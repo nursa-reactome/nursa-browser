@@ -1,0 +1,34 @@
+/* TODO - can the slider styles be moved to a component-specific css file? */
+
+/* The default slider style. */
+.min-max-slider-table {
+    width: 20em;
+    height: 1em;
+}
+
+/* Right-align the max input field. */
+.min-max-slider-input-row > td + td {
+    float: right;
+}
+
+.gsea-config .min-max-slider-table {
+    /* Scooch the table up into the title area. This is ok,
+       since the title is a small div with lots of space to
+       the right, whereas the slider input fields appear
+       above the slider control, which looks best aligned
+       with the buttons to the right under the section title.
+     */
+    position: relative;
+    top: -2em;
+    margin: 0 0 5px 1em;
+}
+
+/* Reduce the default slider knob size by app. 1/4 in the
+   GSEA config context.
+ */
+.gsea-config .min-max-slider-table .noUi-handle {
+    width: 26px;
+    height: 21px;
+    left: -12px;
+    top: -5px;
+}

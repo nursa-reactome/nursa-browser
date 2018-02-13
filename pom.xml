@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.reactome.web.nursa</groupId>
+    <artifactId>nursa-browser</artifactId>
+    <version>3.5.1</version>
+    <packaging>war</packaging>
+    <name>Nursa Dataset Signalling Pathways Portal</name>
+
+    <description>
+        The Nursa Reactome Pathway Browser adapts the Reactome Browser for the
+        Nursa Dataset Signalling Pathways (DSP) portal
+    </description>
+
+    <organization>
+        <name>Oregon Health and Science University</name>
+        <url>http://www.ohsu.edu/</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>loneyf</id>
+            <name>Fred Loney</name>
+            <email>loneyf@ohsu.edu</email>
+            <organization>http://www.ohsu.edu/</organization>
+        </developer>
+        <developer>
+            <id>wug</id>
+            <name>Guanming Wu</name>
+            <email>wug@ohsu.edu</email>
+            <organization>http://www.ohsu.edu/</organization>
+        </developer>
+    </developers>
+
+    <properties>
+        <!-- Name that will be used to generate the war file -->
+        <fileName>NursaBrowser</fileName>
+
+        <!-- Convenience property to set the GWT version -->
+        <gwtVersion>2.8.1</gwtVersion>
+        <gwtStyle>OBF</gwtStyle> <!-- OBF | PRETTY | DETAILED -->
+
+        <!-- GWT needs at least java 1.8 -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <reactome.web.browser>3.5.1</reactome.web.browser>
+        <reactome.web.widgets>1.0.1</reactome.web.widgets>
+        <reactome.nursa.model>1.0.1</reactome.nursa.model>
+        <reactome.gsea.model>1.0.1</reactome.gsea.model>
+
+        <appModule>org.reactome.web.nursa.NursaBrowser</appModule>
+        <appName>${appModule}</appName>
+
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+    </properties>
+ 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.reactome.web.pwp</groupId>
+                <artifactId>browser</artifactId>
+                <version>${reactome.web.browser}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-codeserver</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+        </dependency>
+ 
+        <!--  The base Reactome browser classes. -->
+        <dependency>
+            <groupId>org.reactome.web.pwp</groupId>
+            <artifactId>browser</artifactId>
+            <version>${reactome.web.browser}</version>
+            <classifier>classes</classifier>
+        </dependency>
+       <!--  The shared Nursa model. -->
+        <dependency>
+            <groupId>org.reactome.nursa</groupId>
+            <artifactId>nursa-model</artifactId>
+            <version>${reactome.nursa.model}</version>
+        </dependency>
+       <!--  The shared GSEA model. -->
+        <dependency>
+            <groupId>org.reactome.gsea</groupId>
+            <artifactId>gsea-model</artifactId>
+            <version>${reactome.gsea.model}</version>
+        </dependency>
+       <!--  The reusable widgets. -->
+        <dependency>
+            <groupId>org.reactome.web</groupId>
+            <artifactId>widgets</artifactId>
+            <version>${reactome.web.widgets}</version>
+        </dependency>
+ 
+       <!-- logging dependencies, delegate all to slf4j and use logback -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.22</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>1.7.22</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0</version>
+        </dependency>
+ 
+        <!-- REST client minus jackson conflict -->
+        <dependency>
+            <groupId>org.fusesource.restygwt</groupId>
+            <artifactId>restygwt</artifactId>
+            <version>2.2.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>gwt-jackson-parent</artifactId>
+                    <groupId>com.github.nmorel.gwtjackson</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <artifactId>gwt-jackson</artifactId>
+            <groupId>com.github.nmorel.gwtjackson</groupId>
+            <version>0.14.1</version>
+        </dependency>
+    </dependencies>
+
+   <build>
+        <!-- Output classes directly into the webapp, so that IDEs and "mvn process-classes"
+            update them in DevMode -->
+        <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
+        <finalName>${fileName}-${project.version}</finalName>
+
+        <plugins>
+            <!--  Copy the standard Reactome browser webapp bits. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.0.2</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>org.reactome.web.pwp</groupId>
+                            <artifactId>browser</artifactId>
+                            <type>war</type>
+                            <overWrite>true</overWrite>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
+                            <includes>WEB-INF/web.xml,*.*,static/**</includes>
+                            <!--  Nursa browser has its own home page. -->
+                            <excludes>index.html</excludes>
+                        </artifactItem>
+                    </artifactItems>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>net.ltgt.gwt.maven</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>1.0-rc-6</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>import-sources</goal>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <moduleName>${appModule}</moduleName>
+                    <moduleShortName>${appName}</moduleShortName>
+                    <failOnError>true</failOnError>
+                    <compilerArgs>
+                        <arg>-compileReport</arg>
+                        <arg>-XcompilerMetrics</arg>
+                        <arg>-optimize</arg>
+                        <arg>9</arg>
+                        <arg>-style</arg>
+                        <arg>${gwtStyle}</arg>
+                    </compilerArgs>
+                    <devmodeArgs>
+                        <arg>-bindAddress</arg>
+                        <arg>localhost</arg>
+                    </devmodeArgs>
+                    <codeserverArgs>
+                        <arg>-bindAddress</arg>
+                        <arg>localhost</arg>
+                        <arg>-gen</arg>
+                        <arg>${project.build.directory}/.generated</arg>
+                    </codeserverArgs>
+                    <warDir>${project.build.directory}/${project.build.finalName}</warDir>
+                    <classpathScope>compile+runtime</classpathScope>
+                    <startupUrls>
+                        <startupUrl>index.html</startupUrl>
+                    </startupUrls>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>http://repo.maven.apache.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>central_1</id>
+            <name>Maven Repository Switchboard</name>
+            <url>http://repo1.maven.org/maven2</url>
+            <layout>default</layout>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <!-- EBI repo -->
+        <repository>
+            <id>nexus-ebi-repo</id>
+            <name>The EBI internal repository</name>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-repo/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <!-- EBI SNAPSHOT repo -->
+        <repository>
+            <id>nexus-ebi-snapshot-repo</id>
+            <name>The EBI internal snapshot repository</name>
+            <url>http://www.ebi.ac.uk/Tools/maven/repos/content/groups/ebi-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+</project>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c="urn:import:com.google.gwt.user.cellview.client">
+
+	<g:VerticalPanel ui:field='content'>
+		<g:HorizontalPanel>
+			<!-- The radio button group. -->
+			<g:HorizontalPanel>
+				<g:RadioButton ui:field='gseaBtn' name="technique">GSEA</g:RadioButton>
+				<g:RadioButton ui:field='binomialBtn' name="technique">Binomial</g:RadioButton>
+			</g:HorizontalPanel>
+
+			<!-- The analysis launch button. -->
+			<g:Button ui:field='launchBtn'>Launch</g:Button>
+
+			<!-- The cvonfig slider button. -->
+			<g:Button ui:field='sliderBtn'>
+				<img src="static/images/gear.png" height="16" width="16" />
+			</g:Button>
+
+			<!-- The config slider panel. -->
+			<g:SimplePanel ui:field='sliderPanel' />
+		</g:HorizontalPanel>
+
+		<!-- The analysis results display. -->
+		<g:SimplePanel ui:field='analysisPanel' />
+	</g:VerticalPanel>
+</ui:UiBinder>

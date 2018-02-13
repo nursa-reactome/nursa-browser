@@ -1,0 +1,104 @@
+.main {
+	width: 32em;
+	height: 21em;
+    border: 3px solid gray !important;
+    border-radius: 15px;
+    padding: 5px 10px 5px 10px;
+ 
+    background-color: SteelBlue;
+
+    background: -webkit-linear-gradient(135deg, SteelBlue, rgb(30, 148, 208)); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(135deg, SteelBlue, rgb(30, 148, 208)); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(135deg, SteelBlue, rgb(30, 148, 208)); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(135deg, SteelBlue, rgb(30, 148, 208)); /* Standard syntax */
+    background-image: -ms-linear-gradient(135deg, SteelBlue, rgb(30, 148, 208)); /* For IE10 */
+
+    font-family: Arial Unicode MS, Arial, sans-serif !important;
+    font-size: small !important;
+}
+
+/* Work around the following apparent GWT bug:
+   * Setting a flow panel width does not set the width of the panel content.
+     The work-around is to set the width of the table which implements
+     the flow panel.
+ */
+.main > div > table {
+    width: 100%;    
+}
+
+.header {
+    padding: 2px 0 2px 0;
+}
+
+.headerText {
+    color: white;
+    font-weight: bolder;
+    font-size: large;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    cursor: default;
+}
+
+.combo {
+    margin-top: 4px;
+    height: 19em;
+}
+
+.load {
+    position: absolute;
+    top: 40px;
+    right: 20em;
+    background-color: azure;
+    border-radius: 5px;
+    border: 1px solid grey;
+    color: #063da0;
+    font-weight: bolder;
+    height: 20px;
+    padding: 4px 4px 6px 4px;
+}
+
+.load:disabled {
+    background-color: Gainsboro;
+    opacity: 0.7;
+}
+
+.load:enabled {
+    cursor: pointer;
+}
+
+.info {
+    cursor: help;
+    position: absolute;
+    top: 36px;
+    right: 4em;
+    background-color: azure;
+    border-radius: 5px;
+    border: 1px solid grey;
+    color: #063da0;
+    font-weight: bolder;
+    height: 20px;
+    padding: 0 4px;
+}
+
+.info img {
+	padding: 2px 4px 0 0;
+}
+
+@sprite .close {
+    gwt-image: 'closeNormal';
+    outline: none;
+    background-repeat: no-repeat;
+    border: 0;
+    cursor: pointer;
+    float: right;
+    margin-top: -25px;
+}
+
+@sprite .close:hover {
+    gwt-image: 'closeHovered';
+}
+
+@sprite .close:active:hover {
+    gwt-image: 'closeClicked';
+}

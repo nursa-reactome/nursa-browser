@@ -1,0 +1,25 @@
+.main {
+}
+
+.main button {
+    background-color: azure;
+    border-radius: 5px;
+    border: 1px solid grey;
+    color: #063da0;
+}
+
+.doi {
+	background-color: #908aca;
+    border-radius: 5px;
+    border: 1px solid grey;
+    color: AliceBlue;
+    font-weight: bolder;
+    margin: 0 5px;
+    padding: 4px 10px;
+}
+
+.overview {
+    background-color: #B3E5FC;
+    border-radius: 5px;
+    border: 1px solid grey;
+}
