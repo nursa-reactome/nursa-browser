@@ -1,0 +1,4 @@
+Shows details of the NURSA dataset selected with the top panel DataSet
+search button. The dataset overview, gene list and enriched Reactome
+pathways are displayed. A Compare button shows the different impacted
+pathways of two related datasets.
