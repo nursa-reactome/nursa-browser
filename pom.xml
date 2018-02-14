@@ -178,7 +178,7 @@
                             <type>war</type>
                             <overWrite>true</overWrite>
                             <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
-                            <includes>WEB-INF/web.xml,*.*,static/**</includes>
+                            <includes>*.*,static/**</includes>
                             <!--  Nursa browser has its own home page. -->
                             <excludes>index.html</excludes>
                         </artifactItem>
