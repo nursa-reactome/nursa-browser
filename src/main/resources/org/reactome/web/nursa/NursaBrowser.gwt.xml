@@ -14,11 +14,10 @@
     <inherits name='org.reactome.gsea.GseaModel'/>
     <inherits name="org.fusesource.restygwt.RestyGWT"/>
 
-    <!-- Specify the app entry point class.                         -->
+    <!-- Switch the app entry point class.                         -->
     <replace-with class="org.reactome.web.nursa.client.NursaBrowser">
         <when-type-is class="org.reactome.web.pwp.client.Browser"/>
     </replace-with>
-    <!--  entry-point class='org.reactome.web.nursa.client.NursaBrowser'/ -->
 
     <!-- Specify the paths for translatable code                    -->
     <source path='client'/>
