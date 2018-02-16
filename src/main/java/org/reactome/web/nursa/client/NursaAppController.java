@@ -5,6 +5,7 @@ import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetTabPresenter;
+import org.reactome.web.nursa.client.manager.state.NursaStateManager;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelector;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelectorDisplay;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelectorPresenter;
@@ -35,6 +36,11 @@ public class NursaAppController extends AppController {
         }
         return dataSetEventBus;
     }
+    
+    @Override
+    protected void initStateManager(){
+        new NursaStateManager(this.eventBus);
+    }
 
     @Override
     protected ComplexPanel getTopPanel() {
@@ -60,7 +66,7 @@ public class NursaAppController extends AppController {
         super.initialiseDetailsTabsList();
 
         // Make the dataset tab.
-        DataSetTab.Display datasetTab = new DataSetTabDisplay();
+        DataSetTab.Display datasetTab = new DataSetTabDisplay(getDataSetEventBus());
         new DataSetTabPresenter(this.eventBus, datasetTab, getDataSetEventBus());
         // Remove extraneous tabs.
         DETAILS_TABS.removeIf(tab -> !(tab instanceof DescriptionTab.Display ||
