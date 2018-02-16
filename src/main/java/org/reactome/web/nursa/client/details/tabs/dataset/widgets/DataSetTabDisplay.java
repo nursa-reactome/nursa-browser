@@ -1,6 +1,7 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.*;
 
 import org.reactome.web.pwp.client.common.CommonImages;
@@ -20,8 +21,10 @@ public class DataSetTabDisplay extends ResizeComposite implements DataSetTab.Dis
     private DockLayoutPanel container;
     private DetailsTabTitle title;
     private DataSetPanel content;
+    private EventBus eventBus;
 
-    public DataSetTabDisplay() {
+    public DataSetTabDisplay(EventBus eventBus) {
+        this.eventBus = eventBus;
         this.title = getDetailTabType().getTitle();
         this.container = new DockLayoutPanel(Style.Unit.EM);
         initWidget(this.container);
@@ -45,7 +48,7 @@ public class DataSetTabDisplay extends ResizeComposite implements DataSetTab.Dis
 
     @Override
     public void showDetails(DataSet dataset) {
-        this.content = new DataSetPanel(dataset);
+        this.content = new DataSetPanel(dataset, eventBus);
         this.container.clear();
         this.container.add(this.content);
     }

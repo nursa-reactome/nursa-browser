@@ -1,8 +1,11 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
 import org.reactome.nursa.model.DataSet;
-import org.reactome.web.nursa.client.details.tabs.dataset.AnalysisCompletedEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.AnalysisCompletedHandler;
+import org.reactome.web.analysis.client.model.AnalysisResult;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialAnalysisCompletedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialAnalysisCompletedHandler;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaAnalysisCompletedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaAnalysisCompletedHandler;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
@@ -26,7 +29,8 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class DataSetPanel extends DockLayoutPanel implements AnalysisCompletedHandler {
+public class DataSetPanel extends DockLayoutPanel
+        implements BinomialAnalysisCompletedHandler, GseaAnalysisCompletedHandler {
     /**
      * The UiBinder interface.
      */
@@ -38,19 +42,17 @@ public class DataSetPanel extends DockLayoutPanel implements AnalysisCompletedHa
 
     private Panel contentPanel;
    
-    private EventBus eventBus;
-
     private Integer analysisStartPosition;
 
-    public DataSetPanel(DataSet dataset) {
+    public DataSetPanel(DataSet dataset, EventBus eventBus) {
         super(Style.Unit.EM);
-        eventBus = new SimpleEventBus();
-        eventBus.addHandler(AnalysisCompletedEvent.TYPE, this);
+        eventBus.addHandler(GseaAnalysisCompletedEvent.TYPE, this);
+        eventBus.addHandler(BinomialAnalysisCompletedEvent.TYPE, this);
         addStyleName(RESOURCES.getCSS().main());
         topBar = getTopBar(dataset);
         addNorth(topBar, 4);
         scrollPanel = new ScrollPanel();
-        contentPanel = getMainContent(dataset);
+        contentPanel = getMainContent(dataset, eventBus);
         scrollPanel.add(contentPanel);
         add(scrollPanel);
     }
@@ -71,7 +73,16 @@ public class DataSetPanel extends DockLayoutPanel implements AnalysisCompletedHa
     }
 
     @Override
+    public void onAnalysisCompleted(AnalysisResult result) {
+        showAnalysisResult();
+    }
+
+    @Override
     public void onAnalysisCompleted() {
+        showAnalysisResult();
+    }
+
+    private void showAnalysisResult() {
         // If this is the first analysis, then the analysis start position
         // was set by load or resize and not cleared by a previous call to
         // this method. In the case, scroll to the start of the analysis
@@ -115,7 +126,7 @@ public class DataSetPanel extends DockLayoutPanel implements AnalysisCompletedHa
         return topBar;
     }
 
-    private Panel getMainContent(DataSet dataset) {
+    private Panel getMainContent(DataSet dataset, EventBus eventBus) {
         DataSetSections sections = new DataSetSections(dataset, eventBus);
         VerticalPanel vp = new VerticalPanel();
         for (Widget section: sections) {

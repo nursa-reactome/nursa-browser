@@ -3,8 +3,11 @@ package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 import java.io.IOException;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
+import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.nursa.client.common.events.DataSetSelectedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialAnalysisCompletedEvent;
 import org.reactome.web.nursa.client.tools.dataset.NursaClient;
+import org.reactome.web.pwp.client.common.events.AnalysisCompletedEvent;
 import org.reactome.web.pwp.client.common.events.DetailsTabChangedEvent;
 import org.reactome.web.pwp.client.common.events.StateChangedEvent;
 import org.reactome.web.pwp.client.common.module.AbstractPresenter;
@@ -16,7 +19,8 @@ import com.google.gwt.event.shared.EventBus;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class DataSetTabPresenter extends AbstractPresenter implements DataSetTab.Presenter {
+public class DataSetTabPresenter extends AbstractPresenter
+        implements DataSetTab.Presenter {
 
     private DataSetTab.Display display;
     private DataSet dataset;
@@ -25,14 +29,18 @@ public class DataSetTabPresenter extends AbstractPresenter implements DataSetTab
             EventBus dataSetEventBus) {
         super(detailsEventBus);
         dataSetEventBus.addHandler(DataSetSelectedEvent.TYPE, this);
+        dataSetEventBus.addHandler(BinomialAnalysisCompletedEvent.TYPE, this);
         this.display = display;
         this.display.setPresenter(this);
+    }
+    
+    private EventBus getDetailsEventBus() {
+        return eventBus;
     }
 
     @Override
     public void onStateChanged(StateChangedEvent event) {
-        // Nothing to do here. This handler is only here to accomodate the
-        // Reactome tab framework.
+        // Nothing special to do here.
     }
 
     @Override
@@ -85,5 +93,12 @@ public class DataSetTabPresenter extends AbstractPresenter implements DataSetTab
                 }
             }
         });
+    }
+
+    @Override
+    public void onAnalysisCompleted(AnalysisResult result) {
+        // Forward the analysis result to the StateManager,
+        // which will in turn apply the analysis overlay.
+        getDetailsEventBus().fireEventFromSource(new AnalysisCompletedEvent(result), this);
     }
 }

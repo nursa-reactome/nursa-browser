@@ -2,7 +2,7 @@ package org.reactome.web.nursa.client.details.tabs.dataset;
 
 import java.util.List;
 
-import org.reactome.gsea.model.AnalysisResult;
+import org.reactome.gsea.model.GseaAnalysisResult;
 
 public interface GseaAnalysis {
 
@@ -10,7 +10,7 @@ public interface GseaAnalysis {
     }
 
     interface Display extends DataSetAnalysis.Display {
-        void showResult(List<AnalysisResult> result);
+        void showResult(List<GseaAnalysisResult> result);
     }
 
 }

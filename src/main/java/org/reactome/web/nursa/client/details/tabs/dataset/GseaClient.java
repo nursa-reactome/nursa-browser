@@ -8,7 +8,7 @@ import javax.ws.rs.QueryParam;
 
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.RestService;
-import org.reactome.gsea.model.AnalysisResult;
+import org.reactome.gsea.model.GseaAnalysisResult;
 
 @Path("/Gsea")
 public interface GseaClient extends RestService {
@@ -18,6 +18,6 @@ public interface GseaClient extends RestService {
             List<List<String>> rankedList,
             @QueryParam("dataSetSizeMin") Integer dataSetSizeMin,
             @QueryParam("dataSetSizeMax") Integer dataSetSizeMax,
-            MethodCallback<List<AnalysisResult>> result
+            MethodCallback<List<GseaAnalysisResult>> result
     );
 }

@@ -6,13 +6,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
-import org.reactome.gsea.model.AnalysisResult;
+import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.nursa.model.DataPoint;
 import org.reactome.nursa.model.DataSet;
 import org.reactome.web.analysis.client.AnalysisClient;
 import org.reactome.web.analysis.client.AnalysisHandler;
 import org.reactome.web.analysis.client.model.AnalysisError;
-import org.reactome.web.nursa.client.details.tabs.dataset.AnalysisCompletedEvent;
+import org.reactome.web.analysis.client.model.AnalysisResult;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaAnalysisCompletedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialAnalysisCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaClient;
 
 import com.google.gwt.core.shared.GWT;
@@ -113,12 +115,12 @@ public class PathwayPanel extends Composite {
         Integer dataSetSizeMinOpt = new Integer(dataSetBounds[0]);
         Integer dataSetSizeMaxOpt = new Integer(dataSetBounds[1]);
         // Call the GSEA REST service.
-        client.analyse(rankedList, dataSetSizeMinOpt, dataSetSizeMaxOpt, new MethodCallback<List<AnalysisResult>>() {
+        client.analyse(rankedList, dataSetSizeMinOpt, dataSetSizeMaxOpt, new MethodCallback<List<GseaAnalysisResult>>() {
 
             @Override
-            public void onSuccess(Method method, List<AnalysisResult> result) {
+            public void onSuccess(Method method, List<GseaAnalysisResult> result) {
                 showGseaResult(result);
-                eventBus.fireEventFromSource(new AnalysisCompletedEvent(), PathwayPanel.this);
+                eventBus.fireEventFromSource(new GseaAnalysisCompletedEvent(), PathwayPanel.this);
             }
 
             @Override
@@ -133,7 +135,7 @@ public class PathwayPanel extends Composite {
          });
     }
 
-    protected void showGseaResult(List<AnalysisResult> result) {
+    protected void showGseaResult(List<GseaAnalysisResult> result) {
         Widget table = GseaResultTableFactory.createTable(result);
         analysisPanel.setWidget(table);
     }
@@ -154,9 +156,9 @@ public class PathwayPanel extends Composite {
             }
 
             @Override
-            public void onAnalysisResult(org.reactome.web.analysis.client.model.AnalysisResult result, long time) {
+            public void onAnalysisResult(AnalysisResult result, long time) {
                 showBinomialResult(result);
-                eventBus.fireEventFromSource(new AnalysisCompletedEvent(), PathwayPanel.this);
+                eventBus.fireEventFromSource(new BinomialAnalysisCompletedEvent(result), PathwayPanel.this);
             }
 
             @Override
