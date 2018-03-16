@@ -1,5 +1,8 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
+import java.util.List;
+
+import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.nursa.model.DataSet;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialAnalysisCompletedEvent;
@@ -11,7 +14,6 @@ import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.event.shared.SimpleEventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.Command;
@@ -78,7 +80,7 @@ public class DataSetPanel extends DockLayoutPanel
     }
 
     @Override
-    public void onAnalysisCompleted() {
+    public void onAnalysisCompleted(List<GseaAnalysisResult> result) {
         showAnalysisResult();
     }
 

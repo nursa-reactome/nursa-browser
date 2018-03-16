@@ -16,7 +16,6 @@ import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaAnalysisCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialAnalysisCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaClient;
-
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -101,7 +100,7 @@ public class PathwayPanel extends Composite {
         buildConfigPanel();
     }
 
-    protected void gseaAnalyse() {
+    private void gseaAnalyse() {
         GseaClient client = GWT.create(GseaClient.class);
         // Transform the data points into the GSEA REST PUT
         // payload using the Java8 list comprehension idiom.
@@ -120,7 +119,7 @@ public class PathwayPanel extends Composite {
             @Override
             public void onSuccess(Method method, List<GseaAnalysisResult> result) {
                 showGseaResult(result);
-                eventBus.fireEventFromSource(new GseaAnalysisCompletedEvent(), PathwayPanel.this);
+                eventBus.fireEventFromSource(new GseaAnalysisCompletedEvent(result), PathwayPanel.this);
             }
 
             @Override
@@ -135,12 +134,14 @@ public class PathwayPanel extends Composite {
          });
     }
 
-    protected void showGseaResult(List<GseaAnalysisResult> result) {
-        Widget table = GseaResultTableFactory.createTable(result);
-        analysisPanel.setWidget(table);
+    private void showGseaResult(List<GseaAnalysisResult> result) {
+        final GseaResultTable table = new GseaResultTable(result);
+        final AnalysisResultPanel<GseaAnalysisResult> panel =
+                new AnalysisResultPanel<>(table, eventBus);
+        analysisPanel.setWidget(panel);
     }
 
-    protected void binomialAnalyse() {
+    private void binomialAnalyse() {
         // The input is a table of gene symbol lines.
         List<String> rankedList =
                 this.dataset.getDataPoints()
@@ -169,7 +170,7 @@ public class PathwayPanel extends Composite {
         });
     }
 
-    protected void showBinomialResult(org.reactome.web.analysis.client.model.AnalysisResult result) {
+    private void showBinomialResult(org.reactome.web.analysis.client.model.AnalysisResult result) {
         Widget table = BinomialResultTableFactory.getTable(result);
         analysisPanel.setWidget(table);
     }

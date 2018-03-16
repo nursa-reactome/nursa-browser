@@ -4,36 +4,50 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.reactome.gsea.model.GseaAnalysisResult;
-import com.google.gwt.cell.client.NumberCell;
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.user.cellview.client.CellTable;
+
+import com.google.gwt.core.shared.GWT;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
-import com.google.gwt.user.cellview.client.SimplePager;
-import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.view.client.ListDataProvider;
 
-public class GseaResultTableFactory {
-    private static final NumberCell INTEGER_CELL = new NumberCell();
-    private static final NumberCell DECIMAL_CELL = new NumberCell(NumberFormat.getDecimalFormat());
-    private static final NumberCell SCIENTIFIC_CELL =new NumberCell(NumberFormat.getFormat("0.00E0"));
+public class GseaResultTable extends AnalysisResultTable<GseaAnalysisResult> {
 
-    public static Widget createTable(List<GseaAnalysisResult> result) {
-        // The sortable table.
-        CellTable<GseaAnalysisResult> table = new CellTable<GseaAnalysisResult>();
-        ListDataProvider<GseaAnalysisResult> dataProvider = new ListDataProvider<GseaAnalysisResult>();
-        dataProvider.addDataDisplay(table);
-        dataProvider.setList(result);
-        ListHandler<GseaAnalysisResult> sorter = new ListHandler<GseaAnalysisResult>(dataProvider.getList());
-        table.addColumnSortHandler(sorter);
-        // The exact row count.
-        table.setRowCount(result.size(), true);
+    public GseaResultTable(List<GseaAnalysisResult> result) {
+        super(result);
+        addStyleName(RESOURCES.getCSS().main());
 
-        // Define the columns.
+//        // The hidden stId column.
+//        TextColumn<GseaAnalysisResult> stIdColumn = new TextColumn<GseaAnalysisResult>() {
+//            @Override
+//            public String getValue(GseaAnalysisResult result) {
+//              return getkresult.getPathway().getStId();
+//            }
+//        };
+//        addColumn(stIdColumn, "stId");
+//        
+//        // Work around the following GWT bug:
+//        // * setColumnWidth sets the col element width attribute. However,
+//        //   col width is not supported in HTML5. Furthermore, setting the
+//        //   width of a table column th or td element has no effect on the
+//        //   table layout
+//        //   (cf. https://stackoverflow.com/questions/13850614/why-table-width-is-ignored).
+//        //   Setting the following column style:
+//        //     .hiddden { visibility: collapse }.
+//        //   hides the column but leaves a blank space for the column.
+//        //   The upshot is that there is apparently no way to include
+//        //   a hidden column in a table using CSS. The work-around is
+//        //   to subclass  
+//        //setColumnWidth(stIdColumn, "0px");
+//        //
+//        // The work around reveals a second GWT bug:
+//        // * Column.setCellStyleNames applies the style to the td but not
+//        //   the th. Since the stable id column is the first column, work
+//        //   around this bug by defining a hidden style for the first th
+//        //   in this table's CSS main.
+//        stIdColumn.setCellStyleNames(RESOURCES.getCSS().hidden());
+
+        // The display columns.
         TextColumn<GseaAnalysisResult> nameColumn = new TextColumn<GseaAnalysisResult>() {
             @Override
             public String getValue(GseaAnalysisResult result) {
@@ -132,27 +146,54 @@ public class GseaResultTableFactory {
             }
         });
         
-        // Add the columns.
-        table.addColumn(nameColumn, "Name");
-        table.addColumn(hitsColumn, "Hits");
-        table.addColumn(scoreColumn, "Score");
-        table.addColumn(nesColumn, "NES");
-        table.addColumn(pValueColumn, "P-Value");
-        table.addColumn(fdrColumn, "FDR");
-        table.addColumn(regTypeColumn, "Regulation Type");
+        // Add the display columns.
+        addColumn(nameColumn, "Name");
+        addColumn(hitsColumn, "Hits");
+        addColumn(scoreColumn, "Score");
+        addColumn(nesColumn, "NES");
+        addColumn(pValueColumn, "P-Value");
+        addColumn(fdrColumn, "FDR");
+        addColumn(regTypeColumn, "Regulation Type");
+    }
 
-        // Paginate the table.
-        SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
-        SimplePager pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
-        pager.setDisplay(table);
-        pager.setPageSize(20);
+    @Override
+    protected String getStId(GseaAnalysisResult result) {
+        return result.getPathway().getStId();
+    }
 
-        // Assemble the widget.
-        VerticalPanel vp = new VerticalPanel();
-        vp.add(table);
-        vp.add(pager);
-        // TODO - Center the pager in the panel with a UIBind definition.
-        
-        return vp;
+    public static Resources RESOURCES;
+
+    static {
+        RESOURCES = GWT.create(Resources.class);
+        RESOURCES.getCSS().ensureInjected();
+    }
+ 
+    /**
+     * A ClientBundle of resources used by this widget.
+     */
+    interface Resources extends ClientBundle {
+ 
+        /**
+         * The styles used in this widget.
+         */
+        @Source(Css.CSS)
+        Css getCSS();
+
+    }
+
+    /**
+     * Styles used by this widget.
+     */
+    interface Css extends CssResource {
+ 
+        /**
+         * The path to the default CSS styles used by this resource.
+         */
+        String CSS = "GseaResultTable.css";
+
+        String main();
+
+        String hidden();
+
     }
 }

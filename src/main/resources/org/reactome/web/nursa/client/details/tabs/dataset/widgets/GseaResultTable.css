@@ -1,0 +1,9 @@
+/* Note: the first-child style works around the GWT bug described in
+   GseaResultTable.java */
+.main th:first-child {
+	visibility: collapse;
+}
+
+.hidden {
+	visibility: collapse;
+}

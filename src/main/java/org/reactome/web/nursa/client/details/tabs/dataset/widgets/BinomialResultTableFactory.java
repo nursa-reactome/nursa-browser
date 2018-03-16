@@ -3,6 +3,7 @@ package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 import java.util.Comparator;
 import java.util.List;
 
+import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 
@@ -12,6 +13,7 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
+import com.google.gwt.user.cellview.client.RowHoverEvent;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
@@ -34,6 +36,16 @@ public class BinomialResultTableFactory {
         table.addColumnSortHandler(sorter);
         // The exact row count.
         table.setRowCount(pathways.size(), true);
+
+        // The hidden stId column.
+        TextColumn<PathwaySummary> stIdColumn = new TextColumn<PathwaySummary>() {
+            @Override
+            public String getValue(PathwaySummary result) {
+              return result.getStId();
+            }
+        };
+        table.addColumn(stIdColumn, "Id");
+        table.setColumnWidth(stIdColumn, "0px");
 
         // Define the columns.
         TextColumn<PathwaySummary> nameColumn = new TextColumn<PathwaySummary>() {
@@ -82,6 +94,16 @@ public class BinomialResultTableFactory {
         table.addColumn(nameColumn, "Name");
         table.addColumn(pValueColumn, "P-Value");
         table.addColumn(fdrColumn, "FDR");
+        
+        // Enable selection.
+        RowHoverEvent.Handler hoverHandler = new RowHoverEvent.Handler() {
+
+            @Override
+            public void onRowHover(RowHoverEvent event) {
+                event.getHoveringRow();
+            }
+            
+        };
 
         // Paginate the table.
         SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
