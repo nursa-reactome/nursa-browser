@@ -106,6 +106,12 @@
             <artifactId>gsea-model</artifactId>
             <version>${reactome.gsea.model}</version>
         </dependency>
+        <!--  The REST interface builder utilty. -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>fluent-hc</artifactId>
+            <version>4.5.3</version>
+        </dependency>
        <!--  The reusable widgets. -->
         <dependency>
             <groupId>org.reactome.web</groupId>
