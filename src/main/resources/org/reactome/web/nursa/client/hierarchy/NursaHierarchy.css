@@ -1,0 +1,25 @@
+/* The Nursa portal distinguishes nuclear receptor hierarchy trees with a
+   distinctive color. */
+
+/* Import the hierachy item styles. Unfortunately, AFAIK there is no
+   easy way to do so without specifying the GWT resolved style name,
+   which prepends the class path.  */
+@external .org-reactome-web-pwp-client-hierarchy-widget-HierarchyItem-ResourceCSS-hierarchyItem;
+@external .org-reactome-web-pwp-client-hierarchy-widget-HierarchyItem-ResourceCSS-hierarchyItemSelected;
+@external .org-reactome-web-pwp-client-hierarchy-widget-HierarchyItem-ResourceCSS-hierarchyItemHighlighted;
+
+.nuclearReceptorTree .org-reactome-web-pwp-client-hierarchy-widget-HierarchyItem-ResourceCSS-hierarchyItem {
+    color: SlateBlue;
+    /* The font is too small for weight to take effect, but retain the
+       declaration to show the intent. */
+    font-weight: bold;
+}
+
+/* Selected or highlighted items need a white color against the dark background. */
+.nuclearReceptorTree .org-reactome-web-pwp-client-hierarchy-widget-HierarchyItem-ResourceCSS-hierarchyItemSelected {
+    color: white;
+}
+
+.nuclearReceptorTree .org-reactome-web-pwp-client-hierarchy-widget-HierarchyItem-ResourceCSS-hierarchyItemHighlighted {
+    color: white;
+}

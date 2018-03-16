@@ -5,6 +5,7 @@ import java.util.OptionalInt;
 import java.util.stream.IntStream;
 
 import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetTabPresenter;
+import org.reactome.web.nursa.client.hierarchy.NursaHierarchyDisplay;
 import org.reactome.web.nursa.client.manager.state.NursaStateManager;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelector;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelectorDisplay;
@@ -15,6 +16,7 @@ import org.reactome.web.pwp.client.AppController;
 import org.reactome.web.pwp.client.details.tabs.description.DescriptionTab;
 import org.reactome.web.pwp.client.details.tabs.downloads.DownloadsTab;
 import org.reactome.web.pwp.client.details.tabs.molecules.MoleculesTab;
+import org.reactome.web.pwp.client.hierarchy.HierarchyDisplay;
 import org.reactome.web.pwp.client.tools.launcher.ToolLauncher;
 
 import com.google.gwt.event.shared.EventBus;
@@ -25,6 +27,10 @@ import com.google.gwt.user.client.ui.Widget;
 public class NursaAppController extends AppController {
 
     private EventBus dataSetEventBus;
+
+    public NursaAppController() {
+        super();
+    }
 
     private EventBus getDataSetEventBus() {
         // Create the event bus on demand. Since the protected 
@@ -40,6 +46,11 @@ public class NursaAppController extends AppController {
     @Override
     protected void initStateManager(){
         new NursaStateManager(this.eventBus);
+    }
+
+    @Override
+    protected HierarchyDisplay createHierarchyDisplay() {
+        return new NursaHierarchyDisplay();
     }
 
     @Override
