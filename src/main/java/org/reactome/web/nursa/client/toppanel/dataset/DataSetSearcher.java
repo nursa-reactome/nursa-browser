@@ -21,7 +21,9 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeUri;
 
-
+/**
+ * @author Fred Loney <loneyf@ohsu.edu>
+ */
 public class DataSetSearcher implements Searcher {
     // Proxy a dataset as a suggestion.
     static class DataSetAdapter implements Suggestion {

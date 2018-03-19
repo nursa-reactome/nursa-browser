@@ -11,6 +11,9 @@ import org.reactome.nursa.model.DataSetSearchResult;
 
 
 @Path("/Nursa")
+/**
+ * @author Fred Loney <loneyf@ohsu.edu>
+ */
 public interface NursaClient extends RestService {
     @GET
     @Path("/dataset")

@@ -10,6 +10,9 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.TreeItem;
 
+/**
+ * @author Fred Loney <loneyf@ohsu.edu>
+ */
 public class NursaHierarchyDisplay extends HierarchyDisplay {
 
     /**
