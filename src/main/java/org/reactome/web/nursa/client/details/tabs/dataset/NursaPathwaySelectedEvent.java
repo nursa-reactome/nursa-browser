@@ -5,10 +5,11 @@ import com.google.gwt.event.shared.GwtEvent;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public abstract class NursaPathwayHoveredEvent<K> extends GwtEvent<PathwayLoader> {
+public abstract class NursaPathwaySelectedEvent<K> extends GwtEvent<PathwayLoader> {
+
     private final K key;
 
-    public NursaPathwayHoveredEvent(K key) {
+    public NursaPathwaySelectedEvent(K key) {
         this.key = key;
     }
 

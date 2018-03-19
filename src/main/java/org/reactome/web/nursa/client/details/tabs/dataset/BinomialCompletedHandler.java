@@ -4,7 +4,7 @@ import org.reactome.web.analysis.client.model.AnalysisResult;
 
 import com.google.gwt.event.shared.EventHandler;
 
-public interface BinomialAnalysisCompletedHandler extends EventHandler {
+public interface BinomialCompletedHandler extends EventHandler {
 
     void onAnalysisCompleted(AnalysisResult result);
     

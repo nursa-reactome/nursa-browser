@@ -4,6 +4,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.reactome.gsea.model.GseaAnalysisResult;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaHoveredEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaSelectedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwayHoveredEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwaySelectedEvent;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.resources.client.ClientBundle;
@@ -11,41 +15,14 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
 
-public class GseaResultTable extends AnalysisResultTable<GseaAnalysisResult> {
+/**
+ * @author Fred Loney <loneyf@ohsu.edu>
+ */
+public class GseaTable extends AnalysisResultTable<GseaAnalysisResult, String> {
 
-    public GseaResultTable(List<GseaAnalysisResult> result) {
+    public GseaTable(List<GseaAnalysisResult> result) {
         super(result);
         addStyleName(RESOURCES.getCSS().main());
-
-//        // The hidden stId column.
-//        TextColumn<GseaAnalysisResult> stIdColumn = new TextColumn<GseaAnalysisResult>() {
-//            @Override
-//            public String getValue(GseaAnalysisResult result) {
-//              return getkresult.getPathway().getStId();
-//            }
-//        };
-//        addColumn(stIdColumn, "stId");
-//        
-//        // Work around the following GWT bug:
-//        // * setColumnWidth sets the col element width attribute. However,
-//        //   col width is not supported in HTML5. Furthermore, setting the
-//        //   width of a table column th or td element has no effect on the
-//        //   table layout
-//        //   (cf. https://stackoverflow.com/questions/13850614/why-table-width-is-ignored).
-//        //   Setting the following column style:
-//        //     .hiddden { visibility: collapse }.
-//        //   hides the column but leaves a blank space for the column.
-//        //   The upshot is that there is apparently no way to include
-//        //   a hidden column in a table using CSS. The work-around is
-//        //   to subclass  
-//        //setColumnWidth(stIdColumn, "0px");
-//        //
-//        // The work around reveals a second GWT bug:
-//        // * Column.setCellStyleNames applies the style to the td but not
-//        //   the th. Since the stable id column is the first column, work
-//        //   around this bug by defining a hidden style for the first th
-//        //   in this table's CSS main.
-//        stIdColumn.setCellStyleNames(RESOURCES.getCSS().hidden());
 
         // The display columns.
         TextColumn<GseaAnalysisResult> nameColumn = new TextColumn<GseaAnalysisResult>() {
@@ -157,8 +134,18 @@ public class GseaResultTable extends AnalysisResultTable<GseaAnalysisResult> {
     }
 
     @Override
-    protected String getStId(GseaAnalysisResult result) {
+    protected String getKey(GseaAnalysisResult result) {
         return result.getPathway().getStId();
+    }
+
+    @Override
+    protected NursaPathwayHoveredEvent<String> createHoveredEvent(String stId) {
+        return new GseaHoveredEvent(stId);
+    }
+
+    @Override
+    protected NursaPathwaySelectedEvent<String> createSelectedEvent(String stId) {
+        return new GseaSelectedEvent(stId);
     }
 
     public static Resources RESOURCES;

@@ -1,6 +1,10 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
 import java.util.List;
+
+import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwayHoveredEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwaySelectedEvent;
+
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.user.cellview.client.CellTable;
@@ -8,7 +12,10 @@ import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.view.client.ListDataProvider;
 import com.google.gwt.view.client.SingleSelectionModel;
 
-public abstract class AnalysisResultTable<T> extends CellTable<T> {
+/**
+ * @author Fred Loney <loneyf@ohsu.edu>
+ */
+public abstract class AnalysisResultTable<T, K> extends CellTable<T> {
 
     protected static final NumberCell INTEGER_CELL = new NumberCell();
     protected static final NumberCell DECIMAL_CELL = new NumberCell(NumberFormat.getDecimalFormat());
@@ -32,10 +39,14 @@ public abstract class AnalysisResultTable<T> extends CellTable<T> {
         setRowCount(result.size(), true);
     }
     
-    public String getStId(int row) {
+    public K getKey(int row) {
         T result = sorter.getList().get(row);
-        return getStId(result);
+        return getKey(result);
     }
     
-    abstract protected String getStId(T result);
+    abstract protected NursaPathwayHoveredEvent<K> createHoveredEvent(K key);
+    
+    abstract protected NursaPathwaySelectedEvent<K> createSelectedEvent(K key);
+    
+    abstract protected K getKey(T result);
 }

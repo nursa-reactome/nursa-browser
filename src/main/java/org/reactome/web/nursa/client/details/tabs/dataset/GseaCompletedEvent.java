@@ -9,12 +9,12 @@ import com.google.gwt.event.shared.GwtEvent;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class GseaAnalysisCompletedEvent extends GwtEvent<GseaAnalysisCompletedHandler> {
-    public static Type<GseaAnalysisCompletedHandler> TYPE = new GwtEvent.Type<GseaAnalysisCompletedHandler>();
+public class GseaCompletedEvent extends GwtEvent<GseaCompletedHandler> {
+    public static Type<GseaCompletedHandler> TYPE = new GwtEvent.Type<GseaCompletedHandler>();
 
     private List<GseaAnalysisResult> result;
 
-    public GseaAnalysisCompletedEvent(List<GseaAnalysisResult> result) {
+    public GseaCompletedEvent(List<GseaAnalysisResult> result) {
         this.result = result;
     }
 
@@ -23,12 +23,12 @@ public class GseaAnalysisCompletedEvent extends GwtEvent<GseaAnalysisCompletedHa
     }
 
     @Override
-    public Type<GseaAnalysisCompletedHandler> getAssociatedType() {
+    public Type<GseaCompletedHandler> getAssociatedType() {
         return TYPE;
     }
 
     @Override
-    protected void dispatch(GseaAnalysisCompletedHandler handler) {
+    protected void dispatch(GseaCompletedHandler handler) {
         handler.onAnalysisCompleted(result);
     }
 }

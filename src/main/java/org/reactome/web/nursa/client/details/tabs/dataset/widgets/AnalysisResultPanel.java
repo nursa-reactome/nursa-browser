@@ -14,13 +14,16 @@ import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 
-public class AnalysisResultPanel<T> extends VerticalPanel {
+/**
+ * @author Fred Loney <loneyf@ohsu.edu>
+ */
+public abstract class AnalysisResultPanel<T, K> extends VerticalPanel {
 
     private SimplePager pager;
-    private AnalysisResultTable<T> resultTable;
+    private AnalysisResultTable<T, K> table;
 
-    public AnalysisResultPanel(final AnalysisResultTable<T> table, final EventBus eventBus) {
-        this.resultTable = table;
+    protected AnalysisResultPanel(AnalysisResultTable<T, K> table, final EventBus eventBus) {
+        this.table = table;
         // Paginate the table.
         SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
         pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
@@ -38,9 +41,10 @@ public class AnalysisResultPanel<T> extends VerticalPanel {
             public void onRowHover(RowHoverEvent event) {
                 // The row in the current page, subtracting the header row.
                 int pageRow = event.getHoveringRow().getRowIndex() - 1;
-                String stId = AnalysisResultPanel.this.getId(pageRow);
+                K key = AnalysisResultPanel.this.getKey(pageRow);
                 // Relay the hover event up to the tab presenter.
-                NursaPathwayHoveredEvent pathwayEvent = new NursaPathwayHoveredEvent(stId);
+                NursaPathwayHoveredEvent<K> pathwayEvent =
+                        AnalysisResultPanel.this.table.createHoveredEvent(key);
                 eventBus.fireEventFromSource(pathwayEvent, this);
             }
         };
@@ -63,20 +67,21 @@ public class AnalysisResultPanel<T> extends VerticalPanel {
             @Override
             public void onSelectionChange(SelectionChangeEvent event) {
                 int pageRow = table.getKeyboardSelectedRow();
-                String stId = AnalysisResultPanel.this.getId(pageRow);
+                K key = AnalysisResultPanel.this.getKey(pageRow);
                 // Relay the select event up to the tab presenter.
-                NursaPathwaySelectedEvent pathwayEvent = new NursaPathwaySelectedEvent(stId);
+                NursaPathwaySelectedEvent<K> pathwayEvent =
+                        AnalysisResultPanel.this.table.createSelectedEvent(key);
                 eventBus.fireEventFromSource(pathwayEvent, this);
             }
         };
         table.getSelectionModel().addSelectionChangeHandler(selectHandler);
-     }
-
-    private String getId(int pageRow) {
+    }
+    
+    private K getKey(int pageRow) {
         // The row in the backing pathway list.
         int absRow = pager.getPageStart() + pageRow;
         // The stable id for the hovered row.
-        return resultTable.getStId(absRow);
+        return table.getKey(absRow);
     }
 
 }

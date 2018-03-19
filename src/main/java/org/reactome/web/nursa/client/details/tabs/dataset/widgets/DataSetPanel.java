@@ -5,10 +5,10 @@ import java.util.List;
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.nursa.model.DataSet;
 import org.reactome.web.analysis.client.model.AnalysisResult;
-import org.reactome.web.nursa.client.details.tabs.dataset.BinomialAnalysisCompletedEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.BinomialAnalysisCompletedHandler;
-import org.reactome.web.nursa.client.details.tabs.dataset.GseaAnalysisCompletedEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.GseaAnalysisCompletedHandler;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedHandler;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedHandler;
 
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.core.shared.GWT;
@@ -32,7 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Fred Loney <loneyf@ohsu.edu>
  */
 public class DataSetPanel extends DockLayoutPanel
-        implements BinomialAnalysisCompletedHandler, GseaAnalysisCompletedHandler {
+        implements BinomialCompletedHandler, GseaCompletedHandler {
     /**
      * The UiBinder interface.
      */
@@ -48,8 +48,8 @@ public class DataSetPanel extends DockLayoutPanel
 
     public DataSetPanel(DataSet dataset, EventBus eventBus) {
         super(Style.Unit.EM);
-        eventBus.addHandler(GseaAnalysisCompletedEvent.TYPE, this);
-        eventBus.addHandler(BinomialAnalysisCompletedEvent.TYPE, this);
+        eventBus.addHandler(GseaCompletedEvent.TYPE, this);
+        eventBus.addHandler(BinomialCompletedEvent.TYPE, this);
         addStyleName(RESOURCES.getCSS().main());
         topBar = getTopBar(dataset);
         addNorth(topBar, 4);

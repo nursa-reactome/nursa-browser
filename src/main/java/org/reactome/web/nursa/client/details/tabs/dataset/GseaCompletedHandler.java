@@ -6,7 +6,10 @@ import org.reactome.gsea.model.GseaAnalysisResult;
 
 import com.google.gwt.event.shared.EventHandler;
 
-public interface GseaAnalysisCompletedHandler extends EventHandler {
+/**
+ * @author Fred Loney <loneyf@ohsu.edu>
+ */
+public interface GseaCompletedHandler extends EventHandler {
 
     void onAnalysisCompleted(List<GseaAnalysisResult> result);
     

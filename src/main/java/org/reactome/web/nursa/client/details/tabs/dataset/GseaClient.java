@@ -11,6 +11,9 @@ import org.fusesource.restygwt.client.RestService;
 import org.reactome.gsea.model.GseaAnalysisResult;
 
 @Path("/Gsea")
+/**
+ * @author Fred Loney <loneyf@ohsu.edu>
+ */
 public interface GseaClient extends RestService {
     @POST
     @Path("/analyse")

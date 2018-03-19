@@ -3,11 +3,10 @@ package org.reactome.web.nursa.client.details.tabs.dataset;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class GseaSelectedEvent extends NursaPathwaySelectedEvent<String> {
-    public static Type<PathwayLoader> TYPE =
-            new Type<PathwayLoader>();
+public class GseaHoveredEvent extends NursaPathwayHoveredEvent<String> {
+    public static Type<PathwayLoader> TYPE = new Type<PathwayLoader>();
 
-    public GseaSelectedEvent(String stId) {
+    public GseaHoveredEvent(String stId) {
         super(stId);
     }
 
@@ -20,5 +19,4 @@ public class GseaSelectedEvent extends NursaPathwaySelectedEvent<String> {
     protected void dispatch(PathwayLoader handler) {
         handler.load(getKey());
     }
-
 }

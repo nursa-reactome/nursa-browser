@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.reactome.gsea.model.GseaAnalysisResult;
 
+/**
+ * @author Fred Loney <loneyf@ohsu.edu>
+ */
 public interface GseaAnalysis {
 
     interface Presenter extends DataSetAnalysis.Presenter {

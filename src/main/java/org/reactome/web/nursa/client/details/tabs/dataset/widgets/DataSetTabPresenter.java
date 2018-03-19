@@ -3,16 +3,16 @@ package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
-
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.nursa.client.common.events.DataSetSelectedEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.BinomialAnalysisCompletedEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.GseaAnalysisCompletedEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwayHoveredEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwaySelectedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialHoveredEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialSelectedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaHoveredEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaSelectedEvent;
 import org.reactome.web.nursa.client.tools.dataset.NursaClient;
 import org.reactome.web.pwp.client.common.Selection;
 import org.reactome.web.pwp.client.common.events.AnalysisCompletedEvent;
@@ -27,6 +27,7 @@ import org.reactome.web.pwp.client.manager.state.State;
 import org.reactome.web.pwp.model.client.classes.DatabaseObject;
 import org.reactome.web.pwp.model.client.classes.Pathway;
 import org.reactome.web.pwp.model.client.common.ContentClientHandler;
+import org.reactome.web.pwp.model.client.common.ContentClientHandler.ObjectLoaded;
 import org.reactome.web.pwp.model.client.content.ContentClient;
 import org.reactome.web.pwp.model.client.content.ContentClientError;
 import org.reactome.gsea.model.GseaAnalysisResult;
@@ -34,8 +35,6 @@ import org.reactome.nursa.model.DataSet;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.event.shared.EventHandler;
-import com.google.gwt.event.shared.GwtEvent;
 
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
@@ -51,11 +50,13 @@ public class DataSetTabPresenter extends AbstractPresenter
             EventBus dataSetEventBus) {
         super(detailsEventBus);
         dataSetEventBus.addHandler(DataSetSelectedEvent.TYPE, this);
-        dataSetEventBus.addHandler(BinomialAnalysisCompletedEvent.TYPE, this);
-        dataSetEventBus.addHandler(GseaAnalysisCompletedEvent.TYPE, this);
-        dataSetEventBus.addHandler(NursaPathwayHoveredEvent.TYPE, this);
+        dataSetEventBus.addHandler(BinomialCompletedEvent.TYPE, this);
+        dataSetEventBus.addHandler(GseaCompletedEvent.TYPE, this);
+        dataSetEventBus.addHandler(BinomialHoveredEvent.TYPE, this);
+        dataSetEventBus.addHandler(GseaHoveredEvent.TYPE, this);
         dataSetEventBus.addHandler(PathwayHoveredResetEvent.TYPE, this);
-        dataSetEventBus.addHandler(NursaPathwaySelectedEvent.TYPE, this);
+        dataSetEventBus.addHandler(BinomialSelectedEvent.TYPE, this);
+        dataSetEventBus.addHandler(GseaSelectedEvent.TYPE, this);
         this.display = display;
         this.display.setPresenter(this);
     }
@@ -134,73 +135,64 @@ public class DataSetTabPresenter extends AbstractPresenter
     @Override
     public void onAnalysisCompleted(List<GseaAnalysisResult> result) {
         // Transform the result to a Reactome data structure.
-        BinomialAnalysisResult binomial = new BinomialAnalysisResult(result);
+        BinomialResult binomial = new BinomialResult(result);
         // Borrow the binomial handler to propagate a completed event on
         // the details event bus.
         onAnalysisCompleted(binomial);
     }
-    
+
     @Override
-    public void onPathwayHovered(final String stId) {
-        final Function<Pathway, GwtEvent<?>> eventFactory =
-                pathway -> new DatabaseObjectHoveredEvent(pathway);
-        load(stId, eventFactory);
+    public void load(Long dbId) {
+        ContentClient.query(dbId, createLoadHandler(dbId));
     }
 
     @Override
-    public void onPathwaySelected(String stId) {
-        final Function<Pathway, GwtEvent<?>> eventFactory =
-                pathway -> new DatabaseObjectSelectedEvent(new Selection(pathway));
-        load(stId, eventFactory);
+    public void load(String stId) {
+        ContentClient.query(stId, createLoadHandler(stId));
     }
 
-    private void load(final String stId, final Function<Pathway, GwtEvent<?>> eventFactory) {
-        // The query below is adapted from AnalysisTabPresenter. Unlike
-        // AnalysisTabPresenter, we use the stable id rather than the
-        // database id, since both the binomial and the GSEA analysis
-        // results have a stable id, but only the binomial result has a
-        // database id. Note that the global LRU object cache stores an
-        // object value for both id keys.
-       ContentClient.query(stId, new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
-            @Override
-            public void onObjectLoaded(DatabaseObject databaseObject) {
-                Pathway pathway = (Pathway) databaseObject;
-                if (!Objects.equals(pathway, DataSetTabPresenter.this.selected)) {
-                    // TODO - address the following Reactome bug:
-                    // * hovering over a top-level pathway,
-                    //   then hovering over a pathway in a different
-                    //   hierarchy does not clear the top-level
-                    //   pathway highight. Similarly, hovering over
-                    //   a different top-level pathway does not clear
-                    //   the non-top-level highlighted pathway.
-                    //   The code commented out below does not fix this
-                    //   bug and has no effect.
-                    //if (DataSetTabPresenter.this.selected != null) {
-                    //    // Clear the previous hover, if any.
-                    //    DatabaseObjectHoveredEvent event = new DatabaseObjectHoveredEvent();
-                    //    getDetailsEventBus().fireEventFromSource(event, DataSetTabPresenter.this);
-                    //}
-                    // Highlight the hovered pathway.
-                    GwtEvent<?> event = eventFactory.apply(pathway);
-                    getDetailsEventBus().fireEventFromSource(event, DataSetTabPresenter.this);
+    private ObjectLoaded<DatabaseObject> createLoadHandler(final Object key) {
+        return new ContentClientHandler.ObjectLoaded<DatabaseObject>() {
+                @Override
+                public void onObjectLoaded(DatabaseObject databaseObject) {
+                    Pathway pathway = (Pathway) databaseObject;
+                    if (!Objects.equals(pathway, DataSetTabPresenter.this.selected)) {
+                        // TODO - address the following Reactome bug:
+                        // * hovering over a top-level pathway,
+                        //   then hovering over a pathway in a different
+                        //   hierarchy does not clear the top-level
+                        //   pathway highight. Similarly, hovering over
+                        //   a different top-level pathway does not clear
+                        //   the non-top-level highlighted pathway.
+                        //   The code commented out below does not fix this
+                        //   bug and has no effect.
+                        //if (DataSetTabPresenter.this.selected != null) {
+                        //    // Clear the previous hover, if any.
+                        //    DatabaseObjectHoveredEvent event = new DatabaseObjectHoveredEvent();
+                        //    getDetailsEventBus().fireEventFromSource(event, DataSetTabPresenter.this);
+                        //}
+                        // Highlight the hovered pathway.
+                        DatabaseObjectSelectedEvent event =
+                                new DatabaseObjectSelectedEvent(new Selection(pathway));
+                        getDetailsEventBus().fireEventFromSource(event, DataSetTabPresenter.this);
+                    }
                 }
-            }
 
-            @Override
-            public void onContentClientException(Type type, String message) {
-                onFetchError(stId);
-            }
+                @Override
+                public void onContentClientException(Type type, String message) {
+                    onFetchError(key);
+                }
 
-            @Override
-            public void onContentClientError(ContentClientError error) {
-                onFetchError(stId);
-            }
+                @Override
+                public void onContentClientError(ContentClientError error) {
+                    onFetchError(key);
+                }
 
-            private void onFetchError(String stId) {
-                ErrorMessageEvent msgEvent = new ErrorMessageEvent("Error retrieving data for " + stId);
-                getDetailsEventBus().fireEventFromSource(msgEvent, DataSetTabPresenter.this);
-            }
-        });
+                private void onFetchError(Object key) {
+                    ErrorMessageEvent msgEvent = new ErrorMessageEvent("Error retrieving data for " + key);
+                    getDetailsEventBus().fireEventFromSource(msgEvent, DataSetTabPresenter.this);
+                }
+            };
     }
 
     @Override

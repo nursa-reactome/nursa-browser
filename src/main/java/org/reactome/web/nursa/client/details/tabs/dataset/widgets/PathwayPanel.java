@@ -13,8 +13,9 @@ import org.reactome.web.analysis.client.AnalysisClient;
 import org.reactome.web.analysis.client.AnalysisHandler;
 import org.reactome.web.analysis.client.model.AnalysisError;
 import org.reactome.web.analysis.client.model.AnalysisResult;
-import org.reactome.web.nursa.client.details.tabs.dataset.GseaAnalysisCompletedEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.BinomialAnalysisCompletedEvent;
+import org.reactome.web.analysis.client.model.PathwaySummary;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaClient;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -33,6 +34,9 @@ import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * @author Fred Loney <loneyf@ohsu.edu>
+ */
 public class PathwayPanel extends Composite {
     
     /**
@@ -119,7 +123,7 @@ public class PathwayPanel extends Composite {
             @Override
             public void onSuccess(Method method, List<GseaAnalysisResult> result) {
                 showGseaResult(result);
-                eventBus.fireEventFromSource(new GseaAnalysisCompletedEvent(result), PathwayPanel.this);
+                eventBus.fireEventFromSource(new GseaCompletedEvent(result), PathwayPanel.this);
             }
 
             @Override
@@ -135,9 +139,9 @@ public class PathwayPanel extends Composite {
     }
 
     private void showGseaResult(List<GseaAnalysisResult> result) {
-        final GseaResultTable table = new GseaResultTable(result);
-        final AnalysisResultPanel<GseaAnalysisResult> panel =
-                new AnalysisResultPanel<>(table, eventBus);
+        GseaTable table = new GseaTable(result);
+        AnalysisResultPanel<GseaAnalysisResult, String> panel =
+                new GseaPanel(table, eventBus);
         analysisPanel.setWidget(panel);
     }
 
@@ -159,7 +163,7 @@ public class PathwayPanel extends Composite {
             @Override
             public void onAnalysisResult(AnalysisResult result, long time) {
                 showBinomialResult(result);
-                eventBus.fireEventFromSource(new BinomialAnalysisCompletedEvent(result), PathwayPanel.this);
+                eventBus.fireEventFromSource(new BinomialCompletedEvent(result), PathwayPanel.this);
             }
 
             @Override
@@ -171,8 +175,10 @@ public class PathwayPanel extends Composite {
     }
 
     private void showBinomialResult(org.reactome.web.analysis.client.model.AnalysisResult result) {
-        Widget table = BinomialResultTableFactory.getTable(result);
-        analysisPanel.setWidget(table);
+        BinomialTable table = new BinomialTable(result);
+        AnalysisResultPanel<PathwaySummary, Long> panel =
+                new BinomialPanel(table, eventBus);
+        analysisPanel.setWidget(panel);
     }
     
     /**
