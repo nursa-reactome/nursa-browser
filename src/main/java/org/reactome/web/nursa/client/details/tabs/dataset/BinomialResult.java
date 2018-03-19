@@ -1,4 +1,4 @@
-package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
+package org.reactome.web.nursa.client.details.tabs.dataset;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +11,6 @@ import org.reactome.web.analysis.client.model.AnalysisSummary;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.analysis.client.model.ResourceSummary;
-import org.reactome.web.nursa.client.details.tabs.dataset.BinomialSummary;
 
 /**
  * @author Fred Loney <loneyf@ohsu.edu> 

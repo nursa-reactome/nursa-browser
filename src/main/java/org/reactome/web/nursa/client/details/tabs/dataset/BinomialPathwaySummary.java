@@ -1,4 +1,4 @@
-package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
+package org.reactome.web.nursa.client.details.tabs.dataset;
 
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.gsea.model.GseaAnalysisResult.Pathway;
@@ -6,6 +6,7 @@ import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.analysis.client.model.ReactionStatistics;
 import org.reactome.web.analysis.client.model.SpeciesSummary;
+import org.reactome.web.nursa.client.details.tabs.dataset.widgets.BinomialEntityStatistics;
 
 /**
  * @author Fred Loney <loneyf@ohsu.edu> 
