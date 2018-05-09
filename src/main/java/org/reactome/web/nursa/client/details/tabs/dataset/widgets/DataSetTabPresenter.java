@@ -1,15 +1,17 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.util.List;
 import java.util.Objects;
+
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.reactome.web.analysis.client.model.AnalysisResult;
+import org.reactome.web.nursa.analysis.client.model.BinomialResult;
 import org.reactome.web.nursa.client.common.events.DataSetSelectedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialHoveredEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.BinomialResult;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialSelectedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaHoveredEvent;
@@ -135,8 +137,9 @@ public class DataSetTabPresenter extends AbstractPresenter
 
     @Override
     public void onAnalysisCompleted(List<GseaAnalysisResult> result) {
+        String token = generateToken();
         // Transform the result to a Reactome data structure.
-        BinomialResult binomial = new BinomialResult(result);
+        BinomialResult binomial = new BinomialResult(result, token);
         // Borrow the binomial handler to propagate a completed event on
         // the details event bus.
         onAnalysisCompleted(binomial);
@@ -159,19 +162,23 @@ public class DataSetTabPresenter extends AbstractPresenter
                     Pathway pathway = (Pathway) databaseObject;
                     if (!Objects.equals(pathway, DataSetTabPresenter.this.selected)) {
                         // TODO - address the following Reactome bug:
-                        // * hovering over a top-level pathway,
-                        //   then hovering over a pathway in a different
-                        //   hierarchy does not clear the top-level
-                        //   pathway highight. Similarly, hovering over
-                        //   a different top-level pathway does not clear
-                        //   the non-top-level highlighted pathway.
-                        //   The code commented out below does not fix this
-                        //   bug and has no effect.
-                        //if (DataSetTabPresenter.this.selected != null) {
-                        //    // Clear the previous hover, if any.
-                        //    DatabaseObjectHoveredEvent event = new DatabaseObjectHoveredEvent();
-                        //    getDetailsEventBus().fireEventFromSource(event, DataSetTabPresenter.this);
-                        //}
+                        // * Hovering over a top-level pathway, then hovering
+                        //   over a pathway in a different hierarchy does not
+                        //   clear the top-level pathway highight. Similarly,
+                        //   hovering over a different top-level pathway does
+                        //   not clear the non-top-level highlighted pathway.
+                        //   The following code fragment does not fix this bug
+                        //   and has no discernable effect:
+                        //
+                        //      if (DataSetTabPresenter.this.selected != null) {
+                        //          // Clear the previous hover, if any.
+                        //          DatabaseObjectHoveredEvent event =
+                        //                  new DatabaseObjectHoveredEvent();
+                        //          getDetailsEventBus().fireEventFromSource(
+                        //                  event, DataSetTabPresenter.this
+                        //          );
+                        //      }
+                        
                         // Highlight the hovered pathway.
                         DatabaseObjectSelectedEvent event =
                                 new DatabaseObjectSelectedEvent(new Selection(pathway));
@@ -201,5 +208,54 @@ public class DataSetTabPresenter extends AbstractPresenter
         // An empty hover event clears any current highlighting.
         DatabaseObjectHoveredEvent hoverEvent = new DatabaseObjectHoveredEvent();
         getDetailsEventBus().fireEventFromSource(hoverEvent, this);
+    }
+
+    private String generateToken() {
+        return toMD5(dataset.getName());
+    }
+
+    /****
+     * MD5 cruft below is adapted from
+     * https://gist.github.com/foreground-voice/8822544.
+     * Standard MD5 libraries, e.g. Apache Commons, can't be compiled by GWT.
+     * Other utilities, e.g.
+     * https://github.com/ManfredTremmel/gwt-commons-codec,
+     * fail for a variety of reasons, e.g. class precedence.
+     ****/
+ 
+    private String toMD5(String value) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] bytes = value.getBytes("UTF-8");
+            byte[] digest = md.digest(bytes);
+            return encodeBase16(digest);
+        } catch (Exception e) {
+            String msg = "Could not create the MD5 digest for " + value;
+            throw new IllegalStateException(msg, e);
+        }
+    }
+
+    private String encodeBase16(byte[] bytes)
+    {
+        StringBuffer sb = new StringBuffer(bytes.length * 2);
+        for (int i = 0; i < bytes.length; i++)
+        {
+            byte b = bytes[i];
+            // top 4 bits
+            char c = (char) ((b >> 4) & 0xf);
+            if (c > 9)
+                c = (char) ((c - 10) + 'a');
+            else
+                c = (char) (c + '0');
+            sb.append(c);
+            // bottom 4 bits
+            c = (char) (b & 0xf);
+            if (c > 9)
+                c = (char) ((c - 10) + 'a');
+            else
+                c = (char) (c + '0');
+            sb.append(c);
+        }
+        return sb.toString();
     }
 }

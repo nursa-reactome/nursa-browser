@@ -10,6 +10,7 @@ import org.reactome.web.nursa.client.manager.state.NursaStateManager;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelector;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelectorDisplay;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelectorPresenter;
+import org.reactome.web.nursa.client.viewport.fireworks.NursaFireworksPresenter;
 import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetTab;
 import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetTabDisplay;
 import org.reactome.web.pwp.client.AppController;
@@ -18,6 +19,9 @@ import org.reactome.web.pwp.client.details.tabs.downloads.DownloadsTab;
 import org.reactome.web.pwp.client.details.tabs.molecules.MoleculesTab;
 import org.reactome.web.pwp.client.hierarchy.HierarchyDisplay;
 import org.reactome.web.pwp.client.tools.launcher.ToolLauncher;
+import org.reactome.web.pwp.client.viewport.fireworks.Fireworks.Display;
+import org.reactome.web.pwp.client.viewport.fireworks.FireworksDisplay;
+import org.reactome.web.pwp.client.viewport.fireworks.FireworksPresenter;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
@@ -51,6 +55,16 @@ public class NursaAppController extends AppController {
     @Override
     protected HierarchyDisplay createHierarchyDisplay() {
         return new NursaHierarchyDisplay();
+    }
+
+    @Override
+    protected FireworksPresenter createFireworksPresenter(Display fireworks) {
+        return new NursaFireworksPresenter(this.eventBus, fireworks);
+    }
+
+    @Override
+    protected FireworksDisplay getFireworksDisplay() {
+        return super.getFireworksDisplay();
     }
 
     @Override
