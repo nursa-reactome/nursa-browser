@@ -53,7 +53,7 @@
         <reactome.nursa.model>1.0.1</reactome.nursa.model>
         <reactome.gsea.model>1.0.1</reactome.gsea.model>
 
-        <appModule>org.reactome.web.nursa.NursaBrowser</appModule>
+        <appModule>org.reactome.NursaBrowser</appModule>
         <appName>${appModule}</appName>
 
         <failOnMissingWebXml>false</failOnMissingWebXml>
@@ -77,7 +77,7 @@
             <artifactId>gwt-user</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+       <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-codeserver</artifactId>
             <scope>provided</scope>

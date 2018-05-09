@@ -1,22 +1,28 @@
-package org.reactome.web.nursa.client.details.tabs.dataset;
+package org.reactome.web.nursa.analysis.client.model;
 
 import org.reactome.web.analysis.client.model.AnalysisSummary;
 
 /**
- * 
  * Minimal AnalysisSummary implementation. Reactome raises an error
- * if an analysis result does not have a summary with a token.
- * This implementation has an empty token.
+ * if an analysis result does not have a summary.
+ * 
+ * The caller is responsible for ensuring that the token is distinct
+ * for each analysis input.
  * 
  * @author Fred Loney <loneyf@ohsu.edu>
  */
 public class BinomialSummary implements AnalysisSummary {
 
     private String speciesName;
+    private String token;
+
+    public BinomialSummary(String token) {
+        this.token = token;
+    }
 
     @Override
     public String getToken() {
-        return "";
+        return token;
     }
 
     @Override

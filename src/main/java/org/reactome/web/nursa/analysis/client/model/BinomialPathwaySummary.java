@@ -1,4 +1,4 @@
-package org.reactome.web.nursa.client.details.tabs.dataset;
+package org.reactome.web.nursa.analysis.client.model;
 
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.gsea.model.GseaAnalysisResult.Pathway;
