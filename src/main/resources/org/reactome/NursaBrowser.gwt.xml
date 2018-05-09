@@ -3,6 +3,7 @@
     <!-- Inherit the core Web Toolkit stuff.                        -->
     <inherits name='com.google.gwt.user.User'/>
     <inherits name="com.google.web.bindery.autobean.AutoBean"/>
+    <inherits name='com.google.gwt.user.User'/>
 
     <!-- Inherit the default GWT style sheet                        -->
     <inherits name='com.google.gwt.user.theme.standard.Standard'/>
@@ -13,13 +14,14 @@
     <inherits name='org.reactome.nursa.NursaModel'/>
     <inherits name='org.reactome.gsea.GseaModel'/>
     <inherits name="org.fusesource.restygwt.RestyGWT"/>
-
+ 
     <!-- Switch the app entry point class.                         -->
     <replace-with class="org.reactome.web.nursa.client.NursaBrowser">
         <when-type-is class="org.reactome.web.pwp.client.Browser"/>
     </replace-with>
 
     <!-- Specify the paths for translatable code                    -->
-    <source path='client'/>
-
+    <source path='web'/>
+    <source path='nursa'/>
+                                
 </module>
