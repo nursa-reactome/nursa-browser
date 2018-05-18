@@ -109,7 +109,9 @@ public class PathwayPanel extends Composite {
         // Transform the data points into the GSEA REST PUT
         // payload using the Java8 list comprehension idiom.
         List<List<String>> rankedList =
-                this.dataset.getDataPoints()
+                this.dataset.getExperiments()
+                            .get(0)
+                            .getDataPoints()
                             .stream()
                             .map(PathwayPanel::pullRank)
                             .collect(Collectors.toList());
@@ -148,7 +150,9 @@ public class PathwayPanel extends Composite {
     private void binomialAnalyse() {
         // The input is a table of gene symbol lines.
         List<String> rankedList =
-                this.dataset.getDataPoints()
+                this.dataset.getExperiments()
+                    .get(0)
+                    .getDataPoints()
                     .stream()
                     .map(dp -> dp.getSymbol())
                     .collect(Collectors.toList());

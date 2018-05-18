@@ -2,19 +2,34 @@ package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.reactome.nursa.model.DataPoint;
 import org.reactome.nursa.model.DataSet;
+import org.reactome.nursa.model.Experiment;
+import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetPanel.Css;
+import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetPanel.Resources;
 
 import com.google.gwt.cell.client.NumberCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.NumberFormat;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.resources.client.ClientBundle.Source;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
 import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.ListDataProvider;
@@ -27,8 +42,11 @@ public class DataPointTableFactory {
     private static final NumberCell SCIENTIFIC_CELL =new NumberCell(NumberFormat.getFormat("0.00E0"));
 
     public static Widget getTable(DataSet dataset) {
+        List<Experiment> experiments = dataset.getExperiments();
+        // Default to the first experiment.
+        Experiment experiment = experiments.get(0);
         // The table content.
-        List<DataPoint> dataPoints = dataset.getDataPoints();
+        List<DataPoint> dataPoints = experiment.getDataPoints();
         // The sortable table.
         CellTable<DataPoint> table = new CellTable<DataPoint>();
         ListDataProvider<DataPoint> dataProvider = new ListDataProvider<DataPoint>();
@@ -95,8 +113,24 @@ public class DataPointTableFactory {
         VerticalPanel vp = new VerticalPanel();
         vp.add(table);
         vp.add(pager);
-        // TODO - Center the pager in the panel with a UIBind definition.
+        HorizontalPanel hp = new HorizontalPanel();
+        hp.add(vp);
+        // Make an experiment selector on the right, if necessary.
+        if (experiments.size() > 1) {
+            ExperimentSelector es = new ExperimentSelector(experiments);
+            es.listBox.addChangeHandler(new ChangeHandler() {
+                
+                @Override
+                public void onChange(ChangeEvent event) {
+                    int index = es.listBox.getSelectedIndex();
+                    Experiment experiment = experiments.get(index);
+                    List<DataPoint> dataPoints = experiment.getDataPoints();
+                    dataProvider.setList(dataPoints);
+                }
+            });
+            hp.add(es); 
+        }
         
-        return vp;
+        return hp;
     }
-}
+ }
