@@ -87,7 +87,7 @@ public class DataSetPanel extends DockLayoutPanel
     private void showAnalysisResult() {
         // If this is the first analysis, then the analysis start position
         // was set by load or resize and not cleared by a previous call to
-        // this method. In the case, scroll to the start of the analysis
+        // this method. In that case, scroll to the start of the analysis
         // section and clear the analysis start position variable. Clearing
         // the variable signals that subsequent analyses do not need to
         // scroll on completion.

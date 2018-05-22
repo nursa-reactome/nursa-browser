@@ -176,7 +176,7 @@ public class GseaTable extends AnalysisResultTable<GseaAnalysisResult, String> {
         /**
          * The path to the default CSS styles used by this resource.
          */
-        String CSS = "GseaResultTable.css";
+        String CSS = "GseaTable.css";
 
         String main();
 

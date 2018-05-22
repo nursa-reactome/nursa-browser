@@ -1,8 +1,6 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
 import java.util.Comparator;
-import java.util.List;
-
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialHoveredEvent;
@@ -10,11 +8,8 @@ import org.reactome.web.nursa.client.details.tabs.dataset.BinomialSelectedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwayHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwaySelectedEvent;
 
-import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
-import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
 import com.google.gwt.user.cellview.client.TextColumn;
-import com.google.gwt.view.client.ListDataProvider;
 
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
@@ -23,16 +18,6 @@ public class BinomialTable extends AnalysisResultTable<PathwaySummary, Long> {
 
     public BinomialTable(AnalysisResult result) {
         super(result.getPathways());
-        List<PathwaySummary> pathways = result.getPathways();
-        // The sortable table.
-        CellTable<PathwaySummary> table = new CellTable<PathwaySummary>();
-        ListDataProvider<PathwaySummary> dataProvider = new ListDataProvider<PathwaySummary>();
-        dataProvider.addDataDisplay(table);
-        dataProvider.setList(pathways);
-        ListHandler<PathwaySummary> sorter = new ListHandler<PathwaySummary>(dataProvider.getList());
-        table.addColumnSortHandler(sorter);
-        // The exact row count.
-        table.setRowCount(pathways.size(), true);
 
         // Define the columns.
         TextColumn<PathwaySummary> nameColumn = new TextColumn<PathwaySummary>() {
@@ -78,9 +63,9 @@ public class BinomialTable extends AnalysisResultTable<PathwaySummary, Long> {
         });
         
         // Add the columns.
-        table.addColumn(nameColumn, "Name");
-        table.addColumn(pValueColumn, "P-Value");
-        table.addColumn(fdrColumn, "FDR");
+        addColumn(nameColumn, "Name");
+        addColumn(pValueColumn, "P-Value");
+        addColumn(fdrColumn, "FDR");
     }
 
     @Override

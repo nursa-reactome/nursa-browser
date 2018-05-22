@@ -8,13 +8,16 @@ import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.nursa.model.DataPoint;
-import org.reactome.nursa.model.DataSet;
+import org.reactome.nursa.model.Experiment;
 import org.reactome.web.analysis.client.AnalysisClient;
 import org.reactome.web.analysis.client.AnalysisHandler;
 import org.reactome.web.analysis.client.model.AnalysisError;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
+import org.reactome.web.pwp.client.common.utils.Console;
+import org.reactome.web.nursa.client.common.events.ExperimentSelectedEvent;
+import org.reactome.web.nursa.client.common.handlers.ExperimentSelectedHandler;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaClient;
 import com.google.gwt.core.shared.GWT;
@@ -90,18 +93,26 @@ public class PathwayPanel extends Composite {
     @UiField()
     SimplePanel analysisPanel;
 
-    private DataSet dataset;
+    private Experiment experiment;
 
     private GseaConfigSlider gseaConfigSlider;
 
     private EventBus eventBus;
 
-    public PathwayPanel(DataSet dataset, EventBus eventBus) {
-        this.dataset = dataset;
+    public PathwayPanel(Experiment experiment, EventBus eventBus) {
+        this.experiment = experiment;
         this.eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
         // The configuration control panel.
         buildConfigPanel();
+        eventBus.addHandler(ExperimentSelectedEvent.TYPE, new ExperimentSelectedHandler() {
+            
+            @Override
+            public void onExperimentSelected(ExperimentSelectedEvent event) {
+                PathwayPanel.this.experiment = event.getExperiment();
+            }
+            
+        });
     }
 
     private void gseaAnalyse() {
@@ -109,12 +120,10 @@ public class PathwayPanel extends Composite {
         // Transform the data points into the GSEA REST PUT
         // payload using the Java8 list comprehension idiom.
         List<List<String>> rankedList =
-                this.dataset.getExperiments()
-                            .get(0)
-                            .getDataPoints()
-                            .stream()
-                            .map(PathwayPanel::pullRank)
-                            .collect(Collectors.toList());
+                this.experiment.getDataPoints()
+                               .stream()
+                               .map(PathwayPanel::pullRank)
+                               .collect(Collectors.toList());
         // Obtain the dataset size parameters.
         int[] dataSetBounds = gseaConfigSlider.getValues();
         Integer dataSetSizeMinOpt = new Integer(dataSetBounds[0]);
@@ -150,18 +159,16 @@ public class PathwayPanel extends Composite {
     private void binomialAnalyse() {
         // The input is a table of gene symbol lines.
         List<String> rankedList =
-                this.dataset.getExperiments()
-                    .get(0)
-                    .getDataPoints()
-                    .stream()
-                    .map(dp -> dp.getSymbol())
-                    .collect(Collectors.toList());
+                this.experiment.getDataPoints()
+                              .stream()
+                              .map(dp -> dp.getSymbol())
+                              .collect(Collectors.toList());
         rankedList.add(0, GENE_NAMES_HEADER);
         String data = String.join("\n", rankedList);
         AnalysisClient.analyseData(data, true, false, 0, 0, new AnalysisHandler.Result() {
             @Override
-            public void onAnalysisServerException(String s) {
-                // TODO
+            public void onAnalysisServerException(String message) {
+                Console.error(message);
             }
 
             @Override
@@ -171,8 +178,8 @@ public class PathwayPanel extends Composite {
             }
 
             @Override
-            public void onAnalysisError(AnalysisError analysisError) {
-                // TODO
+            public void onAnalysisError(AnalysisError error) {
+                Console.error(error.getReason());
             }
 
         });

@@ -6,6 +6,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 import org.reactome.web.pwp.client.details.common.widgets.panels.TextPanel;
 import org.reactome.nursa.model.DataSet;
+import org.reactome.nursa.model.Experiment;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,7 +18,7 @@ import java.util.List;
 public class DataSetSections implements Iterable<Widget> {
 
     private static String OVERVIEW_TITLE = "Overview";
-    private static String GENE_LIST_TITLE = "Gene List";
+    private static String GENE_LIST_TITLE = "Experiments";
     private static String PATHWAY_TITLE = "Pathway";
     
     private List<Widget> sections;
@@ -29,9 +30,11 @@ public class DataSetSections implements Iterable<Widget> {
         sections = new ArrayList<Widget>();
         overview = createOverviewSection(dataset);
         sections.add(overview);
-        dataPoints = createDataPointsSection(dataset);
+        dataPoints = createDataPointsSection(dataset, eventBus);
         sections.add(dataPoints);
-        pathways = createPathwaySection(dataset, eventBus);
+        // The first experiment is the default.
+        Experiment experiment = dataset.getExperiments().get(0);
+        pathways = createPathwaySection(experiment, eventBus);
         sections.add(pathways);
     }
 
@@ -58,13 +61,13 @@ public class DataSetSections implements Iterable<Widget> {
         return createDataSetSection(OVERVIEW_TITLE, panel);
     }
 
-    private static Widget createDataPointsSection(DataSet dataset) {
-        Widget table = DataPointTableFactory.getTable(dataset);
-        return createDataSetSection(GENE_LIST_TITLE, table);
+    private static Widget createDataPointsSection(DataSet dataset, EventBus eventBus) {
+        Widget panel = new DataPointsPanel(dataset, eventBus);
+        return createDataSetSection(GENE_LIST_TITLE, panel);
     }
 
-    private static Widget createPathwaySection(DataSet dataset, EventBus eventBus) {
-        Widget panel = new PathwayPanel(dataset, eventBus);
+    private static Widget createPathwaySection(Experiment experiment, EventBus eventBus) {
+        Widget panel = new PathwayPanel(experiment, eventBus);
         return createDataSetSection(PATHWAY_TITLE, panel);
     }
 
