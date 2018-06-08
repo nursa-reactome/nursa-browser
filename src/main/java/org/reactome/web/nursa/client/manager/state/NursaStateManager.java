@@ -7,7 +7,7 @@ import java.util.List;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.AnalysisSummary;
 import org.reactome.web.analysis.client.model.ResourceSummary;
-import org.reactome.web.nursa.analysis.client.model.BinomialResult;
+import org.reactome.web.nursa.analysis.client.model.PseudoAnalysisResult;
 import org.reactome.web.pwp.client.common.events.AnalysisCompletedEvent;
 import org.reactome.web.pwp.client.common.events.StateChangedEvent;
 import org.reactome.web.pwp.client.details.tabs.DetailsTabType;
@@ -26,14 +26,14 @@ public class NursaStateManager extends StateManager {
     @Override
     public void onAnalysisCompleted(AnalysisCompletedEvent event) {
         // Code below is adapted from the superclass for the DataSet tab
-        // and the possibility of a GSEA BinomialState.
+        // and the possibility of a GSEA result mocked as a BinomialState.
         AnalysisResult result = event.getAnalysisResult();
         List<ResourceSummary> resources = result.getResourceSummary();
         ResourceSummary resource = resources.get(0);
         State desiredState = null;
-        if (result instanceof BinomialResult) {
-            BinomialResult binomialResult = (BinomialResult) result;
-            desiredState = new BinomialState(this.currentState, binomialResult);
+        if (result instanceof PseudoAnalysisResult) {
+            PseudoAnalysisResult binomialResult = (PseudoAnalysisResult) result;
+            desiredState = new PseudoState(this.currentState, binomialResult);
         } else {
             desiredState = new State(this.currentState);
         }

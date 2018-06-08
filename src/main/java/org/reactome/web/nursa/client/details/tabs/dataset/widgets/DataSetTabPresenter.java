@@ -1,24 +1,29 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
-import org.fusesource.restygwt.client.Method;
-import org.fusesource.restygwt.client.MethodCallback;
 import org.reactome.web.analysis.client.model.AnalysisResult;
-import org.reactome.web.nursa.analysis.client.model.BinomialResult;
-import org.reactome.web.nursa.client.common.events.DataSetSelectedEvent;
+import org.reactome.web.nursa.analysis.client.model.PseudoAnalysisResult;
+import org.reactome.web.nursa.analysis.client.model.TokenGenerator;
+import org.reactome.web.nursa.client.details.tabs.dataset.BinomialComparisonPartition;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialSelectedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
+import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaComparisonCompletedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.GseaComparisonPartition;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaSelectedEvent;
-import org.reactome.web.nursa.client.tools.dataset.NursaClient;
+import org.reactome.web.nursa.client.search.ExperimentSelectedEvent;
+import org.reactome.web.pwp.client.common.AnalysisStatus;
 import org.reactome.web.pwp.client.common.Selection;
 import org.reactome.web.pwp.client.common.events.AnalysisCompletedEvent;
+import org.reactome.web.pwp.client.common.events.AnalysisResetEvent;
 import org.reactome.web.pwp.client.common.events.DatabaseObjectHoveredEvent;
 import org.reactome.web.pwp.client.common.events.DatabaseObjectSelectedEvent;
 import org.reactome.web.pwp.client.common.events.DetailsTabChangedEvent;
@@ -35,8 +40,8 @@ import org.reactome.web.pwp.model.client.content.ContentClient;
 import org.reactome.web.pwp.model.client.content.ContentClientError;
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.nursa.model.DataSet;
+import org.reactome.nursa.model.Experiment;
 
-import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.shared.EventBus;
 
 /**
@@ -46,15 +51,17 @@ public class DataSetTabPresenter extends AbstractPresenter
         implements DataSetTab.Presenter {
 
     private DataSetTab.Display display;
-    private DataSet dataset;
     protected Object selected;
+    private DataSet dataset;
+    private Experiment experiment;
     
     public DataSetTabPresenter(EventBus detailsEventBus, DataSetTab.Display display,
             EventBus dataSetEventBus) {
         super(detailsEventBus);
-        dataSetEventBus.addHandler(DataSetSelectedEvent.TYPE, this);
+        dataSetEventBus.addHandler(ExperimentSelectedEvent.TYPE, this);
         dataSetEventBus.addHandler(BinomialCompletedEvent.TYPE, this);
         dataSetEventBus.addHandler(GseaCompletedEvent.TYPE, this);
+        dataSetEventBus.addHandler(GseaComparisonCompletedEvent.TYPE, this);
         dataSetEventBus.addHandler(BinomialHoveredEvent.TYPE, this);
         dataSetEventBus.addHandler(GseaHoveredEvent.TYPE, this);
         dataSetEventBus.addHandler(PathwayHoveredResetEvent.TYPE, this);
@@ -70,79 +77,74 @@ public class DataSetTabPresenter extends AbstractPresenter
 
     @Override
     public void onStateChanged(StateChangedEvent event) {
-        // This body is borrowed from AnalysisTabPresenter.
+        // This method body is adapted from AnalysisTabPresenter.
+        // The motivation and effect of this snippet are unclear,
+        // but it makes the Reactome state/tab framework happy.
         State state = event.getState();
+        
+        // FIXME - Is this needed? cf. other usages.
+        // Unlike the opaque base Reactome analysis state
+        // framework, try to explain what this is.
+        AnalysisStatus analysisStatus = state.getAnalysisStatus();
+        
         DatabaseObject selected = state.getSelected();
-        this.selected = (selected instanceof Pathway) ? (Pathway) selected : state.getPathway();
+        if (selected instanceof Pathway) {
+            this.selected = selected;
+        } else {
+            this.selected = state.getPathway();
+        }
     }
 
     @Override
-    public void onDataSetSelected(DataSetSelectedEvent datasetSelectedEvent) {
-        // A dataset was selected by the search dialog.
-        // Note: we do not check whether the selected dataset
-        // DOI is the same as the current dataset DOI. A loaded
-        // dataset could have been reselected. In that case,
-        // reload the dataset anyway since that is presumably
-        // the user's intent.
-        this.dataset = datasetSelectedEvent.getDataSet();
-        loadDataset(this.dataset.getDoi());
+    public void onExperimentSelected(ExperimentSelectedEvent expSelEvent) {
+        this.dataset = expSelEvent.getDataSet();
+        this.experiment = expSelEvent.getExperiment();
+        // If there is a current analysis, then clear it.
+        eventBus.fireEventFromSource(new AnalysisResetEvent(), this);
+        // Display the experiment.
+        display.showDetails(this.dataset, this.experiment);
         // Notify the state manager that this tab wants the focus.
         DetailsTabChangedEvent tabChangedEvent =
                 new DetailsTabChangedEvent(display.getDetailTabType());
         getDetailsEventBus().fireEventFromSource(tabChangedEvent, this);
     }
 
-    public void loadDataset(String doi) {
-        this.display.showLoading(doi);
-        getDataset(doi);
-    }
-
-    private void getDataset(String doi) {
-        NursaClient client = GWT.create(NursaClient.class);
-        client.getDataset(doi, new MethodCallback<DataSet>() {
-            
-            @Override
-            public void onSuccess(Method method, DataSet dataset) {
-                // Guard against a loaded dataset which differs from
-                // the loading dataset. This could occur in the rare
-                // case of a second dataset being selected in the
-                // search dialog while the first dataset is being
-                // loaded. In that case, ignore the loaded dataset,
-                // throwing away the result and continuing to wait
-                // for the second selected dataset load to complete.
-                if (DataSetTabPresenter.this.dataset.getDoi() == dataset.getDoi()) {
-                    DataSetTabPresenter.this.dataset = dataset;
-                    display.showDetails(dataset);
-                }
-            }
-            
-            @Override
-            public void onFailure(Method method, Throwable exception) {
-                try {
-                    throw new IOException("Dataset " + doi + " was not retrieved", exception);
-                } catch (IOException e) {
-                    // TODO - how are I/O errors handled in Reactome?
-                    throw new RuntimeException(e);
-                }
-            }
-        });
-    }
-
     @Override
     public void onAnalysisCompleted(AnalysisResult result) {
         // Relay the analysis result to the StateManager,
         // which will in turn apply the analysis overlay.
-        getDetailsEventBus().fireEventFromSource(new AnalysisCompletedEvent(result), this);
+        AnalysisCompletedEvent event = new AnalysisCompletedEvent(result);
+        getDetailsEventBus().fireEventFromSource(event, this);
     }
 
     @Override
     public void onAnalysisCompleted(List<GseaAnalysisResult> result) {
-        String token = generateToken();
+        String token = generateGseaToken();
         // Transform the result to a Reactome data structure.
-        BinomialResult binomial = new BinomialResult(result, token);
+        PseudoAnalysisResult pseudo = new PseudoAnalysisResult(result, token);
         // Borrow the binomial handler to propagate a completed event on
         // the details event bus.
-        onAnalysisCompleted(binomial);
+        onAnalysisCompleted(pseudo);
+    }
+
+//    @Override
+//    public void onAnalysisCompleted(Comparison comparison, BinomialComparisonPartition partition) {
+//        String token = generateGseaToken(comparison);
+//        // Transform the result to a Reactome data structure.
+//        PseudoAnalysisResult pseudo = new PseudoAnalysisResult(partition, token);
+//        // Borrow the binomial handler to propagate a completed event on
+//        // the details event bus.
+//        onAnalysisCompleted(pseudo);
+//    }
+
+    @Override
+    public void onAnalysisCompleted(Comparison comparison, GseaComparisonPartition partition) {
+        String token = generateGseaToken(comparison);
+        // Transform the result to a Reactome data structure.
+        PseudoAnalysisResult pseudo = new PseudoAnalysisResult(partition, token);
+        // Borrow the binomial handler to propagate a completed event on
+        // the details event bus.
+        onAnalysisCompleted(pseudo);
     }
 
     @Override
@@ -210,52 +212,24 @@ public class DataSetTabPresenter extends AbstractPresenter
         getDetailsEventBus().fireEventFromSource(hoverEvent, this);
     }
 
-    private String generateToken() {
-        return toMD5(dataset.getName());
+    private String generateGseaToken() {
+        return TokenGenerator.create(dataset.getName() + experiment.getName() + "GSEA");
     }
 
-    /****
-     * MD5 cruft below is adapted from
-     * https://gist.github.com/foreground-voice/8822544.
-     * Standard MD5 libraries, e.g. Apache Commons, can't be compiled by GWT.
-     * Other utilities, e.g.
-     * https://github.com/ManfredTremmel/gwt-commons-codec,
-     * fail for a variety of reasons, e.g. class precedence.
-     ****/
- 
-    private String toMD5(String value) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] bytes = value.getBytes("UTF-8");
-            byte[] digest = md.digest(bytes);
-            return encodeBase16(digest);
-        } catch (Exception e) {
-            String msg = "Could not create the MD5 digest for " + value;
-            throw new IllegalStateException(msg, e);
-        }
+    private String generateGseaToken(Comparison comparison) {
+        String compStr = generateComparisonString(comparison);
+        return TokenGenerator.create(dataset.getName() + compStr + "GSEA");
     }
 
-    private String encodeBase16(byte[] bytes)
-    {
-        StringBuffer sb = new StringBuffer(bytes.length * 2);
-        for (int i = 0; i < bytes.length; i++)
-        {
-            byte b = bytes[i];
-            // top 4 bits
-            char c = (char) ((b >> 4) & 0xf);
-            if (c > 9)
-                c = (char) ((c - 10) + 'a');
-            else
-                c = (char) (c + '0');
-            sb.append(c);
-            // bottom 4 bits
-            c = (char) (b & 0xf);
-            if (c > 9)
-                c = (char) ((c - 10) + 'a');
-            else
-                c = (char) (c + '0');
-            sb.append(c);
-        }
-        return sb.toString();
+    private String generateBinaryToken(Comparison comparison) {
+        String compStr = generateComparisonString(comparison);
+        return TokenGenerator.create(dataset.getName() + compStr + "Binomial");
     }
+
+    private String generateComparisonString(Comparison comparison) {
+        List<Experiment> exps = comparison.experiments();
+        String expNames = exps.stream().map(Experiment::getName).collect(Collectors.joining());
+        return dataset.getName() + expNames;
+    }
+
 }

@@ -1,4 +1,4 @@
-package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
+package org.reactome.web.nursa.analysis.client.model;
 
 import java.util.List;
 
@@ -8,14 +8,18 @@ import org.reactome.web.analysis.client.model.EntityStatistics;
 /**
  * @author Fred Loney <loneyf@ohsu.edu> 
  */
-public class BinomialEntityStatistics implements EntityStatistics {
+public class PseudoEntityStatistics implements EntityStatistics {
 
     private double fdr;
     private double pValue;
 
-    public BinomialEntityStatistics(GseaAnalysisResult result) {
-        this.fdr = result.getFdr();
-        this.pValue = result.getPvalue();
+    public PseudoEntityStatistics(double fdr, double pValue) {
+        this.fdr = fdr;
+        this.pValue = pValue;
+    }
+
+    public PseudoEntityStatistics(GseaAnalysisResult result) {
+        this(result.getFdr(), result.getPvalue());
     }
 
     @Override

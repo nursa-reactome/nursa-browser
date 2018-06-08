@@ -1,7 +1,8 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
 import java.util.Comparator;
-import org.reactome.web.analysis.client.model.AnalysisResult;
+import java.util.List;
+
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialSelectedEvent;
@@ -14,10 +15,10 @@ import com.google.gwt.user.cellview.client.TextColumn;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class BinomialTable extends AnalysisResultTable<PathwaySummary, Long> {
+public class BinomialExperimentTable extends AnalysisResultTable<PathwaySummary, Long> {
 
-    public BinomialTable(AnalysisResult result) {
-        super(result.getPathways());
+    public BinomialExperimentTable(List<PathwaySummary> results) {
+        super(results);
 
         // Define the columns.
         TextColumn<PathwaySummary> nameColumn = new TextColumn<PathwaySummary>() {
@@ -82,4 +83,5 @@ public class BinomialTable extends AnalysisResultTable<PathwaySummary, Long> {
     protected NursaPathwaySelectedEvent<Long> createSelectedEvent(Long dbId) {
         return new BinomialSelectedEvent(dbId);
     }
+
 }

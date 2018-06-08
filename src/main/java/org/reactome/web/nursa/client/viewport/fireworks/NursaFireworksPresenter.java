@@ -1,7 +1,7 @@
 package org.reactome.web.nursa.client.viewport.fireworks;
 
 import org.reactome.web.analysis.client.model.SpeciesFilteredResult;
-import org.reactome.web.nursa.client.manager.state.BinomialState;
+import org.reactome.web.nursa.client.manager.state.PseudoState;
 import org.reactome.web.pwp.client.common.events.StateChangedEvent;
 import org.reactome.web.pwp.client.manager.state.State;
 import org.reactome.web.pwp.client.viewport.fireworks.Fireworks.Display;
@@ -16,16 +16,37 @@ public class NursaFireworksPresenter extends FireworksPresenter {
     }
 
     @Override
+    /**
+     * The state can be built from either a Reactome analysis
+     * or a GSEA analysis. If the former, then the superclass
+     * state changed handler filters for species, which in
+     * turn sets the viewer analysis result. If the latter,
+     * then the GSEA analysis result is mocked as a BinomialResult.
+     * The NursaStateManager analysis completed handler checks
+     * for a BinomialResult and makes a BinomialState rather than
+     * a normal Reactome State. The BinomialState makes a
+     * BinomialSpeciesFilteredResult which mocks the normal
+     * Reactome SpeciesFilteredResult. The code below then
+     * detects a GSEA analysis and compensates for bypassing
+     * the species filtering performed on a normal Reactome
+     * analysis result in the superclass state changed handler
+     * by directly setting the display result to the pseudo-filtered
+     * result created by the BinomialState. The display is
+     * thereby enabled to show the over-representation overlay.
+     */
     public void onStateChanged(StateChangedEvent event) {
         super.onStateChanged(event);
         if (this.display.isVisible()) {
             State state = event.getState();
-            if (state instanceof BinomialState) {
-                BinomialState binomialState = (BinomialState) state;
-                SpeciesFilteredResult result = binomialState.getResult();
-                ((NursaFireworksDisplay) this.display).setAnalysisResult(result);
+            if (state instanceof PseudoState) {
+                setBinomialAnalysisResult((PseudoState) state);
             }
         }
+    }
+
+    private void setBinomialAnalysisResult(PseudoState state) {
+        SpeciesFilteredResult result = state.getResult();
+        ((NursaFireworksDisplay) this.display).setAnalysisResult(result);
     }
 
 }

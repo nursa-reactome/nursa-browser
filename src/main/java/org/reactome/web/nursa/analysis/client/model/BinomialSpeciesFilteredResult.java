@@ -1,18 +1,18 @@
-package org.reactome.nursa.fireworks.client;
+package org.reactome.web.nursa.analysis.client.model;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwayBase;
 import org.reactome.web.analysis.client.model.SpeciesFilteredResult;
-import org.reactome.web.nursa.analysis.client.model.BinomialResult;
 
 public class BinomialSpeciesFilteredResult implements SpeciesFilteredResult {
 
     private List<PathwayBase> pathways;
 
-    public BinomialSpeciesFilteredResult(BinomialResult analysisResult) {
+    public BinomialSpeciesFilteredResult(PseudoAnalysisResult analysisResult) {
         pathways = analysisResult.getPathways().stream()
                 .map(pathway -> new BinomialPathwayResult(pathway))
                 .collect(Collectors.toList());
@@ -40,6 +40,8 @@ public class BinomialSpeciesFilteredResult implements SpeciesFilteredResult {
 
     @Override
     public void setAnalysisType(AnalysisType analysisType) {
-        throw new UnsupportedOperationException("Analysis type is always " + getType());
+        if (analysisType != AnalysisType.OVERREPRESENTATION) {
+            throw new UnsupportedOperationException("Analysis type is always " + getType());
+        }
     }
 }

@@ -1,22 +1,28 @@
 package org.reactome.web.nursa.client;
 
-import java.util.NoSuchElementException;
-import java.util.OptionalInt;
-import java.util.stream.IntStream;
-
 import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetTabPresenter;
 import org.reactome.web.nursa.client.hierarchy.NursaHierarchyDisplay;
 import org.reactome.web.nursa.client.manager.state.NursaStateManager;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelector;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelectorDisplay;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelectorPresenter;
+import org.reactome.web.nursa.client.viewport.fireworks.NursaFireworksDisplay;
 import org.reactome.web.nursa.client.viewport.fireworks.NursaFireworksPresenter;
 import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetTab;
 import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetTabDisplay;
 import org.reactome.web.pwp.client.AppController;
 import org.reactome.web.pwp.client.details.tabs.description.DescriptionTab;
+import org.reactome.web.pwp.client.details.tabs.description.DescriptionTabDisplay;
+import org.reactome.web.pwp.client.details.tabs.description.DescriptionTabPresenter;
 import org.reactome.web.pwp.client.details.tabs.downloads.DownloadsTab;
+import org.reactome.web.pwp.client.details.tabs.downloads.DownloadsTabDisplay;
+import org.reactome.web.pwp.client.details.tabs.downloads.DownloadsTabPresenter;
 import org.reactome.web.pwp.client.details.tabs.molecules.MoleculesTab;
+import org.reactome.web.pwp.client.details.tabs.molecules.MoleculesTabDisplay;
+import org.reactome.web.pwp.client.details.tabs.molecules.MoleculesTabPresenter;
+import org.reactome.web.pwp.client.details.tabs.structures.StructuresTab;
+import org.reactome.web.pwp.client.details.tabs.structures.StructuresTabDisplay;
+import org.reactome.web.pwp.client.details.tabs.structures.StructuresTabPresenter;
 import org.reactome.web.pwp.client.hierarchy.HierarchyDisplay;
 import org.reactome.web.pwp.client.tools.launcher.ToolLauncher;
 import org.reactome.web.pwp.client.viewport.fireworks.Fireworks.Display;
@@ -64,7 +70,7 @@ public class NursaAppController extends AppController {
 
     @Override
     protected FireworksDisplay getFireworksDisplay() {
-        return super.getFireworksDisplay();
+        return new NursaFireworksDisplay();
     }
 
     @Override
@@ -85,27 +91,30 @@ public class NursaAppController extends AppController {
         
         return panel;
     }
-
+    
     @Override
     protected void initialiseDetailsTabsList() {
-        super.initialiseDetailsTabsList();
+        // Cull the superclass tabs and add the dataset tab
+        // before the downloads tab.
+        DescriptionTab.Display description = new DescriptionTabDisplay();
+        new DescriptionTabPresenter(this.eventBus, description);
+        DETAILS_TABS.add(description);
 
-        // Make the dataset tab.
-        DataSetTab.Display datasetTab = new DataSetTabDisplay(getDataSetEventBus());
-        new DataSetTabPresenter(this.eventBus, datasetTab, getDataSetEventBus());
-        // Remove extraneous tabs.
-        DETAILS_TABS.removeIf(tab -> !(tab instanceof DescriptionTab.Display ||
-                                       tab instanceof MoleculesTab.Display ||
-                                       tab instanceof DownloadsTab.Display));
-        // Insert the dataset tab before the downloads tab.
-        OptionalInt downloadsNdx =
-                IntStream.range(0, DETAILS_TABS.size())
-                         .filter(i -> DETAILS_TABS.get(i) instanceof DownloadsTab.Display)
-                         .findAny();
-        if (downloadsNdx == null) {
-            throw new NoSuchElementException("Downloads tab not found");
-        }
-        DETAILS_TABS.add(downloadsNdx.getAsInt(), datasetTab);
-    }
+        MoleculesTab.Display molecules = new MoleculesTabDisplay();
+        new MoleculesTabPresenter(this.eventBus, molecules);
+        DETAILS_TABS.add(molecules);
+
+        StructuresTab.Display structures = new StructuresTabDisplay();
+        new StructuresTabPresenter(this.eventBus, structures);
+        DETAILS_TABS.add(structures);
+ 
+        DataSetTab.Display dataset = new DataSetTabDisplay(getDataSetEventBus());
+        new DataSetTabPresenter(this.eventBus, dataset, getDataSetEventBus());
+        DETAILS_TABS.add(dataset);
+
+        DownloadsTab.Display downloads = new DownloadsTabDisplay();
+        new DownloadsTabPresenter(this.eventBus, downloads);
+        DETAILS_TABS.add(downloads);
+   }
 
 }

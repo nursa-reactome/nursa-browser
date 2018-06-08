@@ -17,12 +17,12 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public abstract class AnalysisResultPanel<T, K> extends VerticalPanel {
+public class AnalysisResultPanel<T, K> extends VerticalPanel {
 
     private SimplePager pager;
     private AnalysisResultTable<T, K> table;
 
-    protected AnalysisResultPanel(AnalysisResultTable<T, K> table, final EventBus eventBus) {
+    public AnalysisResultPanel(AnalysisResultTable<T, K> table, EventBus eventBus) {
         this.table = table;
         // Paginate the table.
         SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);

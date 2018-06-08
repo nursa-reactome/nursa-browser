@@ -1,4 +1,4 @@
-package org.reactome.nursa.fireworks.client;
+package org.reactome.web.nursa.analysis.client.model;
 
 import org.reactome.web.analysis.client.model.EntityStatistics;
 import org.reactome.web.analysis.client.model.PathwayBase;

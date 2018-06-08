@@ -1,6 +1,7 @@
 package org.reactome.web.nursa.client.details.tabs.dataset;
 
 import org.reactome.web.analysis.client.model.AnalysisResult;
+import org.reactome.web.nursa.analysis.client.model.PseudoAnalysisResult;
 
 import com.google.gwt.event.shared.GwtEvent;
 
@@ -10,10 +11,10 @@ import com.google.gwt.event.shared.GwtEvent;
 public class BinomialCompletedEvent extends GwtEvent<BinomialCompletedHandler> {
     private AnalysisResult result;
 
-    public static Type<BinomialCompletedHandler> TYPE = new GwtEvent.Type<BinomialCompletedHandler>();
+    public static Type<BinomialCompletedHandler> TYPE =
+            new GwtEvent.Type<BinomialCompletedHandler>();
 
     public BinomialCompletedEvent(AnalysisResult result) {
-        super();
         this.result = result;
     }
 

@@ -9,33 +9,37 @@ import com.google.gwt.user.client.ui.*;
  * @author Fred Loney <loneyf@ohsu.edu>
  */
 public class DataSetSection extends Composite {
+
     private VerticalPanel content;
 
     public DataSetSection() {
         this.content = new VerticalPanel();
-        this.initWidget(this.content);
-        this.addStyleName("elv-Details-OverviewRow");
+        initWidget(this.content);
+        // The Reactome OverviewRow style applies to any section header,
+        // not just the Overview section header.
+        addStyleName("elv-Details-OverviewRow");
+        addStyleName(RESOURCES.getCSS().main());
     }
 
     public void add(String title, Widget widget){
-        this.addTitle(title);
-        this.addWidget(widget);
+        addTitle(title);
+        addWidget(widget);
     }
 
     private void addTitle(String title){
         Label label = new Label(title);
         label.addStyleName(RESOURCES.getCSS().title());
-        this.content.add(label);
+        content.add(label);
     }
 
     private void addWidget(Widget widget){
         SimplePanel aux = new SimplePanel();
         aux.addStyleName(RESOURCES.getCSS().widget());
         aux.add(widget);
-        this.content.add(aux);
+        content.add(aux);
     }
 
-    public static Resources RESOURCES;
+    static Resources RESOURCES;
 
     static {
         RESOURCES = GWT.create(Resources.class);
@@ -70,6 +74,8 @@ public class DataSetSection extends Composite {
         String widget();
 
         String title();
+
+        String subtitle();
 
     }
 }

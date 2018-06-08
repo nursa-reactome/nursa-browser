@@ -13,7 +13,7 @@ public class NursaFireworksDisplay extends FireworksDisplay {
     }
 
     public void setAnalysisResult(SpeciesFilteredResult result) {
-        ((NursaFireworksViewer)this.fireworks).setPathwayAnalysisResult(result);
+        ((NursaFireworksViewer) this.fireworks).setPathwayAnalysisResult(result);
     }
 
 }

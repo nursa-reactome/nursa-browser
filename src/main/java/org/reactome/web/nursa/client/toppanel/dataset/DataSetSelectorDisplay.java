@@ -67,7 +67,6 @@ public class DataSetSelectorDisplay extends Composite implements DataSetSelector
     /**
      * Styles used by this widget.
      */
-    @CssResource.ImportedWithPrefix("pwp-DataSetSelectorDisplay")
     public interface ResourceCSS extends CssResource {
         /**
          * The path to the default CSS styles used by this resource.

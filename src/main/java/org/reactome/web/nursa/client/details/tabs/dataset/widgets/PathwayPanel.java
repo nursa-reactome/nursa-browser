@@ -3,6 +3,7 @@ package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
@@ -14,11 +15,7 @@ import org.reactome.web.analysis.client.AnalysisHandler;
 import org.reactome.web.analysis.client.model.AnalysisError;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.PathwaySummary;
-import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 import org.reactome.web.pwp.client.common.utils.Console;
-import org.reactome.web.nursa.client.common.events.ExperimentSelectedEvent;
-import org.reactome.web.nursa.client.common.handlers.ExperimentSelectedHandler;
-import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaClient;
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -40,7 +37,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class PathwayPanel extends Composite {
+public abstract class PathwayPanel extends Composite {
     
     /**
      * The UiBinder interface.
@@ -91,39 +88,32 @@ public class PathwayPanel extends Composite {
      * The analysis result display.
      */
     @UiField()
-    SimplePanel analysisPanel;
-
-    private Experiment experiment;
+    protected SimplePanel analysisPanel;
 
     private GseaConfigSlider gseaConfigSlider;
 
-    private EventBus eventBus;
+    protected EventBus eventBus;
 
-    public PathwayPanel(Experiment experiment, EventBus eventBus) {
-        this.experiment = experiment;
+    public PathwayPanel(EventBus eventBus) {
         this.eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
         // The configuration control panel.
         buildConfigPanel();
-        eventBus.addHandler(ExperimentSelectedEvent.TYPE, new ExperimentSelectedHandler() {
-            
-            @Override
-            public void onExperimentSelected(ExperimentSelectedEvent event) {
-                PathwayPanel.this.experiment = event.getExperiment();
-            }
-            
-        });
     }
 
-    private void gseaAnalyse() {
+    abstract protected void gseaAnalyse();
+
+    abstract protected void binomialAnalyse();
+
+    protected void gseaAnalyse(Experiment experiment, Consumer<List<GseaAnalysisResult>> consumer) {
         GseaClient client = GWT.create(GseaClient.class);
         // Transform the data points into the GSEA REST PUT
         // payload using the Java8 list comprehension idiom.
         List<List<String>> rankedList =
-                this.experiment.getDataPoints()
-                               .stream()
-                               .map(PathwayPanel::pullRank)
-                               .collect(Collectors.toList());
+                experiment.getDataPoints()
+                           .stream()
+                           .map(PathwayPanel::pullRank)
+                           .collect(Collectors.toList());
         // Obtain the dataset size parameters.
         int[] dataSetBounds = gseaConfigSlider.getValues();
         Integer dataSetSizeMinOpt = new Integer(dataSetBounds[0]);
@@ -133,8 +123,7 @@ public class PathwayPanel extends Composite {
 
             @Override
             public void onSuccess(Method method, List<GseaAnalysisResult> result) {
-                showGseaResult(result);
-                eventBus.fireEventFromSource(new GseaCompletedEvent(result), PathwayPanel.this);
+                consumer.accept(result);
             }
 
             @Override
@@ -149,20 +138,13 @@ public class PathwayPanel extends Composite {
          });
     }
 
-    private void showGseaResult(List<GseaAnalysisResult> result) {
-        GseaTable table = new GseaTable(result);
-        AnalysisResultPanel<GseaAnalysisResult, String> panel =
-                new GseaPanel(table, eventBus);
-        analysisPanel.setWidget(panel);
-    }
-
-    private void binomialAnalyse() {
+    protected void binomialAnalyse(Experiment experiment, Consumer<AnalysisResult> consumer) {
         // The input is a table of gene symbol lines.
         List<String> rankedList =
-                this.experiment.getDataPoints()
-                              .stream()
-                              .map(dp -> dp.getSymbol())
-                              .collect(Collectors.toList());
+                experiment.getDataPoints()
+                          .stream()
+                          .map(dp -> dp.getSymbol())
+                          .collect(Collectors.toList());
         rankedList.add(0, GENE_NAMES_HEADER);
         String data = String.join("\n", rankedList);
         AnalysisClient.analyseData(data, true, false, 0, 0, new AnalysisHandler.Result() {
@@ -173,8 +155,7 @@ public class PathwayPanel extends Composite {
 
             @Override
             public void onAnalysisResult(AnalysisResult result, long time) {
-                showBinomialResult(result);
-                eventBus.fireEventFromSource(new BinomialCompletedEvent(result), PathwayPanel.this);
+                consumer.accept(result);
             }
 
             @Override
@@ -185,13 +166,6 @@ public class PathwayPanel extends Composite {
         });
     }
 
-    private void showBinomialResult(org.reactome.web.analysis.client.model.AnalysisResult result) {
-        BinomialTable table = new BinomialTable(result);
-        AnalysisResultPanel<PathwaySummary, Long> panel =
-                new BinomialPanel(table, eventBus);
-        analysisPanel.setWidget(panel);
-    }
-    
     /**
      * Pulls the gene symbol and FC from the given data point.
      * The FC is formatted as a string for the REST interface.
@@ -277,6 +251,30 @@ public class PathwayPanel extends Composite {
             }
 
         });
+    }
+
+    protected void showBinomialResult(List<PathwaySummary> results) {
+        Widget panel = createBinomialPanel(results);
+        analysisPanel.setWidget(panel);
+    }
+
+    protected Widget createBinomialPanel(List<PathwaySummary> results) {
+        BinomialExperimentTable table = new BinomialExperimentTable(results);
+        AnalysisResultPanel<PathwaySummary, Long> panel =
+                new AnalysisResultPanel<PathwaySummary, Long>(table, eventBus);
+        return panel;
+    }
+
+    protected void showGseaResult(List<GseaAnalysisResult> results) {
+        Widget panel = createGseaPanel(results);
+        analysisPanel.setWidget(panel);
+    }
+
+    protected Widget createGseaPanel(List<GseaAnalysisResult> results) {
+        GseaExperimentTable table = new GseaExperimentTable(results);
+        AnalysisResultPanel<GseaAnalysisResult, String> panel =
+                new AnalysisResultPanel<GseaAnalysisResult, String>(table, eventBus);
+        return panel;
     }
 
     public static Resources RESOURCES;

@@ -18,9 +18,9 @@ import com.google.gwt.user.cellview.client.TextColumn;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class GseaTable extends AnalysisResultTable<GseaAnalysisResult, String> {
+public class GseaExperimentTable extends AnalysisResultTable<GseaAnalysisResult, String> {
 
-    public GseaTable(List<GseaAnalysisResult> result) {
+    public GseaExperimentTable(List<GseaAnalysisResult> result) {
         super(result);
         addStyleName(RESOURCES.getCSS().main());
 

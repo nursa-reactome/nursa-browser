@@ -18,10 +18,6 @@ public class GseaCompletedEvent extends GwtEvent<GseaCompletedHandler> {
         this.result = result;
     }
 
-    public List<GseaAnalysisResult> getResult() {
-        return result;
-    }
-
     @Override
     public Type<GseaCompletedHandler> getAssociatedType() {
         return TYPE;

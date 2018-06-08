@@ -4,10 +4,6 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import org.reactome.web.pwp.client.details.common.widgets.panels.TextPanel;
-import org.reactome.nursa.model.DataSet;
-import org.reactome.nursa.model.Experiment;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,63 +11,65 @@ import java.util.List;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class DataSetSections implements Iterable<Widget> {
+abstract public class DataSetSections implements Iterable<Widget> {
 
     private static String OVERVIEW_TITLE = "Overview";
-    private static String GENE_LIST_TITLE = "Experiments";
-    private static String PATHWAY_TITLE = "Pathway";
+    private static String GENES_TITLE = "Genes";
+    private static String PATHWAYS_TITLE = "Pathways";
     
     private List<Widget> sections;
     private Widget overview;
     private Widget dataPoints;
     private Widget pathways;
+    private EventBus eventBus;
 
-    public DataSetSections(DataSet dataset, EventBus eventBus) {
-        sections = new ArrayList<Widget>();
-        overview = createOverviewSection(dataset);
-        sections.add(overview);
-        dataPoints = createDataPointsSection(dataset, eventBus);
-        sections.add(dataPoints);
-        // The first experiment is the default.
-        Experiment experiment = dataset.getExperiments().get(0);
-        pathways = createPathwaySection(experiment, eventBus);
-        sections.add(pathways);
-    }
-
-    public Widget getOverviewSection() {
-        return overview;
-    }
-
-    public Widget getPathwaysSection() {
-        return pathways;
-    }
-
-    public Widget getDataPointsSection() {
-        return dataPoints;
+    public DataSetSections(EventBus eventBus) {
+        this.eventBus = eventBus;
     }
 
     @Override
     public Iterator<Widget> iterator() {
+        // Build the sections on demand.
+        if (sections == null) {
+            sections = new ArrayList<Widget>();
+            overview = createOverviewSection();
+            sections.add(overview);
+            dataPoints = createGenesSection();
+            sections.add(dataPoints);
+            pathways = createPathwaysSection(eventBus);
+            sections.add(pathways);
+            
+        }
         return sections.iterator();
     }
 
-    private static Widget createOverviewSection(DataSet dataset) {
-        Widget panel = new TextPanel(dataset.getDescription());
+    abstract protected Widget createOverviewPanel();
+
+    abstract protected Widget createGenesPanel();
+    
+    abstract protected Widget createPathwaysPanel(EventBus eventBus);
+
+    protected String overviewTitle() {
+        return OVERVIEW_TITLE;
+    }
+
+    private Widget createOverviewSection() {
+        Widget panel = createOverviewPanel();
         panel.setStyleName(DataSetPanel.RESOURCES.getCSS().overview());
-        return createDataSetSection(OVERVIEW_TITLE, panel);
+        return createDataSetSection(overviewTitle(), panel);
     }
 
-    private static Widget createDataPointsSection(DataSet dataset, EventBus eventBus) {
-        Widget panel = new DataPointsPanel(dataset, eventBus);
-        return createDataSetSection(GENE_LIST_TITLE, panel);
+    private Widget createGenesSection() {
+        Widget panel = createGenesPanel();
+        return createDataSetSection(GENES_TITLE, panel);
     }
 
-    private static Widget createPathwaySection(Experiment experiment, EventBus eventBus) {
-        Widget panel = new PathwayPanel(experiment, eventBus);
-        return createDataSetSection(PATHWAY_TITLE, panel);
+    private Widget createPathwaysSection(EventBus eventBus) {
+        Widget panel = createPathwaysPanel(eventBus);
+        return createDataSetSection(PATHWAYS_TITLE, panel);
     }
 
-    private static Widget createDataSetSection(String title, Widget child) {
+    private Widget createDataSetSection(String title, Widget child) {
         VerticalPanel content = new VerticalPanel();
         content.add(child);
         content.setWidth("100%");
