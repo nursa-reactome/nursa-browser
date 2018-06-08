@@ -1,4 +1,4 @@
-package org.reactome.web.nursa.client.toppanel.dataset;
+package org.reactome.web.nursa.client.search;
 
 import java.io.IOException;
 import java.util.Arrays;

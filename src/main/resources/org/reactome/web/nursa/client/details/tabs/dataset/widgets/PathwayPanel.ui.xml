@@ -13,7 +13,7 @@
 			<!-- The analysis launch button. -->
 			<g:Button ui:field='launchBtn'>Launch</g:Button>
 
-			<!-- The cvonfig slider button. -->
+			<!-- The config slider button. -->
 			<g:Button ui:field='sliderBtn'>
 				<img src="static/images/gear.png" height="16" width="16" />
 			</g:Button>

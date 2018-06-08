@@ -1,0 +1,25 @@
+.main {
+}
+
+.title {
+    color: LavenderBlush;
+    font-size: medium;
+}
+
+.bottom {
+    width: 100%;
+    margin: 6px;
+}
+
+.accept {
+	background-color: MintCream;
+    border-radius: 3px;
+    border-color: Navy;
+	border-style: outset;
+    float: right;
+    margin-right: 6px;
+}
+
+.accept:active {
+    border-style: inset;
+}

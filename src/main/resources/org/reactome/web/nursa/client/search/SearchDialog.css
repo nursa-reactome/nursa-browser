@@ -1,4 +1,5 @@
 .main {
+	position: relative;
 	width: 32em;
 	height: 21em;
     border: 3px solid gray !important;

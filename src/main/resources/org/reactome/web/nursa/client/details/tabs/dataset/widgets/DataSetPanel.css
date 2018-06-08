@@ -8,6 +8,13 @@
     color: #063da0;
 }
 
+div.overview {
+    background-color: #B3E5FC;
+    border-radius: 3px;
+    border: 1px solid grey;
+    padding: 2px 6px;
+}
+
 .doi {
 	background-color: #908aca;
     border-radius: 5px;
@@ -18,8 +25,10 @@
     padding: 4px 10px;
 }
 
-.overview {
-    background-color: #B3E5FC;
+.experiment {
+    background-color: Azure;
     border-radius: 5px;
     border: 1px solid grey;
+    margin: 0 5px;
+    padding: 2px 6px;
 }

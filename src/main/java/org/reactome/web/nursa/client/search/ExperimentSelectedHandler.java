@@ -1,6 +1,4 @@
-package org.reactome.web.nursa.client.common.handlers;
-
-import org.reactome.web.nursa.client.common.events.ExperimentSelectedEvent;
+package org.reactome.web.nursa.client.search;
 
 import com.google.gwt.event.shared.EventHandler;
 

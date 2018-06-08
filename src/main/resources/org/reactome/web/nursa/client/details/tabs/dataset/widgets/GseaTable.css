@@ -1,4 +1,5 @@
-/* Note: the first-child style works around the GWT bug described in
+/* Note: the first-child style works around the following apparent
+   GWT bug described in
    GseaTable.java */
 .main th:first-child {
 	visibility: collapse;
