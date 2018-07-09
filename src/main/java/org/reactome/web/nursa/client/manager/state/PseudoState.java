@@ -2,7 +2,6 @@ package org.reactome.web.nursa.client.manager.state;
 
 import org.reactome.web.analysis.client.model.SpeciesFilteredResult;
 import org.reactome.web.nursa.analysis.client.model.PseudoAnalysisResult;
-import org.reactome.web.nursa.analysis.client.model.BinomialSpeciesFilteredResult;
 import org.reactome.web.pwp.client.manager.state.State;
 
 public class PseudoState extends State {
@@ -11,7 +10,7 @@ public class PseudoState extends State {
 
     public PseudoState(State currentState, PseudoAnalysisResult analysisResult) {
         super(currentState);
-        result = new BinomialSpeciesFilteredResult(analysisResult);
+        result = analysisResult.asSpeciesFilteredResult();
     }
 
     public SpeciesFilteredResult getResult() {

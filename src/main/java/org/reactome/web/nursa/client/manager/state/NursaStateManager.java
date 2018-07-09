@@ -33,9 +33,9 @@ public class NursaStateManager extends StateManager {
         State desiredState = null;
         if (result instanceof PseudoAnalysisResult) {
             PseudoAnalysisResult binomialResult = (PseudoAnalysisResult) result;
-            desiredState = new PseudoState(this.currentState, binomialResult);
+            desiredState = new PseudoState(currentState, binomialResult);
         } else {
-            desiredState = new State(this.currentState);
+            desiredState = new State(currentState);
         }
         desiredState.setDetailsTab(DetailsTabType.DATASET);
         AnalysisSummary summary = result.getSummary();

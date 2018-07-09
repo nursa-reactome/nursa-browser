@@ -2,11 +2,12 @@ package org.reactome.web.nursa.analysis.client.model;
 
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.web.analysis.client.model.EntityStatistics;
+import org.reactome.web.analysis.client.model.PathwayBase;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.analysis.client.model.ReactionStatistics;
 import org.reactome.web.analysis.client.model.SpeciesSummary;
 
-public class PseudoPathwaySummary implements PathwaySummary {
+public class PseudoPathwaySummary implements PathwaySummary, PathwayBase {
 
     private String stId;
     private Long dbId;
