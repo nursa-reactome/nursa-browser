@@ -4,10 +4,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import org.reactome.gsea.model.GseaAnalysisResult;
-import org.reactome.nursa.model.DataSet;
 import org.reactome.nursa.model.Experiment;
 import org.reactome.web.analysis.client.model.AnalysisResult;
-import org.reactome.web.nursa.analysis.client.model.TokenGenerator;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 

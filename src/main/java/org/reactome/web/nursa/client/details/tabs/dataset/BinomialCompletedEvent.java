@@ -1,7 +1,6 @@
 package org.reactome.web.nursa.client.details.tabs.dataset;
 
 import org.reactome.web.analysis.client.model.AnalysisResult;
-import org.reactome.web.nursa.analysis.client.model.PseudoAnalysisResult;
 
 import com.google.gwt.event.shared.GwtEvent;
 

@@ -8,7 +8,6 @@ import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
 import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
 
 import com.google.gwt.event.shared.EventBus;
-import com.google.gwt.user.client.ui.Widget;
 
 public class BinomialComparisonPanel extends ComparisonPathwayResultPanel<PathwaySummary, Long> {
 
