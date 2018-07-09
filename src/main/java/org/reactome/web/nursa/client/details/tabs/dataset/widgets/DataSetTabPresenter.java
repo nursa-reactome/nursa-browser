@@ -1,6 +1,5 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
-import java.security.MessageDigest;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -8,19 +7,16 @@ import java.util.stream.Collectors;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.nursa.analysis.client.model.PseudoAnalysisResult;
 import org.reactome.web.nursa.analysis.client.model.TokenGenerator;
-import org.reactome.web.nursa.client.details.tabs.dataset.BinomialComparisonPartition;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialSelectedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
+import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
-import org.reactome.web.nursa.client.details.tabs.dataset.GseaComparisonCompletedEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.GseaComparisonPartition;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaSelectedEvent;
 import org.reactome.web.nursa.client.search.ExperimentSelectedEvent;
-import org.reactome.web.pwp.client.common.AnalysisStatus;
 import org.reactome.web.pwp.client.common.Selection;
 import org.reactome.web.pwp.client.common.events.AnalysisCompletedEvent;
 import org.reactome.web.pwp.client.common.events.AnalysisResetEvent;
@@ -61,7 +57,7 @@ public class DataSetTabPresenter extends AbstractPresenter
         dataSetEventBus.addHandler(ExperimentSelectedEvent.TYPE, this);
         dataSetEventBus.addHandler(BinomialCompletedEvent.TYPE, this);
         dataSetEventBus.addHandler(GseaCompletedEvent.TYPE, this);
-        dataSetEventBus.addHandler(GseaComparisonCompletedEvent.TYPE, this);
+        dataSetEventBus.addHandler(ComparisonCompletedEvent.TYPE, this);
         dataSetEventBus.addHandler(BinomialHoveredEvent.TYPE, this);
         dataSetEventBus.addHandler(GseaHoveredEvent.TYPE, this);
         dataSetEventBus.addHandler(PathwayHoveredResetEvent.TYPE, this);
@@ -81,11 +77,6 @@ public class DataSetTabPresenter extends AbstractPresenter
         // The motivation and effect of this snippet are unclear,
         // but it makes the Reactome state/tab framework happy.
         State state = event.getState();
-        
-        // FIXME - Is this needed? cf. other usages.
-        // Unlike the opaque base Reactome analysis state
-        // framework, try to explain what this is.
-        AnalysisStatus analysisStatus = state.getAnalysisStatus();
         
         DatabaseObject selected = state.getSelected();
         if (selected instanceof Pathway) {
@@ -127,22 +118,12 @@ public class DataSetTabPresenter extends AbstractPresenter
         onAnalysisCompleted(pseudo);
     }
 
-//    @Override
-//    public void onAnalysisCompleted(Comparison comparison, BinomialComparisonPartition partition) {
-//        String token = generateGseaToken(comparison);
-//        // Transform the result to a Reactome data structure.
-//        PseudoAnalysisResult pseudo = new PseudoAnalysisResult(partition, token);
-//        // Borrow the binomial handler to propagate a completed event on
-//        // the details event bus.
-//        onAnalysisCompleted(pseudo);
-//    }
-
     @Override
-    public void onAnalysisCompleted(Comparison comparison, GseaComparisonPartition partition) {
-        String token = generateGseaToken(comparison);
+    public void onAnalysisCompleted(Comparison comparison, ComparisonPartition<?> partition) {
+        String token = generateComparisonToken(comparison);
         // Transform the result to a Reactome data structure.
-        PseudoAnalysisResult pseudo = new PseudoAnalysisResult(partition, token);
-        // Borrow the binomial handler to propagate a completed event on
+        PseudoAnalysisResult pseudo = new PseudoAnalysisResult(comparison, partition, token);
+        // Borrow the basic handler to propagate a completed event on
         // the details event bus.
         onAnalysisCompleted(pseudo);
     }
@@ -216,14 +197,9 @@ public class DataSetTabPresenter extends AbstractPresenter
         return TokenGenerator.create(dataset.getName() + experiment.getName() + "GSEA");
     }
 
-    private String generateGseaToken(Comparison comparison) {
+    private String generateComparisonToken(Comparison comparison) {
         String compStr = generateComparisonString(comparison);
-        return TokenGenerator.create(dataset.getName() + compStr + "GSEA");
-    }
-
-    private String generateBinaryToken(Comparison comparison) {
-        String compStr = generateComparisonString(comparison);
-        return TokenGenerator.create(dataset.getName() + compStr + "Binomial");
+        return TokenGenerator.create(dataset.getName() + compStr + "Comparison");
     }
 
     private String generateComparisonString(Comparison comparison) {

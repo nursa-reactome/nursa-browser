@@ -7,11 +7,10 @@ import org.reactome.nursa.model.Experiment;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaComparisonPartition;
+import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialComparisonPartition;
-import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
 import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
-import org.reactome.web.nursa.client.details.tabs.dataset.GseaComparisonCompletedEvent;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Widget;
@@ -38,13 +37,13 @@ public class ComparisonPathwayPanel extends PathwayPanel {
 
                     @Override
                     public void accept(AnalysisResult second) {
-                        ComparisonPartition<PathwaySummary> partition =
+                        BinomialComparisonPartition partition =
                                 new BinomialComparisonPartition(
                                         first.getPathways(),
                                         second.getPathways());
                         showBinomialResult(partition);
-                        // FIXME - do this like gsea below.
-                        BinomialCompletedEvent event = new BinomialCompletedEvent(first);
+                        ComparisonCompletedEvent event =
+                                new ComparisonCompletedEvent(comparison, partition);
                         eventBus.fireEventFromSource(event, ComparisonPathwayPanel.this);
                     }
 
@@ -70,8 +69,8 @@ public class ComparisonPathwayPanel extends PathwayPanel {
                         GseaComparisonPartition partition =
                                 new GseaComparisonPartition(first, second);
                         showGseaResult(partition);
-                        GseaComparisonCompletedEvent event =
-                                new GseaComparisonCompletedEvent(comparison, partition);
+                        ComparisonCompletedEvent event =
+                                new ComparisonCompletedEvent(comparison, partition);
                         eventBus.fireEventFromSource(event, ComparisonPathwayPanel.this);
                     }
 
