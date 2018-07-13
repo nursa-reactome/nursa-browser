@@ -1,0 +1,18 @@
+.main {
+    height: 100%;
+}
+
+.body {
+    height: 100%;
+	margin: 5px 10px 20px 5px;
+}
+
+.discretePanel {
+    height: 85%;
+    width: 90%;
+}
+
+.discreteLabel {
+    background-color: rgba(240, 240, 240, 0.9);
+    text-align: center;
+}

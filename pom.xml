@@ -53,7 +53,7 @@
         <reactome.nursa.model>1.0.1</reactome.nursa.model>
         <reactome.gsea.model>1.0.1</reactome.gsea.model>
 
-        <appModule>org.reactome.NursaBrowser</appModule>
+        <appModule>org.reactome.web.NursaBrowser</appModule>
         <appName>${appModule}</appName>
 
         <failOnMissingWebXml>false</failOnMissingWebXml>

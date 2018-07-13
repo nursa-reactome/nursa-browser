@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.function.Function;
 
 import org.reactome.nursa.model.DataPoint;
-import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
-import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonDataPoint;
+import org.reactome.web.nursa.model.ComparisonDataPoint;
 import org.reactome.web.nursa.client.details.tabs.dataset.NullSafeCurry;
+import org.reactome.web.nursa.model.Comparison;
 
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
@@ -77,7 +77,7 @@ public class ComparisonDataPointsPanel extends DataPanel<ComparisonDataPoint> {
         
         // The FDR (p-value) and fold change columns.
         for (int i=0; i < 2; i++) {
-            String qualifier = i == 0 ? "First" : "Second";
+            String qualifier = org.reactome.web.nursa.model.Comparison.LABELS[i];
             Function<ComparisonDataPoint, Double> fdr =
                     curry(i, DataPoint::getPvalue);
             Column<ComparisonDataPoint, Number> fdrCol =

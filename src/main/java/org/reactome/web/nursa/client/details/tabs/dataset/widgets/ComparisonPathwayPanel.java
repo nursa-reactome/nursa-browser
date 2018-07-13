@@ -7,9 +7,9 @@ import org.reactome.nursa.model.Experiment;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaComparisonPartition;
-import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialComparisonPartition;
-import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
+import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonAnalysisCompletedEvent;
+import org.reactome.web.nursa.model.Comparison;
 import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
 
 import com.google.gwt.event.shared.EventBus;
@@ -42,8 +42,8 @@ public class ComparisonPathwayPanel extends PathwayPanel {
                                         first.getPathways(),
                                         second.getPathways());
                         showBinomialResult(partition);
-                        ComparisonCompletedEvent event =
-                                new ComparisonCompletedEvent(comparison, partition);
+                        ComparisonAnalysisCompletedEvent event =
+                                new ComparisonAnalysisCompletedEvent(comparison, partition);
                         eventBus.fireEventFromSource(event, ComparisonPathwayPanel.this);
                     }
 
@@ -69,8 +69,8 @@ public class ComparisonPathwayPanel extends PathwayPanel {
                         GseaComparisonPartition partition =
                                 new GseaComparisonPartition(first, second);
                         showGseaResult(partition);
-                        ComparisonCompletedEvent event =
-                                new ComparisonCompletedEvent(comparison, partition);
+                        ComparisonAnalysisCompletedEvent event =
+                                new ComparisonAnalysisCompletedEvent(comparison, partition);
                         eventBus.fireEventFromSource(event, ComparisonPathwayPanel.this);
                     }
 

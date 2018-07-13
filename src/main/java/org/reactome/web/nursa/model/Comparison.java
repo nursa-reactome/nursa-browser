@@ -1,4 +1,4 @@
-package org.reactome.web.nursa.client.details.tabs.dataset;
+package org.reactome.web.nursa.model;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -8,6 +8,9 @@ import org.reactome.nursa.model.DataSet;
 import org.reactome.nursa.model.Experiment;
 
 public class Comparison {
+
+    /** The comparison operand labels presented to the user. */
+    public static final String[] LABELS = { "First", "Second" };
 
     public static class Operand {
         public DataSet dataset;

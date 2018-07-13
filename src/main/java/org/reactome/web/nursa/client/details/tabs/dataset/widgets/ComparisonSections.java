@@ -1,8 +1,8 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
-import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
-import org.reactome.web.nursa.client.details.tabs.dataset.Comparison.Operand;
-import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonDataPoint;
+import org.reactome.web.nursa.model.Comparison;
+import org.reactome.web.nursa.model.Comparison.Operand;
+import org.reactome.web.nursa.model.ComparisonDataPoint;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.HTMLPanel;

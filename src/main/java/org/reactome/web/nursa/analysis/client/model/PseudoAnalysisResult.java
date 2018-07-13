@@ -2,11 +2,8 @@ package org.reactome.web.nursa.analysis.client.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.AnalysisSummary;
@@ -16,8 +13,8 @@ import org.reactome.web.analysis.client.model.PathwayBase;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.analysis.client.model.ResourceSummary;
 import org.reactome.web.analysis.client.model.SpeciesFilteredResult;
-import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
 import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
+import org.reactome.web.nursa.model.Comparison;
 
 /**
  * This PseudoAnalysisResult class mocks a GSEA or comparison
@@ -27,6 +24,8 @@ import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
  */
 public class PseudoAnalysisResult implements AnalysisResult {
 
+    private static final String TYPE_ERROR_MSG = "A comparison analysis type cannot be set";
+    
     private AnalysisSummary summary;
     private PseudoPathwaySummary[] pathways;
     private List<ResourceSummary> resources;
@@ -111,14 +110,17 @@ public class PseudoAnalysisResult implements AnalysisResult {
             
             @Override
             public void setAnalysisType(AnalysisType analysisType) {
-                if (analysisType != AnalysisType.OVERREPRESENTATION) {
-                    throw new UnsupportedOperationException("Analysis type is always " + getType());
+                if (analysisType != getAnalysisType()) {
+                    throw new UnsupportedOperationException(TYPE_ERROR_MSG);
                 }
             }
             
             @Override
             public String getType() {
-                return AnalysisType.OVERREPRESENTATION.name();
+                // The FireworksViewer sets the analysis type to the result
+                // of this method. It is unknown why the analysis type is
+                // handled this way, but this implementation works so far.
+                return getAnalysisType().toString();
             }
             
             @Override
@@ -145,14 +147,6 @@ public class PseudoAnalysisResult implements AnalysisResult {
     private ExpressionSummary createExpressionSummary() {
         // Base Reactome hard-codes min to 0 and max to 0.05 in various
         // places, so we must go along with that here.
-//        Double min = Stream.of(this.pathways)
-//                                  .map(p -> p.getEntities().getpValue())
-//                                  .min(Comparator.comparing(Double::valueOf))
-//                                  .get();
-//        Double max = Stream.of(this.pathways)
-//                                  .map(p -> p.getEntities().getpValue())
-//                                  .max(Comparator.comparing(Double::valueOf))
-//                                  .get();
         return new PseudoExpressionSummary(0.0, 0.05);
     }
 
@@ -161,15 +155,7 @@ public class PseudoAnalysisResult implements AnalysisResult {
      * empty column list.
      */
     private ExpressionSummary createExpressionSummary(Comparison comparison) {
-        // DOI doesn't fit in Reactome expression bar.
-        // Use First and Second instead.
-        // TODO - color code tab experiment name/doi
-        // and use same colors in the expression bar.
-        List<String> dataSetDescriptors = Arrays.asList("First", "Second");
-//        List<String> dataSetDescriptors = Stream.of(comparison.operands)
-//                .map(operand -> operand.dataset.getDoi())
-//                .collect(Collectors.toList());
-        return new ComparisonPseudoExpressionSummary(dataSetDescriptors);
+        return new ComparisonPseudoExpressionSummary();
     }
 
     /**

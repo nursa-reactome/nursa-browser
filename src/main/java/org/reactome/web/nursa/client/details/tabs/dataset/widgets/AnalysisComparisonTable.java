@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.reactome.web.nursa.model.Comparison;
+
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
 
@@ -38,7 +40,7 @@ extends AnalysisResultTable<Map.Entry<String, List<R>>, K> {
         
         for (int i=0; i < 2; i++) {
             final int index = i;
-            String qualifier = index == 0 ? "First" : "Second";
+            String qualifier = Comparison.LABELS[i];
             Column<Map.Entry<String, List<R>>, Number> pValueColumn =
                     new Column<Map.Entry<String, List<R>>, Number>(SCIENTIFIC_CELL) {
                 @Override

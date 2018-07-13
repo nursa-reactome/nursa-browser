@@ -1,4 +1,4 @@
-package org.reactome.web.nursa.client.details.tabs.dataset;
+package org.reactome.web.nursa.model;
 
 import org.reactome.nursa.model.DataPoint;
 

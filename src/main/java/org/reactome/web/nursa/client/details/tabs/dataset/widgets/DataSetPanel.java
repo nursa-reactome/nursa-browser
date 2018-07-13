@@ -8,7 +8,7 @@ import org.reactome.nursa.model.Experiment;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedHandler;
-import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
+import org.reactome.web.nursa.model.Comparison;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedHandler;
 import org.reactome.web.nursa.client.search.ExperimentSelectedEvent;

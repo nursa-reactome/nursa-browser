@@ -32,8 +32,8 @@ public class NursaStateManager extends StateManager {
         ResourceSummary resource = resources.get(0);
         State desiredState = null;
         if (result instanceof PseudoAnalysisResult) {
-            PseudoAnalysisResult binomialResult = (PseudoAnalysisResult) result;
-            desiredState = new PseudoState(currentState, binomialResult);
+            PseudoAnalysisResult pseudo = (PseudoAnalysisResult) result;
+            desiredState = new PseudoState(currentState, pseudo);
         } else {
             desiredState = new State(currentState);
         }

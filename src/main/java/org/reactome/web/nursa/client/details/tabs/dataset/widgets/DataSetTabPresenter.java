@@ -10,8 +10,8 @@ import org.reactome.web.nursa.analysis.client.model.TokenGenerator;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialSelectedEvent;
-import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
-import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonCompletedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonAnalysisCompletedEvent;
+import org.reactome.web.nursa.model.Comparison;
 import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaHoveredEvent;
@@ -57,7 +57,7 @@ public class DataSetTabPresenter extends AbstractPresenter
         dataSetEventBus.addHandler(ExperimentSelectedEvent.TYPE, this);
         dataSetEventBus.addHandler(BinomialCompletedEvent.TYPE, this);
         dataSetEventBus.addHandler(GseaCompletedEvent.TYPE, this);
-        dataSetEventBus.addHandler(ComparisonCompletedEvent.TYPE, this);
+        dataSetEventBus.addHandler(ComparisonAnalysisCompletedEvent.TYPE, this);
         dataSetEventBus.addHandler(BinomialHoveredEvent.TYPE, this);
         dataSetEventBus.addHandler(GseaHoveredEvent.TYPE, this);
         dataSetEventBus.addHandler(PathwayHoveredResetEvent.TYPE, this);
@@ -119,10 +119,12 @@ public class DataSetTabPresenter extends AbstractPresenter
     }
 
     @Override
-    public void onAnalysisCompleted(Comparison comparison, ComparisonPartition<?> partition) {
+    public void onAnalysisCompleted(Comparison comparison,
+            ComparisonPartition<?> partition) {
         String token = generateComparisonToken(comparison);
         // Transform the result to a Reactome data structure.
-        PseudoAnalysisResult pseudo = new PseudoAnalysisResult(comparison, partition, token);
+        PseudoAnalysisResult pseudo =
+                new PseudoAnalysisResult(comparison, partition, token);
         // Borrow the basic handler to propagate a completed event on
         // the details event bus.
         onAnalysisCompleted(pseudo);

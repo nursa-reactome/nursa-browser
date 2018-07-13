@@ -10,6 +10,7 @@
     <!-- Other module inherits                                      -->
     <inherits name="org.reactome.web.Widgets"/>
     <inherits name='org.reactome.web.pwp.Browser'/>
+    <inherits name="org.reactome.web.fireworks.Fireworks"/>
     <inherits name='org.reactome.nursa.NursaModel'/>
     <inherits name='org.reactome.gsea.GseaModel'/>
     <inherits name="org.fusesource.restygwt.RestyGWT"/>
@@ -20,7 +21,6 @@
     </replace-with>
 
     <!-- Specify the paths for translatable code                    -->
-    <source path='web'/>
     <source path='nursa'/>
-                                
-</module>
+ 
+ </module>

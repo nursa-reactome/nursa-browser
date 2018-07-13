@@ -6,20 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.reactome.web.nursa.analysis.client.model.ComparisonPseudoExpressionSummary;
+import org.reactome.web.nursa.analysis.client.model.ComparisonExpressionSummary;
 import org.reactome.web.nursa.analysis.client.model.PseudoPathwaySummary;
 
 public abstract class ComparisonPartition<R> {
-
-    private static final double[] UNSHARED_PSEUDO_PVALUES = {
-            ComparisonPseudoExpressionSummary.COMPARISON_EXPRESSION_MIN,
-            ComparisonPseudoExpressionSummary.COMPARISON_EXPRESSION_MAX
-    };
-
-    private static final double SHARED_PSEUDO_PVALUE =
-            ComparisonPseudoExpressionSummary.COMPARISON_EXPRESSION_MIN +
-            ((ComparisonPseudoExpressionSummary.COMPARISON_EXPRESSION_MAX -
-              ComparisonPseudoExpressionSummary.COMPARISON_EXPRESSION_MIN) / 2);
 
     private Map<String, List<R>> shared;
     
@@ -74,7 +64,7 @@ public abstract class ComparisonPartition<R> {
         // Make the unshared pathway summaries.
         List<PseudoPathwaySummary> summaries = new ArrayList<PseudoPathwaySummary>();
         for (int i=0; i < 2; i++) {
-            double unsharedPvalue = UNSHARED_PSEUDO_PVALUES[i];
+            double unsharedPvalue = ComparisonExpressionSummary.UNSHARED_PSEUDO_VALUES[i];
             for (R result : getUnshared().get(i)) {
                 PseudoPathwaySummary summary =
                         createPathwaySummary(result, unsharedPvalue);
@@ -85,7 +75,7 @@ public abstract class ComparisonPartition<R> {
         // Make the shared pathway summaries. Since the summary
         // only uses pathway name and id fields, we can create
         // the summary from the first result.
-        double sharedPvalue = SHARED_PSEUDO_PVALUE;
+        double sharedPvalue = ComparisonExpressionSummary.SHARED_PSEUDO_VALUE;
         for (List<R> results : getShared().values()) {
             PseudoPathwaySummary summary =
                     createPathwaySummary(results.get(0), sharedPvalue);

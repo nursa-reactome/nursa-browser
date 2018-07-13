@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.reactome.web.analysis.client.model.PathwaySummary;
-import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
+import org.reactome.web.nursa.model.Comparison;
 import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
 
 import com.google.gwt.event.shared.EventBus;

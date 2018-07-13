@@ -5,8 +5,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
-import org.reactome.web.nursa.client.details.tabs.dataset.Comparison;
-import org.reactome.web.nursa.client.details.tabs.dataset.Comparison.Operand;
+import org.reactome.web.nursa.model.Comparison;
+import org.reactome.web.nursa.model.Comparison.Operand;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.HTMLPanel;
