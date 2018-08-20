@@ -7,6 +7,8 @@ import org.reactome.nursa.model.Experiment;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.user.client.ui.Button;
@@ -39,6 +41,17 @@ public class ExperimentSelector extends VerticalPanel {
         lb.setVisibleItemCount(Math.min(experiments.size(), MAX_EXP_ITEMS));
         // The default selection is the first experiment.
         lb.setSelectedIndex(0);
+        // Double click accepts the experiment.
+        lb.addDoubleClickHandler(new DoubleClickHandler() {
+
+            @Override
+            public void onDoubleClick(DoubleClickEvent event) {
+                experiment = experiments.get(lb.getSelectedIndex());
+                consumer.accept(experiment);
+            }
+        
+        });
+        
         add(lb);
         
         // The Accept button.
