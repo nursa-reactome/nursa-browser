@@ -43,7 +43,7 @@ public class NursaFireworksViewer extends FireworksViewerImpl {
                 }
                 if (node != null) {
                     String colour = ComparisonExpressionSummary.getColour(pathway);
-                    node.setColour(colour);
+                    node.setEnrichmentColour(colour);
                 }
             }
         }
