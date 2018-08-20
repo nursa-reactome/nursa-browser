@@ -90,14 +90,22 @@ public class ComparisonDataPointsPanel extends DataPanel<ComparisonDataPoint> {
             table.addColumn(foldChangeCol, qualifier + " Fold Change");
         }
 
-        // The log10(FDR1/FDR2) ratio column. 
+        // The log10(pvalue1/pvalue2) ratio column. 
         Column<ComparisonDataPoint, Number> ratioCol =
                 createDataColumn(ComparisonDataPoint::getRatio, sorter, DECIMAL_CELL);
-        table.addColumn(ratioCol, "FDR Ratio");
+        table.addColumn(ratioCol, "PValue Ratio");
 
         return table;
     }
 
+    /**
+     * Curries the index accessor composed with the given data point accessor
+     * into a single function.
+     * 
+     * @param index the index to dereference
+     * @param accessor the data point accessor function
+     * @return the composed function
+     */
     private static Function<ComparisonDataPoint, Double> curry(
             final int index, Function<DataPoint, Double> accessor) {
         
