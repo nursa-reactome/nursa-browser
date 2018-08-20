@@ -1,5 +1,6 @@
 package org.reactome.web.nursa.analysis.client.model;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.reactome.gsea.model.GseaAnalysisResult;
@@ -29,37 +30,37 @@ public class PseudoEntityStatistics implements EntityStatistics {
 
     @Override
     public Integer getTotal() {
-        return null;
+        return 1;
     }
 
     @Override
     public Integer getFound() {
-        return null;
+        return 1;
     }
 
     @Override
     public Double getRatio() {
-        return null;
+        return 1.0;
     }
 
     @Override
     public Integer getCuratedTotal() {
-        return null;
+        return 1;
     }
 
     @Override
     public Integer getCuratedFound() {
-        return null;
+        return 1;
     }
 
     @Override
     public Integer getInteractorsTotal() {
-        return null;
+        return 1;
     }
 
     @Override
     public Integer getInteractorsFound() {
-        return null;
+        return 1;
     }
 
     @Override
@@ -74,7 +75,7 @@ public class PseudoEntityStatistics implements EntityStatistics {
 
     @Override
     public List<Double> getExp() {
-        return null;
+        return Arrays.asList(0.0);
     }
 
 }
