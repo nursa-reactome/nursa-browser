@@ -10,7 +10,7 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.RestService;
 import org.reactome.gsea.model.GseaAnalysisResult;
 
-@Path("/Gsea")
+@Path("/GseaService")
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
