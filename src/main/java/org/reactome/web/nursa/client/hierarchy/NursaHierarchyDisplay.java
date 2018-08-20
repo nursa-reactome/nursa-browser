@@ -3,11 +3,17 @@ package org.reactome.web.nursa.client.hierarchy;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.reactome.web.pwp.client.common.Selection;
+import org.reactome.web.pwp.client.common.events.DatabaseObjectSelectedEvent;
 import org.reactome.web.pwp.client.hierarchy.HierarchyDisplay;
+import org.reactome.web.pwp.client.hierarchy.widget.HierarchyItem;
 import org.reactome.web.pwp.model.client.classes.Event;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.TreeItem;
 
 /**
@@ -19,6 +25,7 @@ public class NursaHierarchyDisplay extends HierarchyDisplay {
      * The substring which marks a hierarchical item as a nuclear receptor.
      */
     private static final String NUCLEAR_RECEPTOR_SUBSTR = "Nuclear Receptor";
+    
     private int nuclearReceptorItemCount;
 
     @Override
@@ -30,6 +37,17 @@ public class NursaHierarchyDisplay extends HierarchyDisplay {
             TreeItem item = this.hierarchyTree.getItem(i);
             item.addStyleName(RESOURCES.getCSS().nuclearReceptorTree());
         }
+        
+        // Select NR signaling after the browser loads.
+        Scheduler.get().scheduleDeferred(new Command() {
+            
+            public void execute () {
+                HierarchyItem item =
+                        (HierarchyItem) NursaHierarchyDisplay.this.hierarchyTree.getItem(0);
+                NursaHierarchyDisplay.this.onSelection(item);
+            }
+
+        });
     }
 
     private List<Event> sortTlps(List<? extends Event> tlps) {
