@@ -11,6 +11,7 @@ import org.reactome.web.nursa.client.viewport.fireworks.NursaFireworksPresenter;
 import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetTab;
 import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetTabDisplay;
 import org.reactome.web.pwp.client.AppController;
+import org.reactome.web.pwp.client.common.events.BrowserReadyEvent;
 import org.reactome.web.pwp.client.details.tabs.description.DescriptionTab;
 import org.reactome.web.pwp.client.details.tabs.description.DescriptionTabDisplay;
 import org.reactome.web.pwp.client.details.tabs.description.DescriptionTabPresenter;
@@ -26,6 +27,7 @@ import org.reactome.web.pwp.client.details.tabs.structures.StructuresTabPresente
 import org.reactome.web.pwp.client.hierarchy.HierarchyDisplay;
 import org.reactome.web.pwp.client.tools.launcher.ToolLauncher;
 import org.reactome.web.pwp.client.viewport.fireworks.Fireworks.Display;
+import org.reactome.web.pwp.model.client.classes.Pathway;
 import org.reactome.web.pwp.client.viewport.fireworks.FireworksDisplay;
 import org.reactome.web.pwp.client.viewport.fireworks.FireworksPresenter;
 
@@ -52,7 +54,7 @@ public class NursaAppController extends AppController {
         }
         return dataSetEventBus;
     }
-    
+
     @Override
     protected void initStateManager(){
         new NursaStateManager(this.eventBus);
