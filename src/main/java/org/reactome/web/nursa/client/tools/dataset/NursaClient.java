@@ -10,7 +10,7 @@ import org.reactome.nursa.model.DataSet;
 import org.reactome.nursa.model.DataSetSearchResult;
 
 
-@Path("/Nursa")
+@Path("/NursaService")
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */

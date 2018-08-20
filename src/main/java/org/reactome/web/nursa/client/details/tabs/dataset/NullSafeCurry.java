@@ -13,13 +13,20 @@ public class NullSafeCurry<S, T, R> implements Function<S, R> {
 
     private Function<S, R> function;
 
-    public NullSafeCurry(Function<S, T> outer, Function<T, R> inner) {
+    /**
+     * Curries <code>outer(inner(s))</code> into the functional equivalent of
+     * <code>s == null ? null : (inner(s) == null ? null : outer(inner(s)))</code>.
+     * 
+     * @param inner the first function to apply to the input
+     * @param outer the second function to apply to the inner result
+     */
+    public NullSafeCurry(Function<S, T> inner, Function<T, R> outer) {
        this.function = new Function<S, R>() {
 
             @Override
             public R apply(S s) {
-                T t = s == null ? null : outer.apply(s);
-                return t == null ? null : inner.apply(t);
+                T t = s == null ? null : inner.apply(s);
+                return t == null ? null : outer.apply(t);
             }
             
         };
