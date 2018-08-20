@@ -3,6 +3,8 @@ package org.reactome.web.nursa.client.search;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.DoubleClickEvent;
+import com.google.gwt.event.dom.client.DoubleClickHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
@@ -31,6 +33,7 @@ import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.pwp.client.common.CommonImages;
 import org.reactome.web.nursa.client.search.DataSetSearcher.DataSetAdapter;
 import org.reactome.web.widgets.search.Searcher;
+import org.reactome.web.widgets.search.Suggestion;
 import org.reactome.web.widgets.search.SuggestionComboBox;
 
 /**
@@ -134,6 +137,18 @@ public class SearchDialog extends DialogBox implements ClickHandler {
         Widget combo = suggestionBox.asWidget();
         combo.addStyleName(RESOURCES.getCSS().combo());
         searchPanel.add(combo);
+
+        // Double click accepts the suggestion.
+        combo.addDomHandler(new DoubleClickHandler() {
+ 
+            @Override
+            public void onDoubleClick(DoubleClickEvent event)
+            {
+                loadDataSet(container, searchPanel);
+            }
+
+        }, DoubleClickEvent.getType());
+
         // The dataset load button.
         loadBtn = new Button("Load");
         loadBtn.setStyleName(RESOURCES.getCSS().load());
@@ -141,41 +156,9 @@ public class SearchDialog extends DialogBox implements ClickHandler {
 
             @Override
             public void onClick(ClickEvent event) {
-                container.remove(searchPanel);
-                HTML loadingMsg = new HTML("Loading the dataset...");
-                container.add(loadingMsg);
-                // Get the experiments.
-                DataSetLoader.getDataset(dataset.getDoi(), new Consumer<DataSet>() {
-
-                    @Override
-                    public void accept(DataSet dataset) {
-                        // Select an experiment, if necessary.
-                        List<Experiment> experiments = dataset.getExperiments();
-                        if (experiments.size() == 1) {
-                            Experiment experiment = experiments.get(0);
-                            ExperimentSelectedEvent selEvent =
-                                    new ExperimentSelectedEvent(dataset, experiment);
-                            eventBus.fireEventFromSource(selEvent, SearchDialog.this);
-                            hide();
-                        } else {
-                            container.remove(loadingMsg);
-                            container.add(new ExperimentSelector(experiments, new Consumer<Experiment>() {
-
-                                @Override
-                                public void accept(Experiment experiment) {
-                                    ExperimentSelectedEvent selEvent =
-                                            new ExperimentSelectedEvent(dataset, experiment);
-                                    eventBus.fireEventFromSource(selEvent, SearchDialog.this);
-                                    SearchDialog.this.hide();
-                                }
-                                
-                            }));
-                         }
-                    }
-                    
-                });
+                loadDataSet(container, searchPanel);
             }
-            
+
         });
         loadBtn.setEnabled(false);
         searchPanel.add(loadBtn);
@@ -189,7 +172,43 @@ public class SearchDialog extends DialogBox implements ClickHandler {
         // when the dataset is selected and loaded.
         container.add(searchPanel);
     }
+    
+    protected void loadDataSet(ComplexPanel container, ComplexPanel searchPanel) {
+        container.remove(searchPanel);
+        HTML loadingMsg = new HTML("Loading the dataset...");
+        container.add(loadingMsg);
+        // Get the experiments.
+        DataSetLoader.getDataset(dataset.getDoi(), new Consumer<DataSet>() {
 
+            @Override
+            public void accept(DataSet dataset) {
+                // Select an experiment, if necessary.
+                List<Experiment> experiments = dataset.getExperiments();
+                if (experiments.size() == 1) {
+                    Experiment experiment = experiments.get(0);
+                    ExperimentSelectedEvent selEvent =
+                            new ExperimentSelectedEvent(dataset, experiment);
+                    eventBus.fireEventFromSource(selEvent, SearchDialog.this);
+                    hide();
+                } else {
+                    container.remove(loadingMsg);
+                    container.add(new ExperimentSelector(experiments, new Consumer<Experiment>() {
+
+                        @Override
+                        public void accept(Experiment experiment) {
+                            ExperimentSelectedEvent selEvent =
+                                    new ExperimentSelectedEvent(dataset, experiment);
+                            eventBus.fireEventFromSource(selEvent, SearchDialog.this);
+                            SearchDialog.this.hide();
+                        }
+                        
+                    }));
+                 }
+            }
+            
+        });
+    }
+    
     private void setTitlePanel(String title) {
         Label label = new Label(title);
         label.setStyleName(RESOURCES.getCSS().headerText());
