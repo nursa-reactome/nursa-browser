@@ -5,9 +5,9 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.reactome.web.nursa</groupId>
     <artifactId>nursa-browser</artifactId>
-    <version>3.5.1</version>
+    <version>1.4.0</version>
     <packaging>war</packaging>
-    <name>Nursa Dataset Signalling Pathways Portal</name>
+    <name>NursaBrowser</name>
 
     <description>
         The Nursa Reactome Pathway Browser adapts the Reactome Browser for the
@@ -156,10 +156,10 @@
     </dependencies>
 
    <build>
+        <finalName>${project.name}</finalName>
         <!-- Output classes directly into the webapp, so that IDEs and "mvn process-classes"
             update them in DevMode -->
         <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
-        <finalName>${fileName}-${project.version}</finalName>
 
         <plugins>
             <!--  Copy the standard Reactome browser webapp bits. -->
