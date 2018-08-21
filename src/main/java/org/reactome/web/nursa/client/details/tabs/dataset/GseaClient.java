@@ -15,6 +15,7 @@ import org.reactome.gsea.model.GseaAnalysisResult;
  * @author Fred Loney <loneyf@ohsu.edu>
  */
 public interface GseaClient extends RestService {
+
     @POST
     @Path("/analyse")
     public void analyse(
@@ -23,4 +24,5 @@ public interface GseaClient extends RestService {
             @QueryParam("dataSetSizeMax") Integer dataSetSizeMax,
             MethodCallback<List<GseaAnalysisResult>> result
     );
+
 }
