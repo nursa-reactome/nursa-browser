@@ -75,14 +75,14 @@ public class ComparisonDataPointsPanel extends DataPanel<ComparisonDataPoint> {
         });
         table.addColumn(symbolColumn, "Symbol");
         
-        // The FDR (p-value) and fold change columns.
+        // The p-value and fold change columns.
         for (int i=0; i < 2; i++) {
             String qualifier = org.reactome.web.nursa.model.Comparison.LABELS[i];
-            Function<ComparisonDataPoint, Double> fdr =
+            Function<ComparisonDataPoint, Double> pValue =
                     curry(i, DataPoint::getPvalue);
-            Column<ComparisonDataPoint, Number> fdrCol =
-                    createDataColumn(fdr, sorter, SCIENTIFIC_CELL);
-            table.addColumn(fdrCol, qualifier + " FDR");
+            Column<ComparisonDataPoint, Number> pValueCol =
+                    createDataColumn(pValue, sorter, SCIENTIFIC_CELL);
+            table.addColumn(pValueCol, qualifier + " P-Value");
             Function<ComparisonDataPoint, Double> foldChange =
                     curry(i, DataPoint::getFoldChange);
             Column<ComparisonDataPoint, Number> foldChangeCol =
@@ -93,7 +93,7 @@ public class ComparisonDataPointsPanel extends DataPanel<ComparisonDataPoint> {
         // The log10(pvalue1/pvalue2) ratio column. 
         Column<ComparisonDataPoint, Number> ratioCol =
                 createDataColumn(ComparisonDataPoint::getRatio, sorter, DECIMAL_CELL);
-        table.addColumn(ratioCol, "PValue Ratio");
+        table.addColumn(ratioCol, "P-Value Ratio");
 
         return table;
     }
