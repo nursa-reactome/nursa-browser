@@ -38,10 +38,6 @@ public class NursaAppController extends AppController {
 
     private EventBus dataSetEventBus;
 
-    public NursaAppController() {
-        super();
-    }
-
     private EventBus getDataSetEventBus() {
         // Create the event bus on demand. Since the protected 
         // methods below are called from the superclass constructor,
