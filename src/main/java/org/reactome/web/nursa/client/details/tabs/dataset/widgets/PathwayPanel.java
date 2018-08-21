@@ -29,6 +29,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SimplePanel;
@@ -70,7 +71,19 @@ public abstract class PathwayPanel extends Composite {
      * The config slider button.
      */
     @UiField()
+    Widget launchPad;
+
+    /**
+     * The config slider button.
+     */
+    @UiField()
     Button launchBtn;
+
+    /**
+     * The analysis running label.
+     */
+    @UiField()
+    Label runningLbl;
 
     /**
      * The config slider button.
@@ -123,17 +136,16 @@ public abstract class PathwayPanel extends Composite {
 
             @Override
             public void onSuccess(Method method, List<GseaAnalysisResult> result) {
+                runningLbl.setVisible(false);
+                launchBtn.setVisible(true);
                 consumer.accept(result);
             }
 
             @Override
             public void onFailure(Method method, Throwable exception) {
-                try {
-                    throw new IOException("GSEA execution unsuccessful", exception);
-                } catch (IOException e) {
-                    // TODO - how are I/O errors handled in Reactome?
-                    throw new RuntimeException(e);
-                }
+                runningLbl.setVisible(false);
+                launchBtn.setVisible(true);
+                Console.error("GSEA execution unsuccessful: " + exception);
             }
          });
     }
@@ -150,16 +162,22 @@ public abstract class PathwayPanel extends Composite {
         AnalysisClient.analyseData(data, true, false, 0, 0, new AnalysisHandler.Result() {
             @Override
             public void onAnalysisServerException(String message) {
+                runningLbl.setVisible(false);
+                launchBtn.setVisible(true);
                 Console.error(message);
             }
 
             @Override
             public void onAnalysisResult(AnalysisResult result, long time) {
+                runningLbl.setVisible(false);
+                launchBtn.setVisible(true);
                 consumer.accept(result);
             }
 
             @Override
             public void onAnalysisError(AnalysisError error) {
+                runningLbl.setVisible(false);
+                launchBtn.setVisible(true);
                 Console.error(error.getReason());
             }
 
@@ -182,10 +200,17 @@ public abstract class PathwayPanel extends Composite {
 
     private void buildConfigPanel() {
         content.addStyleName(RESOURCES.getCSS().main());
- 
+        // The sliderBtn comment below regarding style
+        // applies to launchPad and runningLbl as well.
+        launchPad.addStyleName(RESOURCES.getCSS().launchPad());
+        runningLbl.addStyleName(RESOURCES.getCSS().running());
+        runningLbl.setVisible(false);
+        
         launchBtn.addClickHandler(new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
+                launchBtn.setVisible(false);
+                runningLbl.setVisible(true);
                 if (gseaBtn.getValue()) {
                     gseaAnalyse();
                 } else {
@@ -222,9 +247,7 @@ public abstract class PathwayPanel extends Composite {
         //   this.get_clientBundleFieldNameUnlikelyToCollideWithUserSpecifiedFieldOkay_4_g$(...).style_19_g$ is not a function
         // The work-around is to set the style the old-fashioned verbose way with
         // the CSS resource below.
-        sliderBtn.addStyleName(RESOURCES.getCSS().sliderBtn());
-        //sliderBtn.getElement().getStyle().setPadding(1, Unit.PX);
-        //sliderBtn.getElement().getStyle().setPaddingTop(3, Unit.PX);
+        sliderBtn.addStyleName(RESOURCES.getCSS().slider());
         sliderBtn.setVisible(gseaBtn.getValue());
         gseaConfigSlider = new GseaConfigSlider();
         sliderPanel.addStyleName("gsea-config");
@@ -309,7 +332,11 @@ public abstract class PathwayPanel extends Composite {
 
         String main();
 
-        String sliderBtn();
+        String launchPad();
+
+        String running();
+
+        String slider();
 
     }
 }

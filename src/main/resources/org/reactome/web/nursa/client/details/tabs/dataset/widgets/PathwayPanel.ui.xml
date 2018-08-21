@@ -10,8 +10,16 @@
 				<g:RadioButton ui:field='binomialBtn' name="technique">Binomial</g:RadioButton>
 			</g:HorizontalPanel>
 
-			<!-- The analysis launch button. -->
-			<g:Button ui:field='launchBtn'>Launch</g:Button>
+            <!-- Stack the mutually exclusive launch button and 
+              running indicator in a vertical panel to center both
+              in the same fixed-size div with a slight margin.
+              They are not shown together. -->
+            <g:VerticalPanel ui:field='launchPad'>
+                <!-- The analysis launch button. -->
+                <g:Button ui:field='launchBtn'>Launch</g:Button>
+                <!-- The analysis running button. -->
+                <g:Label ui:field='runningLbl'>Running...</g:Label>
+            </g:VerticalPanel>
 
 			<!-- The config slider button. -->
 			<g:Button ui:field='sliderBtn'>

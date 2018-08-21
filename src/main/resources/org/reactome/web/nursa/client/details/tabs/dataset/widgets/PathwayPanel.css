@@ -1,10 +1,14 @@
 .main {
 }
 
-.main button {
-    margin-left: 3px;
+.slider {
+    padding: 3px 1px 1px 1px;
 }
 
-.sliderBtn {
-    padding: 3px 1px 1px 1px;
+.launchPad {
+    padding: 0 3px;
+}
+
+.running {
+    cursor: wait;
 }
