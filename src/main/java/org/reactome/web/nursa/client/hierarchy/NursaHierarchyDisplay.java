@@ -99,4 +99,5 @@ public class NursaHierarchyDisplay extends HierarchyDisplay {
 
         String nuclearReceptorTree();
     }
+
 }
