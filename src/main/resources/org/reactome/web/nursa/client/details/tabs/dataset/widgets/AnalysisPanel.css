@@ -1,14 +1,31 @@
 .main {
 }
 
-.slider {
-    padding: 3px 1px 1px 1px;
+.gseaBtn {
+    margin-left: 6px;
+}
+
+.binomialCutoff {
+    margin-left: 3px;
+}
+
+.launchBtn {
+    padding: 0 2px;
 }
 
 .launchPad {
-    padding: 0 3px;
+    margin-left: 9px;
 }
 
 .running {
     cursor: wait;
+}
+
+.configBtn {
+    margin-left: 9px;
+    padding: 1px 3px;
+}
+
+.configPanel {
+    margin-left: 6px;
 }
