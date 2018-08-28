@@ -11,11 +11,11 @@ import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 
 import com.google.gwt.event.shared.EventBus;
 
-public class ExperimentPathwayPanel extends PathwayPanel {
+public class ExperimentAnalysisPanel extends AnalysisPanel {
 
     private Experiment experiment;
 
-    public ExperimentPathwayPanel(Experiment experiment, EventBus eventBus) {
+    public ExperimentAnalysisPanel(Experiment experiment, EventBus eventBus) {
         super(eventBus);
         this.experiment = experiment;
     }
@@ -28,7 +28,7 @@ public class ExperimentPathwayPanel extends PathwayPanel {
             public void accept(AnalysisResult result) {
                 showBinomialResult(result.getPathways());
                 BinomialCompletedEvent event = new BinomialCompletedEvent(result);
-                eventBus.fireEventFromSource(event, ExperimentPathwayPanel.this);
+                eventBus.fireEventFromSource(event, ExperimentAnalysisPanel.this);
             }
         });
     }
@@ -41,7 +41,7 @@ public class ExperimentPathwayPanel extends PathwayPanel {
             public void accept(List<GseaAnalysisResult> result) {
                 showGseaResult(result);
                 GseaCompletedEvent event = new GseaCompletedEvent(result);
-                eventBus.fireEventFromSource(event, ExperimentPathwayPanel.this);
+                eventBus.fireEventFromSource(event, ExperimentAnalysisPanel.this);
             }
         });
     }

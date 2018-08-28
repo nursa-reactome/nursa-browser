@@ -15,11 +15,11 @@ import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ComparisonPathwayPanel extends PathwayPanel {
+public class ComparisonAnalysisPanel extends AnalysisPanel {
 
     private Comparison comparison;
 
-    public ComparisonPathwayPanel(Comparison comparison, EventBus eventBus) {
+    public ComparisonAnalysisPanel(Comparison comparison, EventBus eventBus) {
         super(eventBus);
         this.comparison = comparison;
     }
@@ -44,7 +44,7 @@ public class ComparisonPathwayPanel extends PathwayPanel {
                         showBinomialResult(partition);
                         ComparisonAnalysisCompletedEvent event =
                                 new ComparisonAnalysisCompletedEvent(comparison, partition);
-                        eventBus.fireEventFromSource(event, ComparisonPathwayPanel.this);
+                        eventBus.fireEventFromSource(event, ComparisonAnalysisPanel.this);
                     }
 
                 });
@@ -71,7 +71,7 @@ public class ComparisonPathwayPanel extends PathwayPanel {
                         showGseaResult(partition);
                         ComparisonAnalysisCompletedEvent event =
                                 new ComparisonAnalysisCompletedEvent(comparison, partition);
-                        eventBus.fireEventFromSource(event, ComparisonPathwayPanel.this);
+                        eventBus.fireEventFromSource(event, ComparisonAnalysisPanel.this);
                     }
 
                 });
