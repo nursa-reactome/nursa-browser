@@ -43,14 +43,16 @@ public abstract class DataPanel<T> implements IsWidget {
 
     protected Column<T, Number> createDataColumn(
             Function<T, Double> accessor, ListHandler<T> sorter, NumberCell cell) {
+        // The column with a value function.
         Column<T, Number> column =
                 new Column<T, Number>(cell) {
             @Override
-            public Number getValue(T cdp) {
-                return  accessor.apply(cdp);
+            public Number getValue(T comparisonDataPoint) {
+                return  accessor.apply(comparisonDataPoint);
             }
         };
         column.setSortable(true);
+        // The table sort comparator.
         Comparator<T> comparator = new NullSafeComparator<T, Double>() {
 
             @Override
