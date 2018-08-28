@@ -48,8 +48,8 @@ public class ComparisonSections extends DataSetSections {
     }
 
     @Override
-    protected Widget createPathwaysPanel(EventBus eventBus) {
-        return new ComparisonPathwayPanel(comparison, eventBus);
+    protected Widget createAnalysisPanel(EventBus eventBus) {
+        return new ComparisonAnalysisPanel(comparison, eventBus);
     }
 
 }

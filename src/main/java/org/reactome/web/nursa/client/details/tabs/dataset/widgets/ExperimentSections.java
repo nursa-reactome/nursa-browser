@@ -30,8 +30,8 @@ public class ExperimentSections extends DataSetSections {
     }
 
     @Override
-    protected Widget createPathwaysPanel(EventBus eventBus) {
-        return new ExperimentPathwayPanel(experiment, eventBus);
+    protected Widget createAnalysisPanel(EventBus eventBus) {
+        return new ExperimentAnalysisPanel(experiment, eventBus);
     }
 
 }

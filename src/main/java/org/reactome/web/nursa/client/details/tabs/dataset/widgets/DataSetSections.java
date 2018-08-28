@@ -15,12 +15,12 @@ abstract public class DataSetSections implements Iterable<Widget> {
 
     private static String OVERVIEW_TITLE = "Overview";
     private static String GENES_TITLE = "Genes";
-    private static String PATHWAYS_TITLE = "Pathways";
+    private static String ANALYSIS_TITLE = "Analysis";
     
     private List<Widget> sections;
     private Widget overview;
     private Widget dataPoints;
-    private Widget pathways;
+    private Widget analysis;
     private EventBus eventBus;
 
     public DataSetSections(EventBus eventBus) {
@@ -36,8 +36,8 @@ abstract public class DataSetSections implements Iterable<Widget> {
             sections.add(overview);
             dataPoints = createGenesSection();
             sections.add(dataPoints);
-            pathways = createPathwaysSection(eventBus);
-            sections.add(pathways);
+            analysis = createAnalysisSection(eventBus);
+            sections.add(analysis);
             
         }
         return sections.iterator();
@@ -47,7 +47,7 @@ abstract public class DataSetSections implements Iterable<Widget> {
 
     abstract protected Widget createGenesPanel();
     
-    abstract protected Widget createPathwaysPanel(EventBus eventBus);
+    abstract protected Widget createAnalysisPanel(EventBus eventBus);
 
     protected String overviewTitle() {
         return OVERVIEW_TITLE;
@@ -64,9 +64,9 @@ abstract public class DataSetSections implements Iterable<Widget> {
         return createDataSetSection(GENES_TITLE, panel);
     }
 
-    private Widget createPathwaysSection(EventBus eventBus) {
-        Widget panel = createPathwaysPanel(eventBus);
-        return createDataSetSection(PATHWAYS_TITLE, panel);
+    private Widget createAnalysisSection(EventBus eventBus) {
+        Widget panel = createAnalysisPanel(eventBus);
+        return createDataSetSection(ANALYSIS_TITLE, panel);
     }
 
     private Widget createDataSetSection(String title, Widget child) {
