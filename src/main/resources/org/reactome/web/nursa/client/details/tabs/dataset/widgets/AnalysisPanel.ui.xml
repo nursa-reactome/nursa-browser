@@ -3,17 +3,16 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c="urn:import:com.google.gwt.user.cellview.client">
 
 	<g:VerticalPanel ui:field='content'>
-		<g:HorizontalPanel>
+		<g:HorizontalPanel ui:field='analysisControlPanel'>
 			<!-- The radio button group. -->
 			<g:HorizontalPanel>
-				<g:RadioButton ui:field='gseaBtn' name="technique">GSEA</g:RadioButton>
 				<g:RadioButton ui:field='binomialBtn' name="technique">Binomial</g:RadioButton>
+                <g:RadioButton ui:field='gseaBtn' name="technique">GSEA</g:RadioButton>
 			</g:HorizontalPanel>
 
             <!-- Stack the mutually exclusive launch button and 
-              running indicator in a vertical panel to center both
-              in the same fixed-size div with a slight margin.
-              They are not shown together. -->
+              running indicator in a vertical panel for styling
+              purposes. They are not shown together. -->
             <g:VerticalPanel ui:field='launchPad'>
                 <!-- The analysis launch button. -->
                 <g:Button ui:field='launchBtn'>Launch</g:Button>
@@ -21,13 +20,23 @@
                 <g:Label ui:field='runningLbl'>Running...</g:Label>
             </g:VerticalPanel>
 
-			<!-- The config slider button. -->
-			<g:Button ui:field='sliderBtn'>
+			<!-- The configuration show/hide button. -->
+			<g:Button ui:field='configBtn'>
 				<img src="static/images/gear.png" height="16" width="16" />
 			</g:Button>
 
-			<!-- The config slider panel. -->
-			<g:SimplePanel ui:field='sliderPanel' />
+            <!-- Stack the mutually exclusive binomial and 
+              GSEA config in a vertical panel for styling
+              purposes. They are not shown together. -->
+            <g:VerticalPanel ui:field='configPanel'>
+                <!-- The binomial configuration panel. -->
+                <g:HorizontalPanel ui:field='binomialConfig'>
+                    <g:Label>P-Value Cutoff:</g:Label>
+                    <g:DoubleBox ui:field='binomialCutoff'/>
+                </g:HorizontalPanel>
+                <!-- The GSEA configuration panel. -->
+                <g:SimplePanel ui:field='gseaConfig'/>
+            </g:VerticalPanel>
 		</g:HorizontalPanel>
 
 		<!-- The analysis results display. -->
