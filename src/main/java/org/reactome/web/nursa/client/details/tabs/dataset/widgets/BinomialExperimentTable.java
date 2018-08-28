@@ -64,7 +64,7 @@ public class BinomialExperimentTable extends AnalysisResultTable<PathwaySummary,
         });
         
         // Add the columns.
-        addColumn(nameColumn, "Name");
+        addColumn(nameColumn, "Pathway");
         addColumn(pValueColumn, "P-Value");
         addColumn(fdrColumn, "FDR");
     }
