@@ -9,8 +9,11 @@ import java.util.function.Function;
 import org.reactome.nursa.model.DataPoint;
 import org.reactome.web.nursa.model.ComparisonDataPoint;
 import org.reactome.web.nursa.client.details.tabs.dataset.NullSafeCurry;
+import org.reactome.web.nursa.client.details.tabs.dataset.NursaWidgetHelper;
 import org.reactome.web.nursa.model.Comparison;
 
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
@@ -77,23 +80,33 @@ public class ComparisonDataPointsPanel extends DataPanel<ComparisonDataPoint> {
         
         // The p-value and fold change columns.
         for (int i=0; i < 2; i++) {
-            String qualifier = org.reactome.web.nursa.model.Comparison.LABELS[i];
             Function<ComparisonDataPoint, Double> pValue =
                     curry(i, DataPoint::getPvalue);
             Column<ComparisonDataPoint, Number> pValueCol =
                     createDataColumn(pValue, sorter, SCIENTIFIC_CELL);
-            table.addColumn(pValueCol, qualifier + " P-Value");
+            SafeHtml pValueHdr = NursaWidgetHelper.superscriptHeader(i, "P-Value");
+            table.addColumn(pValueCol, pValueHdr);
             Function<ComparisonDataPoint, Double> foldChange =
                     curry(i, DataPoint::getFoldChange);
-            Column<ComparisonDataPoint, Number> foldChangeCol =
+            Column<ComparisonDataPoint, Number> fcCol =
                     createDataColumn(foldChange, sorter, DECIMAL_CELL);
-            table.addColumn(foldChangeCol, qualifier + " Fold Change");
+            SafeHtml fcHdr = NursaWidgetHelper.superscriptHeader(i, "Fold Change");
+           table.addColumn(fcCol, fcHdr);
         }
 
         // The log10(pvalue1/pvalue2) ratio column. 
         Column<ComparisonDataPoint, Number> ratioCol =
-                createDataColumn(ComparisonDataPoint::getRatio, sorter, DECIMAL_CELL);
-        table.addColumn(ratioCol, "P-Value Ratio");
+                createDataColumn(ComparisonDataPoint::getPValueRatio, sorter, DECIMAL_CELL);
+        table.addColumn(ratioCol, "Log P-Value Ratio");
+
+        // The fold change difference column. 
+        Column<ComparisonDataPoint, Number> fcDiffCol =
+                createDataColumn(ComparisonDataPoint::getFCDifference, sorter, DECIMAL_CELL);
+        SafeHtmlBuilder shb = new SafeHtmlBuilder();
+        shb.appendHtmlConstant("&Delta;");
+        shb.appendEscaped( " Fold Change");
+        SafeHtml fcHdr = shb.toSafeHtml();
+        table.addColumn(fcDiffCol, fcHdr);
 
         return table;
     }
@@ -108,7 +121,7 @@ public class ComparisonDataPointsPanel extends DataPanel<ComparisonDataPoint> {
      */
     private static Function<ComparisonDataPoint, Double> curry(
             final int index, Function<DataPoint, Double> accessor) {
-        
+        // First dereference the data point, then apply the accessor.
         return new NullSafeCurry<ComparisonDataPoint, DataPoint, Double>(
                 cdp -> cdp.getDataPoints()[index],
                 accessor);
