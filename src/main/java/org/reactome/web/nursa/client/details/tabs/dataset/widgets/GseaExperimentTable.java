@@ -22,7 +22,6 @@ public class GseaExperimentTable extends AnalysisResultTable<GseaAnalysisResult,
 
     public GseaExperimentTable(List<GseaAnalysisResult> result) {
         super(result);
-        addStyleName(RESOURCES.getCSS().main());
 
         // The display columns.
         TextColumn<GseaAnalysisResult> nameColumn = new TextColumn<GseaAnalysisResult>() {
@@ -124,7 +123,7 @@ public class GseaExperimentTable extends AnalysisResultTable<GseaAnalysisResult,
         });
         
         // Add the display columns.
-        addColumn(nameColumn, "Name");
+        addColumn(nameColumn, "Pathway");
         addColumn(hitsColumn, "Hits");
         addColumn(scoreColumn, "Score");
         addColumn(nesColumn, "NES");
@@ -148,39 +147,4 @@ public class GseaExperimentTable extends AnalysisResultTable<GseaAnalysisResult,
         return new GseaSelectedEvent(stId);
     }
 
-    public static Resources RESOURCES;
-
-    static {
-        RESOURCES = GWT.create(Resources.class);
-        RESOURCES.getCSS().ensureInjected();
-    }
- 
-    /**
-     * A ClientBundle of resources used by this widget.
-     */
-    interface Resources extends ClientBundle {
- 
-        /**
-         * The styles used in this widget.
-         */
-        @Source(Css.CSS)
-        Css getCSS();
-
-    }
-
-    /**
-     * Styles used by this widget.
-     */
-    interface Css extends CssResource {
- 
-        /**
-         * The path to the default CSS styles used by this resource.
-         */
-        String CSS = "GseaTable.css";
-
-        String main();
-
-        String hidden();
-
-    }
 }
