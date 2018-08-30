@@ -50,7 +50,7 @@
 
         <reactome.web.browser>3.5.1</reactome.web.browser>
         <reactome.web.widgets>1.0.1</reactome.web.widgets>
-        <reactome.nursa.model>1.0.1</reactome.nursa.model>
+        <reactome.nursa.model>1.0.2</reactome.nursa.model>
         <reactome.gsea.model>1.0.1</reactome.gsea.model>
 
         <appModule>org.reactome.web.NursaBrowser</appModule>
