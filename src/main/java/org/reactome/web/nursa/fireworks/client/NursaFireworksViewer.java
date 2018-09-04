@@ -1,5 +1,6 @@
 package org.reactome.web.nursa.fireworks.client;
 
+import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.analysis.client.model.PathwayBase;
 import org.reactome.web.analysis.client.model.SpeciesFilteredResult;
 import org.reactome.web.fireworks.client.FireworksCanvas;
@@ -35,7 +36,7 @@ public class NursaFireworksViewer extends FireworksViewerImpl {
     protected void setAnalysisResultData(SpeciesFilteredResult result) {
         super.setAnalysisResultData(result);
         // Override comparison analysis colors.
-        if (result.getExpressionSummary() instanceof ComparisonExpressionSummary) {
+        if (AnalysisType.DATASET_COMPARISON.equals(result.getAnalysisType())) {
             for (PathwayBase pathway : result.getPathways()) {
                 Node node = data.getNode(pathway.getDbId());
                 if (node == null) {

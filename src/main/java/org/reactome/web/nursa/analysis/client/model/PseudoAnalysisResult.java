@@ -29,11 +29,12 @@ public class PseudoAnalysisResult implements AnalysisResult {
     private AnalysisSummary summary;
     private PseudoPathwaySummary[] pathways;
     private List<ResourceSummary> resources;
-
     private ExpressionSummary expression;
+    private final AnalysisType type;
 
-    private PseudoAnalysisResult(String token) {
+    private PseudoAnalysisResult(String token, AnalysisType type) {
         summary = new PseudoAnalysisSummary(token);
+        this.type = type;
     }
 
     /**
@@ -42,7 +43,7 @@ public class PseudoAnalysisResult implements AnalysisResult {
      *        each dataset analysis input
      */
     public PseudoAnalysisResult(List<GseaAnalysisResult> results, String token) {
-        this(token);
+        this(token, AnalysisType.OVERREPRESENTATION);
         resources = createResourceSummary();
         pathways = results.stream()
                           .map(result -> new PseudoPathwaySummary(result))
@@ -60,7 +61,7 @@ public class PseudoAnalysisResult implements AnalysisResult {
      *        each dataset analysis input
      */
     public PseudoAnalysisResult(Comparison comparison, ComparisonPartition<?> partition, String token) {
-        this(token);
+        this(token, AnalysisType.DATASET_COMPARISON);
         resources = createResourceSummary();
         pathways = partition.createPseudoPathwaySummary();
         expression = createExpressionSummary(comparison); 
@@ -135,7 +136,7 @@ public class PseudoAnalysisResult implements AnalysisResult {
             
             @Override
             public AnalysisType getAnalysisType() {
-                return AnalysisType.OVERREPRESENTATION;
+                return type;
             }
         };
     }

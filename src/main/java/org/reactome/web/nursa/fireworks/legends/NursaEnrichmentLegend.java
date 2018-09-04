@@ -1,5 +1,6 @@
 package org.reactome.web.nursa.fireworks.legends;
 
+import org.reactome.web.analysis.client.model.AnalysisType;
 import org.reactome.web.fireworks.events.AnalysisPerformedEvent;
 import org.reactome.web.fireworks.legends.EnrichmentLegend;
 import org.reactome.web.nursa.analysis.client.model.ComparisonExpressionSummary;
@@ -64,7 +65,7 @@ public class NursaEnrichmentLegend extends EnrichmentLegend {
     
     @Override
     public void onAnalysisPerformed(AnalysisPerformedEvent e) {
-        if (e.getExpressionSummary() instanceof ComparisonExpressionSummary) {
+        if (e.getAnalysisType() == AnalysisType.DATASET_COMPARISON) {
             this.discrete.setVisible(true);
             this.gradient.setVisible(false);
             for (Label label: gradientLabels) {
