@@ -6,10 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.reactome.web.nursa.client.details.tabs.dataset.NursaWidgetHelper;
-import org.reactome.web.nursa.model.Comparison;
-
 import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
 
