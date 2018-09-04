@@ -14,6 +14,7 @@ import org.reactome.web.analysis.client.AnalysisHandler;
 import org.reactome.web.analysis.client.model.AnalysisError;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.PathwaySummary;
+import org.reactome.web.pwp.client.common.events.AnalysisResetEvent;
 import org.reactome.web.pwp.client.common.utils.Console;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaClient;
 import com.google.gwt.core.shared.GWT;
@@ -95,7 +96,7 @@ public abstract class AnalysisPanel extends Composite {
     Button configBtn;
 
     /**
-     * The config slider container.
+     * The config container.
      */
     @UiField()
     Widget configPanel;
@@ -132,7 +133,7 @@ public abstract class AnalysisPanel extends Composite {
         this.eventBus = eventBus;
         initWidget(uiBinder.createAndBindUi(this));
         // The configuration control panel.
-        buildConfigPanel();
+        buildConfigView();
     }
 
     abstract protected void gseaAnalyse();
@@ -222,7 +223,7 @@ public abstract class AnalysisPanel extends Composite {
         );
     }
 
-    private void buildConfigPanel() {
+    private void buildConfigView() {
         content.addStyleName(RESOURCES.getCSS().main());
         // Note: it would be preferable to set the style for the
         // widgets below in AnalysisPanel.ui.xml, e.g.:
@@ -306,6 +307,8 @@ public abstract class AnalysisPanel extends Composite {
                 launchBtn.setVisible(false);
                 runningLbl.setVisible(true);
                 analysisPanel.clear();
+                AnalysisResetEvent resetEvent = new AnalysisResetEvent();
+                eventBus.fireEventFromSource(event, resetEvent);
                 if (gseaBtn.getValue()) {
                     gseaAnalyse();
                 } else {
