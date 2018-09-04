@@ -34,7 +34,7 @@ abstract public class DataSetSections implements Iterable<Widget> {
             sections = new ArrayList<Widget>();
             overview = createOverviewSection();
             sections.add(overview);
-            dataPoints = createGenesSection();
+            dataPoints = createDataPointsSection();
             sections.add(dataPoints);
             analysis = createAnalysisSection(eventBus);
             sections.add(analysis);
@@ -45,7 +45,7 @@ abstract public class DataSetSections implements Iterable<Widget> {
 
     abstract protected Widget createOverviewPanel();
 
-    abstract protected Widget createGenesPanel();
+    abstract protected Widget createDataPointsPanel();
     
     abstract protected Widget createAnalysisPanel(EventBus eventBus);
 
@@ -59,8 +59,8 @@ abstract public class DataSetSections implements Iterable<Widget> {
         return createDataSetSection(overviewTitle(), panel);
     }
 
-    private Widget createGenesSection() {
-        Widget panel = createGenesPanel();
+    private Widget createDataPointsSection() {
+        Widget panel = createDataPointsPanel();
         return createDataSetSection(GENES_TITLE, panel);
     }
 
