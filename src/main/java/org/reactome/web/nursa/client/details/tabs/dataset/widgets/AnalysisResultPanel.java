@@ -1,6 +1,5 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
-import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwayHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwaySelectedEvent;
 import org.reactome.web.pwp.client.details.tabs.analysis.widgets.results.events.PathwayHoveredResetEvent;
 
@@ -39,13 +38,16 @@ public class AnalysisResultPanel<T, K> extends VerticalPanel {
 
             @Override
             public void onRowHover(RowHoverEvent event) {
-                // The row in the current page, subtracting the header row.
-                int pageRow = event.getHoveringRow().getRowIndex() - 1;
-                K key = AnalysisResultPanel.this.getKey(pageRow);
-                // Relay the hover event up to the tab presenter.
-                NursaPathwayHoveredEvent<K> pathwayEvent =
-                        AnalysisResultPanel.this.table.createHoveredEvent(key);
-                eventBus.fireEventFromSource(pathwayEvent, this);
+                // TODO - should this emulate base Reactome
+                // AnalysisTabPresenter.onPathwayHovered?
+                // That would be a challenge to get right.
+//                // The row in the current page, subtracting the header row.
+//                int pageRow = event.getHoveringRow().getRowIndex() - 1;
+//                K key = AnalysisResultPanel.this.getKey(pageRow);
+//                // Relay the hover event up to the tab presenter.
+//                NursaPathwayHoveredEvent<K> pathwayEvent =
+//                        AnalysisResultPanel.this.table.createHoveredEvent(key);
+//                eventBus.fireEventFromSource(pathwayEvent, this);
             }
         };
         table.addRowHoverHandler(hoverHandler);
