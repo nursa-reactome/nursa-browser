@@ -24,7 +24,7 @@ public class ExperimentSections extends DataSetSections {
     }
 
     @Override
-    protected Widget createGenesPanel() {
+    protected Widget createDataPointsPanel() {
         ExperimentDataPointsPanel panel = new ExperimentDataPointsPanel(experiment);
         return panel.asWidget();
     }

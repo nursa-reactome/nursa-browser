@@ -42,7 +42,7 @@ public class ComparisonSections extends DataSetSections {
     }
 
     @Override
-    protected Widget createGenesPanel() {
+    protected Widget createDataPointsPanel() {
         DataPanel<ComparisonDataPoint> panel = new ComparisonDataPointsPanel(comparison);
         return panel.asWidget();
     }
