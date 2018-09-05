@@ -33,7 +33,6 @@ import org.reactome.web.diagram.common.PwpButton;
 import org.reactome.web.pwp.client.common.CommonImages;
 import org.reactome.web.nursa.client.search.DataSetSearcher.DataSetAdapter;
 import org.reactome.web.widgets.search.Searcher;
-import org.reactome.web.widgets.search.Suggestion;
 import org.reactome.web.widgets.search.SuggestionComboBox;
 
 /**
@@ -240,6 +239,7 @@ public class SearchDialog extends DialogBox implements ClickHandler {
     }
 
     public interface Resources extends ClientBundle {
+ 
         @Source(Css.CSS)
         Css getCSS();
 
@@ -254,9 +254,11 @@ public class SearchDialog extends DialogBox implements ClickHandler {
 
         @Source("images/close_clicked.png")
         ImageResource closeClicked();
+
     }
 
     public interface Css extends CssResource {
+
         /**
          * The path to the default CSS styles used by this resource.
          */
@@ -275,5 +277,7 @@ public class SearchDialog extends DialogBox implements ClickHandler {
         String combo();
 
         String close();
+
     }
+
 }
