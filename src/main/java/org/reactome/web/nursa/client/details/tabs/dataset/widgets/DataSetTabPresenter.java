@@ -63,6 +63,7 @@ public class DataSetTabPresenter extends AbstractPresenter
         dataSetEventBus.addHandler(PathwayHoveredResetEvent.TYPE, this);
         dataSetEventBus.addHandler(BinomialSelectedEvent.TYPE, this);
         dataSetEventBus.addHandler(GseaSelectedEvent.TYPE, this);
+        dataSetEventBus.addHandler(AnalysisResetEvent.TYPE, this);
         this.display = display;
         this.display.setPresenter(this);
     }
@@ -102,6 +103,11 @@ public class DataSetTabPresenter extends AbstractPresenter
 
     @Override
     public void onAnalysisCompleted(AnalysisResult result) {
+        // Work around the bug described in onAnalysisReset()
+        // by firing the reset event here to clear the previous
+        // overlay, if any.
+        AnalysisResetEvent resetEvent = new AnalysisResetEvent();
+        getDetailsEventBus().fireEventFromSource(resetEvent, this);
         // Relay the analysis result to the StateManager,
         // which will in turn apply the analysis overlay.
         AnalysisCompletedEvent event = new AnalysisCompletedEvent(result);
@@ -208,6 +214,16 @@ public class DataSetTabPresenter extends AbstractPresenter
         List<Experiment> exps = comparison.experiments();
         String expNames = exps.stream().map(Experiment::getName).collect(Collectors.joining());
         return dataset.getName() + expNames;
+    }
+
+    @Override
+    public void onAnalysisReset() {
+        // NOTE: Even though it is verified that the reset event fires
+        // on the dataset event bus, this handler is never called.
+        // The work-around is to fire the event when analysis completes.
+        // Forward to the rest of the Reactome GUI.
+        AnalysisResetEvent resetEvent = new AnalysisResetEvent();
+        getDetailsEventBus().fireEventFromSource(resetEvent, this);
     }
 
 }
