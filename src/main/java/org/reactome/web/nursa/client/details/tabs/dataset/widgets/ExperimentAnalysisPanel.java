@@ -11,7 +11,7 @@ import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 
 import com.google.gwt.event.shared.EventBus;
 
-public class ExperimentAnalysisPanel extends AnalysisPanel {
+public class ExperimentAnalysisPanel extends AnalysisDisplay {
 
     private Experiment experiment;
 
