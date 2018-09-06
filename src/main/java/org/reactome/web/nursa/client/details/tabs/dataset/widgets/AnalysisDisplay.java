@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.reactome.gsea.model.GseaAnalysisResult;
@@ -17,9 +19,12 @@ import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.pwp.client.common.events.AnalysisResetEvent;
 import org.reactome.web.pwp.client.common.utils.Console;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaClient;
+
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventBus;
@@ -29,9 +34,11 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DoubleBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.RadioButton;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -39,106 +46,85 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public abstract class AnalysisPanel extends Composite {
+public abstract class AnalysisDisplay extends Composite {
+
+    private static final String BINOMIAL_CONFIG = "Binomial Analysis Configuration";
     
-    private static final double DEF_BINOMIAL_CUTOFF = .05;
+    private static final String GSEA_CONFIG = "GSEA Configuration";
 
     /**
      * The UiBinder interface.
      */
-    interface Binder extends UiBinder<Widget, AnalysisPanel> {
+    interface Binder extends UiBinder<Widget, AnalysisDisplay> {
     }
     
     static final Binder uiBinder = GWT.create(Binder.class);
 
     final String GENE_NAMES_HEADER = "#Gene names";
     
-    /**
-     * The panel content.
-     */
+    /** The main panel. */
     @UiField()
     Panel content;
     
-    /**
-     * The binomial analysis radio button.
-     */
+    /** The binomial analysis radio button. */
     @UiField()
     RadioButton binomialBtn;
     
-    /**
-     * The GSEA analysis radio button.
-     */
+    /** The GSEA analysis radio button. */
     @UiField()
     RadioButton gseaBtn;
 
-    /**
-     * The config slider button.
-     */
+    /** The launch display area. */
     @UiField()
     Widget launchPad;
 
-    /**
-     * The config slider button.
-     */
+    /** The launch button. */
     @UiField()
     Button launchBtn;
 
-    /**
-     * The analysis running label.
-     */
+    /** The analysis running label. */
     @UiField()
     Label runningLbl;
 
-    /**
-     * The configuration button.
-     */
+    /** The configuration button. */
     @UiField()
     Button configBtn;
 
-    /**
-     * The config container.
-     */
+    /** The configuration settings text display. */
     @UiField()
-    Widget configPanel;
+    Label settingsLbl;
 
-    /**
-     * The binomial config container.
-     */
+    /** The analysis result display. */
     @UiField()
-    Widget binomialConfig;
-
-    /**
-     * The binomial p-value cut-off.
-     */
-    @UiField()
-    DoubleBox binomialCutoff;
-
-    /**
-     * The GSEA config slider container.
-     */
-    @UiField()
-    SimplePanel gseaConfig;
-
-    /**
-     * The analysis result display.
-     */
-    @UiField()
-    protected SimplePanel analysisPanel;
-
-    private GseaConfigSlider gseaConfigSlider;
+    protected SimplePanel resultsPanel;
+    
+    private BinomialConfigDisplay binomialConfig;
+    
+    private GseaConfigPanel gseaConfig;
 
     protected EventBus eventBus;
 
-    public AnalysisPanel(EventBus eventBus) {
+    public AnalysisDisplay(EventBus eventBus) {
         this.eventBus = eventBus;
+        binomialConfig = new BinomialConfigDisplay();
+        gseaConfig = new GseaConfigPanel();
         initWidget(uiBinder.createAndBindUi(this));
-        // The configuration control panel.
-        buildConfigView();
+        buildDisplay();
     }
 
     abstract protected void gseaAnalyse();
 
     abstract protected void binomialAnalyse();
+
+    protected void showBinomialResult(List<PathwaySummary> results) {
+        Widget panel = createBinomialPanel(results);
+        resultsPanel.setWidget(panel);
+    }
+
+    protected void showGseaResult(List<GseaAnalysisResult> results) {
+        Widget panel = createGseaPanel(results);
+        resultsPanel.setWidget(panel);
+    }
 
     protected void gseaAnalyse(Experiment experiment, Consumer<List<GseaAnalysisResult>> consumer) {
         GseaClient client = GWT.create(GseaClient.class);
@@ -147,10 +133,10 @@ public abstract class AnalysisPanel extends Composite {
         List<List<String>> rankedList =
                 experiment.getDataPoints()
                            .stream()
-                           .map(AnalysisPanel::pullRank)
+                           .map(AnalysisDisplay::pullRank)
                            .collect(Collectors.toList());
         // Obtain the dataset size parameters.
-        int[] dataSetBounds = gseaConfigSlider.getValues();
+        int[] dataSetBounds = gseaConfig.getDataSetSizeBounds();
         Integer dataSetSizeMinOpt = new Integer(dataSetBounds[0]);
         Integer dataSetSizeMaxOpt = new Integer(dataSetBounds[1]);
         // Call the GSEA REST service.
@@ -175,7 +161,7 @@ public abstract class AnalysisPanel extends Composite {
     protected void binomialAnalyse(Experiment experiment, Consumer<AnalysisResult> consumer) {
         // The input is a table of gene symbol lines.
         // The input data points are filtered by the cut-off value.
-        double cutoff = binomialCutoff.getValue();
+        double cutoff = binomialConfig.getPValueCutoff();
         List<String> rankedList =
                 experiment.getDataPoints()
                           .stream()
@@ -223,11 +209,11 @@ public abstract class AnalysisPanel extends Composite {
         );
     }
 
-    private void buildConfigView() {
+    private void buildDisplay() {
         content.addStyleName(RESOURCES.getCSS().main());
         // Note: it would be preferable to set the style for the
-        // widgets below in AnalysisPanel.ui.xml, e.g.:
-        //     <ui:style src="AnalysisPanel.css" />
+        // widgets below in AnalysisDisplay.ui.xml, e.g.:
+        //     <ui:style src="AnalysisDisplay.css" />
         //     ...
         //     <g:Button ui:field='sliderBtn' addStyleNames="{style.sliderBtn}">
         // GWT and SO snippets suggest this is feasible and recommended, e.g.
@@ -243,28 +229,15 @@ public abstract class AnalysisPanel extends Composite {
         gseaBtn.addStyleName(RESOURCES.getCSS().gseaBtn());
         runningLbl.addStyleName(RESOURCES.getCSS().running());
         configBtn.addStyleName(RESOURCES.getCSS().configBtn());
-        configPanel.addStyleName(RESOURCES.getCSS().configPanel());
-        binomialCutoff.addStyleName(RESOURCES.getCSS().binomialCutoff());
-        
-        // Initialize the binomial cut-off.
-        binomialCutoff.setValue(DEF_BINOMIAL_CUTOFF);
-        
-        // Make the slider.
-        gseaConfigSlider = new GseaConfigSlider();
-        // The GSEA config style must be defined in the global
-        // style.css file since it uses the third-party slider
-        // widget styles.
-        gseaConfig.addStyleName("gsea-config");
-        gseaConfig.getElement().appendChild(gseaConfigSlider.getElement());
-        // The config panel is displayed when the config button
-        // is clicked.
-        configPanel.setVisible(false);
+        settingsLbl.addStyleName(RESOURCES.getCSS().settingsLbl());
+         
         // The config button toggles the config panel display.
         configBtn.addClickHandler(new ClickHandler() {
 
             @Override
             public void onClick(ClickEvent event) {
-                configPanel.setVisible(!configPanel.isVisible());
+                // Open the configuration dialog.
+                showConfig();
             }
 
         });
@@ -277,24 +250,22 @@ public abstract class AnalysisPanel extends Composite {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 if (event.getValue()) {
-                    binomialConfig.setVisible(true);
-                    gseaConfig.setVisible(false);
+                    settingsLbl.setText(formatBinomialSettings());
                 }
             }
 
         });
         
-        // The default config is binomial.
+        // The default analysis is binomial.
         binomialBtn.setValue(true);
-        gseaConfig.setVisible(false);
+        settingsLbl.setText(formatBinomialSettings());
         
         gseaBtn.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 if (event.getValue()) {
-                    gseaConfig.setVisible(true);
-                    binomialConfig.setVisible(false);
+                    settingsLbl.setText(formatGseaSettings());
                 }
             }
 
@@ -306,7 +277,7 @@ public abstract class AnalysisPanel extends Composite {
             public void onClick(ClickEvent event) {
                 launchBtn.setVisible(false);
                 runningLbl.setVisible(true);
-                analysisPanel.clear();
+                resultsPanel.clear();
                 AnalysisResetEvent resetEvent = new AnalysisResetEvent();
                 eventBus.fireEventFromSource(event, resetEvent);
                 if (gseaBtn.getValue()) {
@@ -318,58 +289,95 @@ public abstract class AnalysisPanel extends Composite {
         });
     }
 
-    protected void showBinomialResult(List<PathwaySummary> results) {
-        Widget panel = createBinomialPanel(results);
-        analysisPanel.setWidget(panel);
+    private String formatBinomialSettings() {
+        return "p-value <= " + binomialConfig.getPValueCutoff();
     }
 
-    protected Widget createBinomialPanel(List<PathwaySummary> results) {
+    private String formatGseaSettings() {
+        int[] bounds = gseaConfig.getDataSetSizeBounds();
+        // Alas, GWT does not support String.format.
+        return Integer.toString(bounds[0]) +
+                " <= dataset size < " +
+                Integer.toString(bounds[1]);
+    }
+
+    private Widget createBinomialPanel(List<PathwaySummary> results) {
         BinomialExperimentTable table = new BinomialExperimentTable(results);
         AnalysisResultPanel<PathwaySummary, Long> panel =
                 new AnalysisResultPanel<PathwaySummary, Long>(table, eventBus);
         return panel;
     }
 
-    protected void showGseaResult(List<GseaAnalysisResult> results) {
-        Widget panel = createGseaPanel(results);
-        analysisPanel.setWidget(panel);
-    }
-
-    protected Widget createGseaPanel(List<GseaAnalysisResult> results) {
+    private Widget createGseaPanel(List<GseaAnalysisResult> results) {
         GseaExperimentTable table = new GseaExperimentTable(results);
         AnalysisResultPanel<GseaAnalysisResult, String> panel =
                 new AnalysisResultPanel<GseaAnalysisResult, String>(table, eventBus);
         return panel;
     }
 
-    public static Resources RESOURCES;
+    private void showConfig() {
+        DialogBox dialog = createConfigDialog();
+        dialog.show();
+    }
+
+    private DialogBox createConfigDialog() {
+        if (binomialBtn.getValue()) {
+            return createBinomialConfigDialog();
+        } else {
+            return createGseaConfigDialog();
+        }
+    }
+
+    private DialogBox createBinomialConfigDialog() {
+        AnalysisConfigDialog dialog =
+                new AnalysisConfigDialog(binomialConfig, BINOMIAL_CONFIG);
+        dialog.addCloseHandler(new CloseHandler<PopupPanel>() {
+
+            @Override
+            public void onClose(CloseEvent<PopupPanel> event) {
+                settingsLbl.setText(formatBinomialSettings());
+            }
+            
+        });
+        
+        return dialog;
+    }
+
+    private DialogBox createGseaConfigDialog() {
+        AnalysisConfigDialog dialog =
+                new AnalysisConfigDialog(gseaConfig, GSEA_CONFIG);
+        dialog.addCloseHandler(new CloseHandler<PopupPanel>() {
+
+            @Override
+            public void onClose(CloseEvent<PopupPanel> event) {
+                settingsLbl.setText(formatGseaSettings());
+            }
+            
+        });
+        
+        return dialog;
+    }
+
+    private static Resources RESOURCES;
 
     static {
         RESOURCES = GWT.create(Resources.class);
         RESOURCES.getCSS().ensureInjected();
     }
  
-    /**
-     * A ClientBundle of resources used by this widget.
-     */
+    /** A ClientBundle of resources used by this widget. */
     interface Resources extends ClientBundle {
  
-        /**
-         * The styles used in this widget.
-         */
+        /** The styles used in this widget. */
         @Source(Css.CSS)
         Css getCSS();
 
     }
 
-    /**
-     * Styles used by this widget.
-     */
+    /** Styles used by this widget. */
     interface Css extends CssResource {
  
-        /**
-         * The path to the default CSS styles used by this resource.
-         */
+        /** The path to the default CSS styles used by this resource. */
         String CSS = "AnalysisPanel.css";
 
         String main();
@@ -384,9 +392,7 @@ public abstract class AnalysisPanel extends Composite {
 
         String configBtn();
 
-        String configPanel();
-
-        String binomialCutoff();
+        String settingsLbl();
 
     }
 }

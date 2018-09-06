@@ -15,7 +15,7 @@ import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ComparisonAnalysisPanel extends AnalysisPanel {
+public class ComparisonAnalysisPanel extends AnalysisDisplay {
 
     private Comparison comparison;
 
@@ -82,12 +82,12 @@ public class ComparisonAnalysisPanel extends AnalysisPanel {
 
     private void showBinomialResult(ComparisonPartition<PathwaySummary> partition) {
         Widget panel = new BinomialComparisonPanel(comparison, partition, eventBus);
-        analysisPanel.setWidget(panel);
+        resultsPanel.setWidget(panel);
     }
 
     private void showGseaResult(GseaComparisonPartition partition) {
         Widget panel = new GseaComparisonPanel(comparison, partition, eventBus);
-        analysisPanel.setWidget(panel);
+        resultsPanel.setWidget(panel);
     }
 
 }
