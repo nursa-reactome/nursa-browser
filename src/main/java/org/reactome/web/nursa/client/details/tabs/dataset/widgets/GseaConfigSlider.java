@@ -13,4 +13,5 @@ public class GseaConfigSlider extends MinMaxSlider {
     public GseaConfigSlider() {
         super(BOUNDS, START);
     }
+
 }

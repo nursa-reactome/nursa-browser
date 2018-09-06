@@ -31,14 +31,7 @@
 }
 
 .gsea-config .min-max-slider-table {
-    /* Scooch the table up into the title area. This is ok,
-       since the title is a small div with lots of space to
-       the right, whereas the slider input fields appear
-       above the slider control, which looks best aligned
-       with the buttons to the right under the section title.
-     */
     position: relative;
-    top: -2em;
     margin: 0 0 6px 6px;
 }
 

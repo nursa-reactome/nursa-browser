@@ -3,7 +3,7 @@
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c="urn:import:com.google.gwt.user.cellview.client">
 
 	<g:VerticalPanel ui:field='content'>
-		<g:HorizontalPanel ui:field='analysisControlPanel'>
+		<g:HorizontalPanel>
 			<!-- The radio button group. -->
 			<g:HorizontalPanel>
 				<g:RadioButton ui:field='binomialBtn' name="technique">Binomial</g:RadioButton>
@@ -20,26 +20,16 @@
                 <g:Label ui:field='runningLbl'>Running...</g:Label>
             </g:VerticalPanel>
 
-			<!-- The configuration show/hide button. -->
+			<!-- The configuration modal pop-up button. -->
 			<g:Button ui:field='configBtn'>
 				<img src="static/images/gear.png" height="16" width="16" />
 			</g:Button>
 
-            <!-- Stack the mutually exclusive binomial and 
-              GSEA config in a vertical panel for styling
-              purposes. They are not shown together. -->
-            <g:VerticalPanel ui:field='configPanel'>
-                <!-- The binomial configuration panel. -->
-                <g:HorizontalPanel ui:field='binomialConfig'>
-                    <g:Label>P-Value Cutoff:</g:Label>
-                    <g:DoubleBox ui:field='binomialCutoff'/>
-                </g:HorizontalPanel>
-                <!-- The GSEA configuration panel. -->
-                <g:SimplePanel ui:field='gseaConfig'/>
-            </g:VerticalPanel>
-		</g:HorizontalPanel>
+            <!-- The config settings text display. -->
+            <g:Label ui:field='settingsLbl' />
+ 		</g:HorizontalPanel>
 
 		<!-- The analysis results display. -->
-		<g:SimplePanel ui:field='analysisPanel' />
+		<g:SimplePanel ui:field='resultsPanel' />
 	</g:VerticalPanel>
 </ui:UiBinder>
