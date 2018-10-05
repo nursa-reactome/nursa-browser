@@ -8,13 +8,13 @@ import com.google.gwt.event.shared.GwtEvent;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class ExperimentSelectedEvent extends GwtEvent<ExperimentSelectedHandler> {
-    public static Type<ExperimentSelectedHandler> TYPE = new Type<>();
+public class ExperimentLoadedEvent extends GwtEvent<ExperimentLoadedHandler> {
+    public static Type<ExperimentLoadedHandler> TYPE = new Type<>();
     
     private DataSet dataset;
     private Experiment experiment;
 
-    public ExperimentSelectedEvent(DataSet dataset, Experiment experiment) {
+    public ExperimentLoadedEvent(DataSet dataset, Experiment experiment) {
         this.dataset = dataset;
         this.experiment = experiment;
     }
@@ -28,12 +28,12 @@ public class ExperimentSelectedEvent extends GwtEvent<ExperimentSelectedHandler>
     }
 
     @Override
-    public Type<ExperimentSelectedHandler> getAssociatedType() {
+    public Type<ExperimentLoadedHandler> getAssociatedType() {
         return TYPE;
     }
 
     @Override
-    public void dispatch(ExperimentSelectedHandler handler) {
-        handler.onExperimentSelected(this);
+    public void dispatch(ExperimentLoadedHandler handler) {
+        handler.onExperimentLoaded(this);
     }
 }

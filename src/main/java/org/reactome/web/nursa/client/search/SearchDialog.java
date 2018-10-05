@@ -27,6 +27,7 @@ import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
 import java.util.function.Consumer;
 
+import org.reactome.nursa.model.DataPoint;
 import org.reactome.nursa.model.DataSet;
 import org.reactome.nursa.model.Experiment;
 import org.reactome.web.diagram.common.PwpButton;
@@ -183,26 +184,38 @@ public class SearchDialog extends DialogBox implements ClickHandler {
             public void accept(DataSet dataset) {
                 // Select an experiment, if necessary.
                 List<Experiment> experiments = dataset.getExperiments();
+                container.remove(loadingMsg);
                 if (experiments.size() == 1) {
-                    Experiment experiment = experiments.get(0);
-                    ExperimentSelectedEvent selEvent =
-                            new ExperimentSelectedEvent(dataset, experiment);
-                    eventBus.fireEventFromSource(selEvent, SearchDialog.this);
-                    hide();
+                    loadDataPoints(1, experiments.get(0), container);
                 } else {
-                    container.remove(loadingMsg);
-                    container.add(new ExperimentSelector(experiments, new Consumer<Experiment>() {
+                    container.add(new ExperimentSelector(experiments, new Consumer<Integer>() {
 
                         @Override
-                        public void accept(Experiment experiment) {
-                            ExperimentSelectedEvent selEvent =
-                                    new ExperimentSelectedEvent(dataset, experiment);
-                            eventBus.fireEventFromSource(selEvent, SearchDialog.this);
-                            SearchDialog.this.hide();
+                        public void accept(Integer expNdx) {
+                            int expNbr = expNdx + 1;
+                            Experiment experiment = experiments.get(expNdx);
+                            loadDataPoints(expNbr, experiment, container);
                         }
                         
                     }));
                  }
+            }
+            
+        });
+    }
+    
+    protected void loadDataPoints(int expNbr, Experiment experiment, ComplexPanel container) {
+        HTML loadingMsg = new HTML("Loading the experiment data points...");
+        container.add(loadingMsg);
+        // Get the experiment data points.
+        DataPointsLoader.getDataPoints(dataset.getDoi(), expNbr, new Consumer<List<DataPoint>>() {
+
+            @Override
+            public void accept(List<DataPoint> dataPoints) {
+                experiment.setDataPoints(dataPoints);
+                ExperimentLoadedEvent event = new ExperimentLoadedEvent(dataset, experiment);
+                eventBus.fireEventFromSource(event, SearchDialog.this);
+                SearchDialog.this.hide();
             }
             
         });

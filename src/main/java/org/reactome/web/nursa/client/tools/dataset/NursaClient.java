@@ -1,13 +1,17 @@
 package org.reactome.web.nursa.client.tools.dataset;
 
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.fusesource.restygwt.client.MethodCallback;
 import org.fusesource.restygwt.client.RestService;
+import org.reactome.nursa.model.DataPoint;
 import org.reactome.nursa.model.DataSet;
 import org.reactome.nursa.model.DataSetSearchResult;
+import org.reactome.nursa.model.Experiment;
 
 
 @Path("/NursaService")
@@ -17,7 +21,14 @@ import org.reactome.nursa.model.DataSetSearchResult;
 public interface NursaClient extends RestService {
     @GET
     @Path("/dataset")
-    public void getDataset(@QueryParam("doi") String doi, MethodCallback<DataSet> dataset);
+    public void getDataset(@QueryParam("doi") String doi,
+                           MethodCallback<DataSet> dataset);
+
+    @GET
+    @Path("/datapoints")
+    public void getDataPoints(@QueryParam("doi") String doi,
+                           @QueryParam("experimentNumber") int expNbr,
+                           MethodCallback<List<DataPoint>> dataset);
 
     @GET
     @Path("/search")

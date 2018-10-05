@@ -16,7 +16,7 @@ import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaSelectedEvent;
-import org.reactome.web.nursa.client.search.ExperimentSelectedEvent;
+import org.reactome.web.nursa.client.search.ExperimentLoadedEvent;
 import org.reactome.web.pwp.client.common.Selection;
 import org.reactome.web.pwp.client.common.events.AnalysisCompletedEvent;
 import org.reactome.web.pwp.client.common.events.AnalysisResetEvent;
@@ -54,7 +54,7 @@ public class DataSetTabPresenter extends AbstractPresenter
     public DataSetTabPresenter(EventBus detailsEventBus, DataSetTab.Display display,
             EventBus dataSetEventBus) {
         super(detailsEventBus);
-        dataSetEventBus.addHandler(ExperimentSelectedEvent.TYPE, this);
+        dataSetEventBus.addHandler(ExperimentLoadedEvent.TYPE, this);
         dataSetEventBus.addHandler(BinomialCompletedEvent.TYPE, this);
         dataSetEventBus.addHandler(GseaCompletedEvent.TYPE, this);
         dataSetEventBus.addHandler(ComparisonAnalysisCompletedEvent.TYPE, this);
@@ -88,9 +88,9 @@ public class DataSetTabPresenter extends AbstractPresenter
     }
 
     @Override
-    public void onExperimentSelected(ExperimentSelectedEvent expSelEvent) {
-        this.dataset = expSelEvent.getDataSet();
-        this.experiment = expSelEvent.getExperiment();
+    public void onExperimentLoaded(ExperimentLoadedEvent event) {
+        this.dataset = event.getDataSet();
+        this.experiment = event.getExperiment();
         // If there is a current analysis, then clear it.
         eventBus.fireEventFromSource(new AnalysisResetEvent(), this);
         // Display the experiment.

@@ -5,8 +5,8 @@ import com.google.gwt.event.shared.EventHandler;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public interface ExperimentSelectedHandler extends EventHandler {
+public interface ExperimentLoadedHandler extends EventHandler {
 
-    void onExperimentSelected(ExperimentSelectedEvent expSelectedEvent);
+    void onExperimentLoaded(ExperimentLoadedEvent event);
 
 }

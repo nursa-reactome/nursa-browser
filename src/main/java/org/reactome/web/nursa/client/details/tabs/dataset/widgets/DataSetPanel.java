@@ -11,8 +11,8 @@ import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedHandl
 import org.reactome.web.nursa.model.Comparison;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedHandler;
-import org.reactome.web.nursa.client.search.ExperimentSelectedEvent;
-import org.reactome.web.nursa.client.search.ExperimentSelectedHandler;
+import org.reactome.web.nursa.client.search.ExperimentLoadedEvent;
+import org.reactome.web.nursa.client.search.ExperimentLoadedHandler;
 import org.reactome.web.nursa.client.search.SearchDialog;
 
 import com.google.gwt.core.client.Scheduler;
@@ -42,7 +42,7 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Fred Loney <loneyf@ohsu.edu>
  */
 public class DataSetPanel extends DockLayoutPanel
-        implements BinomialCompletedHandler, GseaCompletedHandler, ExperimentSelectedHandler {
+        implements BinomialCompletedHandler, GseaCompletedHandler, ExperimentLoadedHandler {
 
     private static final String SEARCH_DIALOG_TITLE = "Comparison Search";
 
@@ -66,7 +66,7 @@ public class DataSetPanel extends DockLayoutPanel
         this.experiment = experiment;
         this.eventBus = eventBus;
         this.compareEventBus = new SimpleEventBus();
-        this.compareEventBus.addHandler(ExperimentSelectedEvent.TYPE, this);
+        this.compareEventBus.addHandler(ExperimentLoadedEvent.TYPE, this);
         eventBus.addHandler(GseaCompletedEvent.TYPE, this);
         eventBus.addHandler(BinomialCompletedEvent.TYPE, this);
         addStyleName(RESOURCES.getCSS().main());
@@ -104,10 +104,10 @@ public class DataSetPanel extends DockLayoutPanel
     }
 
     @Override
-    public void onExperimentSelected(ExperimentSelectedEvent expSelectedEvent) {
+    public void onExperimentLoaded(ExperimentLoadedEvent event) {
         // Handle the comparison experiment.
-        DataSet dataset = expSelectedEvent.getDataSet();
-        Experiment experiment = expSelectedEvent.getExperiment();
+        DataSet dataset = event.getDataSet();
+        Experiment experiment = event.getExperiment();
         contentPanel = getComparisonContent(dataset, experiment, eventBus);
         scrollPanel.clear();
         scrollPanel.add(contentPanel);

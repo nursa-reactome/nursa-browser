@@ -4,7 +4,7 @@ import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedHandl
 import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonAnalysisCompletedHandler;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedHandler;
 import org.reactome.web.nursa.client.details.tabs.dataset.PathwayLoader;
-import org.reactome.web.nursa.client.search.ExperimentSelectedHandler;
+import org.reactome.web.nursa.client.search.ExperimentLoadedHandler;
 import org.reactome.web.pwp.client.common.handlers.AnalysisResetHandler;
 import org.reactome.web.pwp.client.details.tabs.DetailsTab;
 import org.reactome.web.pwp.client.details.tabs.analysis.widgets.results.handlers.PathwayHoveredResetHandler;
@@ -16,7 +16,7 @@ import org.reactome.nursa.model.Experiment;
  */
 public interface DataSetTab {
 
-    interface Presenter extends DetailsTab.Presenter, ExperimentSelectedHandler,
+    interface Presenter extends DetailsTab.Presenter, ExperimentLoadedHandler,
     GseaCompletedHandler, BinomialCompletedHandler, ComparisonAnalysisCompletedHandler,
     PathwayLoader, PathwayHoveredResetHandler, AnalysisResetHandler {
     }

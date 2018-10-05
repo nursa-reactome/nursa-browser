@@ -23,9 +23,7 @@ public class ExperimentSelector extends VerticalPanel {
 
     private static final int MAX_EXP_ITEMS = 8;
     
-    private Experiment experiment;
-
-    public ExperimentSelector(List<Experiment> experiments, Consumer<Experiment> consumer) {
+    public ExperimentSelector(List<Experiment> experiments, Consumer<Integer> consumer) {
         addStyleName(RESOURCES.getCSS().main());
         
         // The list box title.
@@ -46,8 +44,8 @@ public class ExperimentSelector extends VerticalPanel {
 
             @Override
             public void onDoubleClick(DoubleClickEvent event) {
-                experiment = experiments.get(lb.getSelectedIndex());
-                consumer.accept(experiment);
+                int expNbr = lb.getSelectedIndex() + 1;
+                consumer.accept(expNbr);
             }
         
         });
@@ -60,8 +58,7 @@ public class ExperimentSelector extends VerticalPanel {
             
             @Override
             public void onClick(ClickEvent event) {
-                experiment = experiments.get(lb.getSelectedIndex());
-                consumer.accept(experiment);
+                consumer.accept(lb.getSelectedIndex());
             }
 
         });
@@ -71,10 +68,6 @@ public class ExperimentSelector extends VerticalPanel {
         bottom.addStyleName(RESOURCES.getCSS().bottom());
         bottom.add(accept);
         add(bottom);
-    }
-    
-    public Experiment getSelectedExperiment() {
-        return this.experiment;
     }
 
     public static Resources RESOURCES;
