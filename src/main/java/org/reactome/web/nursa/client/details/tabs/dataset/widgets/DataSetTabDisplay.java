@@ -8,8 +8,7 @@ import org.reactome.web.pwp.client.common.CommonImages;
 import org.reactome.web.pwp.client.details.tabs.DetailsTabTitle;
 import org.reactome.web.pwp.client.details.tabs.DetailsTabType;
 import org.reactome.web.nursa.client.details.tabs.dataset.widgets.DataSetPanel;
-import org.reactome.nursa.model.DataSet;
-import org.reactome.nursa.model.Experiment;
+import org.reactome.web.nursa.client.search.DataPointsLoadedEvent;
 
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
@@ -48,9 +47,9 @@ public class DataSetTabDisplay extends ResizeComposite implements DataSetTab.Dis
     }
 
     @Override
-    public void showDetails(DataSet dataset, Experiment experiment) {
-        setTitle(dataset.getDoi());
-        this.content = new DataSetPanel(dataset, experiment, eventBus);
+    public void showDetails(DataPointsLoadedEvent event) {
+        setTitle(event.getDataSet().getDoi());
+        this.content = new DataSetPanel(event, eventBus);
         this.container.clear();
         this.container.add(this.content);
     }
