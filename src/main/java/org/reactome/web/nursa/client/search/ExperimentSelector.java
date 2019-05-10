@@ -44,8 +44,8 @@ public class ExperimentSelector extends VerticalPanel {
 
             @Override
             public void onDoubleClick(DoubleClickEvent event) {
-                int expNbr = lb.getSelectedIndex() + 1;
-                consumer.accept(expNbr);
+                int expNdx = lb.getSelectedIndex();
+                consumer.accept(expNdx);
             }
         
         });
