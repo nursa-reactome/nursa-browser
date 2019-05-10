@@ -7,25 +7,26 @@ import java.util.function.Consumer;
 import org.fusesource.restygwt.client.Method;
 import org.fusesource.restygwt.client.MethodCallback;
 import org.reactome.nursa.model.DataPoint;
+import org.reactome.nursa.model.DisplayableDataPoint;
 import org.reactome.web.nursa.client.tools.dataset.NursaClient;
 
 import com.google.gwt.core.shared.GWT;
 
 public class DataPointsLoader {
 
-    static public void getDataPoints(String doi, int expNbr, Consumer<List<DataPoint>> consumer) {
+    static public void getDataPoints(String doi, int expId, Consumer<List<DisplayableDataPoint>> consumer) {
         NursaClient client = GWT.create(NursaClient.class);
-        client.getDataPoints(doi, expNbr, new MethodCallback<List<DataPoint>>() {
+        client.getDataPoints(doi, expId, new MethodCallback<List<DisplayableDataPoint>>() {
             
             @Override
-            public void onSuccess(Method method, List<DataPoint> dataPoints) {
+            public void onSuccess(Method method, List<DisplayableDataPoint> dataPoints) {
                 consumer.accept(dataPoints);
             }
             
             @Override
             public void onFailure(Method method, Throwable exception) {
                 try {
-                    String message = "Dataset " + doi + " Experiment " + expNbr + " was not retrieved";
+                    String message = "Dataset " + doi + " Experiment " + expId + " was not retrieved";
                     throw new IOException(message, exception);
                 } catch (IOException e) {
                     // TODO - how are I/O errors handled in Reactome?

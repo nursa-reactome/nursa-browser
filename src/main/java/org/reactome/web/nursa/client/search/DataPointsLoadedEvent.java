@@ -1,22 +1,27 @@
 package org.reactome.web.nursa.client.search;
 
+import java.util.List;
+
 import org.reactome.nursa.model.DataSet;
 import org.reactome.nursa.model.Experiment;
+import org.reactome.nursa.model.DisplayableDataPoint;
 
 import com.google.gwt.event.shared.GwtEvent;
 
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class ExperimentLoadedEvent extends GwtEvent<ExperimentLoadedHandler> {
+public class DataPointsLoadedEvent extends GwtEvent<ExperimentLoadedHandler> {
     public static Type<ExperimentLoadedHandler> TYPE = new Type<>();
     
     private DataSet dataset;
     private Experiment experiment;
+    private List<DisplayableDataPoint> dataPoints;
 
-    public ExperimentLoadedEvent(DataSet dataset, Experiment experiment) {
+    public DataPointsLoadedEvent(DataSet dataset, Experiment experiment, List<DisplayableDataPoint> dataPoints) {
         this.dataset = dataset;
         this.experiment = experiment;
+        this.dataPoints = dataPoints;
     }
 
     public DataSet getDataSet() {
@@ -25,6 +30,10 @@ public class ExperimentLoadedEvent extends GwtEvent<ExperimentLoadedHandler> {
 
     public Experiment getExperiment() {
         return experiment;
+    }
+
+    public List<DisplayableDataPoint> getDataPoints() {
+        return dataPoints;
     }
 
     @Override
@@ -36,4 +45,5 @@ public class ExperimentLoadedEvent extends GwtEvent<ExperimentLoadedHandler> {
     public void dispatch(ExperimentLoadedHandler handler) {
         handler.onExperimentLoaded(this);
     }
+
 }
