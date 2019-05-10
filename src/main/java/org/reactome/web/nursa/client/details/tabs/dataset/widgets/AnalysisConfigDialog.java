@@ -92,8 +92,9 @@ public class AnalysisConfigDialog extends DialogBox implements ClickHandler {
         @Source(Css.CSS)
         Css getCSS();
 
-        @Source("images/minihelp_normal.png")
-        ImageResource info();
+        // TODO - enable mini-help hover text.
+        //@Source("images/minihelp_normal.png")
+        //ImageResource info();
 
         @Source("images/close_normal.png")
         ImageResource closeNormal();
@@ -118,7 +119,7 @@ public class AnalysisConfigDialog extends DialogBox implements ClickHandler {
 
         String main();
 
-        String info();
+        //String info();
 
         String header();
 

@@ -49,7 +49,7 @@ public class ComparisonSections extends DataSetSections {
 
     @Override
     protected Widget createAnalysisPanel(EventBus eventBus) {
-        return new ComparisonAnalysisPanel(comparison, eventBus);
+        return new ComparisonAnalysisDisplay(comparison, eventBus);
     }
 
 }
