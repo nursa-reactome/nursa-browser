@@ -1,0 +1,13 @@
+@external .gwt-Label
+
+.main {
+}
+
+.main .gwt-Label {
+    color: FloralWhite;
+}
+
+.main input {
+    margin-left: 6px;
+    width: 12em;
+}
