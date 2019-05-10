@@ -1,14 +1,15 @@
 package org.reactome.web.nursa.client.details.tabs.dataset;
 
+import java.util.List;
+
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.nursa.analysis.client.model.PseudoPathwaySummary;
 
 public class BinomialComparisonPartition extends ComparisonPartition<PathwaySummary> {
 
-    public BinomialComparisonPartition(
-            Iterable<PathwaySummary> result1,
-            Iterable<PathwaySummary> result2) {
-        super(result1, result2);
+    public BinomialComparisonPartition(List<PathwaySummary> result1, List<PathwaySummary> result2,
+            double filter) {
+        super(result1, result2, filter);
     }
 
     @Override

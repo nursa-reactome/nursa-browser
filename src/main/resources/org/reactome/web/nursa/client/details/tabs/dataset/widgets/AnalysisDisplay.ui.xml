@@ -27,6 +27,12 @@
 
             <!-- The config settings text display. -->
             <g:Label ui:field='settingsLbl' />
+            
+            <!-- The results filter. -->
+            <g:HorizontalPanel ui:field='filterPanel'>
+                <g:Label>Filter: FDR &le; </g:Label>
+                <g:DoubleBox ui:field='filterBox'/>
+            </g:HorizontalPanel>
  		</g:HorizontalPanel>
 
 		<!-- The analysis results display. -->

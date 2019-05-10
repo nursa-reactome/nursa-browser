@@ -17,11 +17,12 @@ public class NursaFireworksPresenter extends FireworksPresenter {
 
     @Override
     /**
-     * The state can be built from either a Reactome analysis
-     * or a GSEA analysis. If the former, then the superclass
-     * state changed handler filters for species, which in
-     * turn sets the viewer analysis result. If the latter,
-     * then the GSEA analysis result is mocked as a BinomialResult.
+     * The state can be built from a Reactome binomial analysis,
+     * a GSEA analysis or an analysis comparison. If it is a
+     * binomial analyisis, then the superclass state changed
+     * handler filters for species, which in turn sets the
+     * viewer analysis result. If GSEA or comparison, then
+     * the analysis result is mocked as a BinomialResult.
      * The NursaStateManager analysis completed handler checks
      * for a BinomialResult and makes a BinomialState rather than
      * a normal Reactome State. The BinomialState makes a

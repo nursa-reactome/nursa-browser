@@ -1,9 +1,13 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
 import org.fusesource.restygwt.client.Method;
@@ -11,6 +15,7 @@ import org.fusesource.restygwt.client.MethodCallback;
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.nursa.model.DataPoint;
 import org.reactome.nursa.model.Experiment;
+import org.reactome.nursa.model.DisplayableDataPoint;
 import org.reactome.web.analysis.client.AnalysisClient;
 import org.reactome.web.analysis.client.AnalysisHandler;
 import org.reactome.web.analysis.client.model.AnalysisError;
@@ -18,8 +23,8 @@ import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.pwp.client.common.events.AnalysisResetEvent;
 import org.reactome.web.pwp.client.common.utils.Console;
+import org.reactome.web.nursa.client.details.tabs.dataset.AnalysisResultFilterChangedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaClient;
-
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -36,6 +41,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DoubleBox;
+import com.google.gwt.user.client.ui.IntegerBox;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -47,6 +53,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author Fred Loney <loneyf@ohsu.edu>
  */
 public abstract class AnalysisDisplay extends Composite {
+
+    private static final double DEF_RESULT_FILTER = 0.05;
 
     private static final String BINOMIAL_CONFIG = "Binomial Analysis Configuration";
     
@@ -60,7 +68,7 @@ public abstract class AnalysisDisplay extends Composite {
     
     static final Binder uiBinder = GWT.create(Binder.class);
 
-    final String GENE_NAMES_HEADER = "#Gene names";
+    private static final String GENE_NAMES_HEADER = "#Gene names";
     
     /** The main panel. */
     @UiField()
@@ -94,22 +102,36 @@ public abstract class AnalysisDisplay extends Composite {
     @UiField()
     Label settingsLbl;
 
+    /** The results filter panel. */
+    @UiField()
+    Widget filterPanel;
+
+    /** The results filter entry box. */
+    @UiField()
+    DoubleBox filterBox;
+
     /** The analysis result display. */
     @UiField()
     protected SimplePanel resultsPanel;
     
     private BinomialConfigDisplay binomialConfig;
     
-    private GseaConfigPanel gseaConfig;
+    private GseaConfigDisplay gseaConfig;
 
     protected EventBus eventBus;
+
+    protected Double resultFilter = DEF_RESULT_FILTER;
 
     public AnalysisDisplay(EventBus eventBus) {
         this.eventBus = eventBus;
         binomialConfig = new BinomialConfigDisplay();
-        gseaConfig = new GseaConfigPanel();
+        gseaConfig = new GseaConfigDisplay();
         initWidget(uiBinder.createAndBindUi(this));
         buildDisplay();
+    }
+
+    public double getResultFilter() {
+        return resultFilter == null ? DEF_RESULT_FILTER : resultFilter;
     }
 
     abstract protected void gseaAnalyse();
@@ -126,26 +148,29 @@ public abstract class AnalysisDisplay extends Composite {
         resultsPanel.setWidget(panel);
     }
 
-    protected void gseaAnalyse(Experiment experiment, Consumer<List<GseaAnalysisResult>> consumer) {
+    protected void gseaAnalyse(List<DisplayableDataPoint> dataPoints, Consumer<List<GseaAnalysisResult>> consumer) {
         GseaClient client = GWT.create(GseaClient.class);
         // Transform the data points into the GSEA REST PUT
         // payload using the Java8 list comprehension idiom.
-        List<List<String>> rankedList =
-                experiment.getDataPoints()
-                           .stream()
-                           .map(AnalysisDisplay::pullRank)
-                           .collect(Collectors.toList());
-        // Obtain the dataset size parameters.
+        // Only Reactome genes are included.
+        List<List<String>> rankedList = filterDataPoints(dataPoints).stream()
+                .map(AnalysisDisplay::pullRank)
+                .collect(Collectors.toList());
+        // The permutations parameter.
+        Integer nperms = gseaConfig.getNperms();
+        // The dataset size parameters.
         int[] dataSetBounds = gseaConfig.getDataSetSizeBounds();
         Integer dataSetSizeMinOpt = new Integer(dataSetBounds[0]);
         Integer dataSetSizeMaxOpt = new Integer(dataSetBounds[1]);
-        // Call the GSEA REST service.
-        client.analyse(rankedList, dataSetSizeMinOpt, dataSetSizeMaxOpt, new MethodCallback<List<GseaAnalysisResult>>() {
+        
+        // The result handler.
+        MethodCallback<List<GseaAnalysisResult>> callback = new MethodCallback<List<GseaAnalysisResult>>() {
 
             @Override
             public void onSuccess(Method method, List<GseaAnalysisResult> result) {
                 runningLbl.setVisible(false);
                 launchBtn.setVisible(true);
+                filterPanel.setVisible(true);
                 consumer.accept(result);
             }
 
@@ -153,28 +178,83 @@ public abstract class AnalysisDisplay extends Composite {
             public void onFailure(Method method, Throwable exception) {
                 runningLbl.setVisible(false);
                 launchBtn.setVisible(true);
+                filterPanel.setVisible(false);
                 Console.error("GSEA execution unsuccessful: " + exception);
             }
-         });
+
+        };
+        
+        // Call the GSEA REST service.
+        client.analyse(rankedList, nperms, dataSetSizeMinOpt, dataSetSizeMaxOpt, callback);
     }
 
-    protected void binomialAnalyse(Experiment experiment, Consumer<AnalysisResult> consumer) {
+    private Collection<DisplayableDataPoint> filterDataPoints(List<DisplayableDataPoint> dataPoints) {
+        HashMap<String, List<DisplayableDataPoint>> geneDataPointsMap =
+                new HashMap<String, List<DisplayableDataPoint>>();
+        for (DisplayableDataPoint dataPoint: dataPoints) {
+            if (!dataPoint.isReactome()) {
+                continue;
+            }
+            String symbol = dataPoint.getSymbol();
+            List<DisplayableDataPoint> geneDataPoints = geneDataPointsMap.get(symbol);
+            if (geneDataPoints == null) {
+                geneDataPoints = new ArrayList<DisplayableDataPoint>();
+                geneDataPointsMap.put(symbol, geneDataPoints);
+            }
+            geneDataPoints.add(dataPoint);
+        }
+        
+        return geneDataPointsMap.values().stream()
+                .map(AnalysisDisplay::summarize)
+                .collect(Collectors.toList());
+    }
+    
+    private static DisplayableDataPoint summarize(List<DisplayableDataPoint> dataPoints) {
+        DisplayableDataPoint first = dataPoints.get(0);
+        if (dataPoints.size() == 1) {
+            return first;
+        }
+        
+        DisplayableDataPoint summary = new DisplayableDataPoint();
+        summary.setSymbol(first.getSymbol());
+        summary.setReactome(first.isReactome());
+        // The p-value is the geometric mean of the data point p-values.
+        double[] pValues = dataPoints.stream()
+                .mapToDouble(DisplayableDataPoint::getPvalue)
+                .toArray();
+        double pValue = geometricMean(pValues);
+        summary.setPvalue(pValue);
+        // The FC is that of the most significant data point.
+        DisplayableDataPoint bestDataPoint = null;
+        for (DisplayableDataPoint dataPoint: dataPoints) {
+            if (bestDataPoint == null || dataPoint.getPvalue() < bestDataPoint.getPvalue()) {
+                bestDataPoint = dataPoint;
+            }
+        }
+        summary.setFoldChange(bestDataPoint.getFoldChange());
+        
+        return summary;
+    }
+    
+    private static double geometricMean(double[] values) {
+        double product = Arrays.stream(values)
+                .reduce((accum, value) -> accum * value).getAsDouble();
+        return Math.pow(product, 1.0 / values.length);
+    }
+    
+    protected void binomialAnalyse(List<DisplayableDataPoint> dataPoints, Consumer<AnalysisResult> consumer) {
         // The input is a table of gene symbol lines.
-        // The input data points are filtered by the cut-off value.
-        double cutoff = binomialConfig.getPValueCutoff();
-        List<String> rankedList =
-                experiment.getDataPoints()
-                          .stream()
-                          .filter(dp -> dp.getPvalue() <= cutoff)
-                          .map(dp -> dp.getSymbol())
-                          .collect(Collectors.toList());
+        List<String> rankedList = getBinomialGeneList(dataPoints);
+        // Add the header required by the REST API call.
         rankedList.add(0, GENE_NAMES_HEADER);
+        // Make the REST payload text value.
         String data = String.join("\n", rankedList);
         AnalysisClient.analyseData(data, true, false, 0, 0, new AnalysisHandler.Result() {
             @Override
             public void onAnalysisServerException(String message) {
                 runningLbl.setVisible(false);
                 launchBtn.setVisible(true);
+                filterPanel.setVisible(false);
                 Console.error(message);
             }
 
@@ -182,6 +262,7 @@ public abstract class AnalysisDisplay extends Composite {
             public void onAnalysisResult(AnalysisResult result, long time) {
                 runningLbl.setVisible(false);
                 launchBtn.setVisible(true);
+                filterPanel.setVisible(true);
                 consumer.accept(result);
             }
 
@@ -189,10 +270,24 @@ public abstract class AnalysisDisplay extends Composite {
             public void onAnalysisError(AnalysisError error) {
                 runningLbl.setVisible(false);
                 launchBtn.setVisible(true);
+                filterPanel.setVisible(false);
                 Console.error(error.getReason());
             }
 
         });
+    }
+
+    /**
+     * Filters the experiment data points based on the config.
+     * 
+     * @param dataPoints the Nursa dataset experiment data points
+     * @return the ranked gene symbols list
+     */
+    private List<String> getBinomialGeneList(List<DisplayableDataPoint> dataPoints) {
+        return filterDataPoints(dataPoints).stream()
+                .filter(binomialConfig.getFilter())
+                .map(dp -> dp.getSymbol())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -230,7 +325,11 @@ public abstract class AnalysisDisplay extends Composite {
         runningLbl.addStyleName(RESOURCES.getCSS().running());
         configBtn.addStyleName(RESOURCES.getCSS().configBtn());
         settingsLbl.addStyleName(RESOURCES.getCSS().settingsLbl());
-         
+        filterPanel.addStyleName(RESOURCES.getCSS().filterPanel());
+        filterBox.addStyleName(RESOURCES.getCSS().filterBox());
+        filterBox.setValue(getResultFilter());
+        filterPanel.setVisible(false);
+        
         // The config button toggles the config panel display.
         configBtn.addClickHandler(new ClickHandler() {
 
@@ -250,7 +349,7 @@ public abstract class AnalysisDisplay extends Composite {
             @Override
             public void onValueChange(ValueChangeEvent<Boolean> event) {
                 if (event.getValue()) {
-                    settingsLbl.setText(formatBinomialSettings());
+                    settingsLbl.setText(binomialConfig.formatFilter());
                 }
             }
 
@@ -258,7 +357,7 @@ public abstract class AnalysisDisplay extends Composite {
         
         // The default analysis is binomial.
         binomialBtn.setValue(true);
-        settingsLbl.setText(formatBinomialSettings());
+        settingsLbl.setText(binomialConfig.formatFilter());
         
         gseaBtn.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 
@@ -287,32 +386,37 @@ public abstract class AnalysisDisplay extends Composite {
                 }
             }
         });
-    }
+        
+        filterBox.addValueChangeHandler(new ValueChangeHandler<Double>() {
 
-    private String formatBinomialSettings() {
-        return "p-value <= " + binomialConfig.getPValueCutoff();
+            @Override
+            public void onValueChange(ValueChangeEvent<Double> event) {
+                resultFilter = event.getValue();
+                // Redraw the tables.
+                AnalysisResultFilterChangedEvent changedEvent =
+                        new AnalysisResultFilterChangedEvent(resultFilter);
+                eventBus.fireEventFromSource(changedEvent, this);
+            }
+            
+        });
     }
 
     private String formatGseaSettings() {
+        int permutations = gseaConfig.getNperms();
         int[] bounds = gseaConfig.getDataSetSizeBounds();
-        // Alas, GWT does not support String.format.
-        return Integer.toString(bounds[0]) +
+        // Alas, GWT does not support String.format().
+        return Integer.toString(permutations) + " permutations, " + 
+                Integer.toString(bounds[0]) +
                 " <= dataset size < " +
                 Integer.toString(bounds[1]);
     }
 
     private Widget createBinomialPanel(List<PathwaySummary> results) {
-        BinomialExperimentTable table = new BinomialExperimentTable(results);
-        AnalysisResultPanel<PathwaySummary, Long> panel =
-                new AnalysisResultPanel<PathwaySummary, Long>(table, eventBus);
-        return panel;
+        return new BinomialAnalysisResultPanel(results, getResultFilter(), eventBus);
     }
 
     private Widget createGseaPanel(List<GseaAnalysisResult> results) {
-        GseaExperimentTable table = new GseaExperimentTable(results);
-        AnalysisResultPanel<GseaAnalysisResult, String> panel =
-                new AnalysisResultPanel<GseaAnalysisResult, String>(table, eventBus);
-        return panel;
+        return new GseaAnalysisResultPanel(results, resultFilter, eventBus);
     }
 
     private void showConfig() {
@@ -335,7 +439,8 @@ public abstract class AnalysisDisplay extends Composite {
 
             @Override
             public void onClose(CloseEvent<PopupPanel> event) {
-                settingsLbl.setText(formatBinomialSettings());
+                String settings = binomialConfig.formatFilter();
+                settingsLbl.setText(settings);
             }
             
         });
@@ -357,7 +462,7 @@ public abstract class AnalysisDisplay extends Composite {
         
         return dialog;
     }
-
+    
     private static Resources RESOURCES;
 
     static {
@@ -378,7 +483,7 @@ public abstract class AnalysisDisplay extends Composite {
     interface Css extends CssResource {
  
         /** The path to the default CSS styles used by this resource. */
-        String CSS = "AnalysisPanel.css";
+        String CSS = "AnalysisDisplay.css";
 
         String main();
 
@@ -393,6 +498,10 @@ public abstract class AnalysisDisplay extends Composite {
         String configBtn();
 
         String settingsLbl();
+        
+        String filterPanel();
+        
+        String filterBox();
 
     }
 }

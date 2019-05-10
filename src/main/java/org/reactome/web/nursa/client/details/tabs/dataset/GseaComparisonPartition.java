@@ -1,14 +1,15 @@
 package org.reactome.web.nursa.client.details.tabs.dataset;
 
+import java.util.List;
+
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.web.nursa.analysis.client.model.PseudoPathwaySummary;
 
 public class GseaComparisonPartition extends ComparisonPartition<GseaAnalysisResult> {
 
-    public GseaComparisonPartition(
-            Iterable<GseaAnalysisResult> result1,
-            Iterable<GseaAnalysisResult> result2) {
-        super(result1, result2);
+    public GseaComparisonPartition(List<GseaAnalysisResult> result1, List<GseaAnalysisResult> result2,
+            double filter) {
+        super(result1, result2, filter);
     }
 
     @Override

@@ -15,27 +15,47 @@ public abstract class ComparisonPartition<R> {
     
     private List<List<R>> unshared;
 
-    protected ComparisonPartition(Iterable<R> result1, Iterable<R> result2) {
+    private List<R> result1;
+
+    private List<R> result2;
+
+    protected ComparisonPartition(List<R> result1, List<R> result2, double filter) {
+        this.result1 = result1;
+        this.result2 = result2;
+        partition(filter);
+    }
+    
+    public void repartition(double filter) {
+        partition(filter);
+    }
+
+    private void partition(double filter) {
         // Map pathways for the first result.
         Map<String, R> first = new HashMap<String, R>();
-        for (R r: result1) {
-            first.put(getKey(r), r);
+        shared = new HashMap<String, List<R>>();
+        for (R r1: result1) {
+            if (getFdr(r1) < filter) {
+                first.put(getKey(r1), r1);
+            }
         }
         List<R> second = new ArrayList<R>();
         shared = new HashMap<String, List<R>>();
         // Build the partition.
         for (R r2: result2) {
             String k = getKey(r2);
-            R r1 = first.remove(k);
-            if (r1 == null) {
-                second.add(r2);
-            } else {
-                List<R> both = Arrays.asList(r1, r2);
-                shared.put(k, both);
+            if (getFdr(r2) < filter) {
+                R r1 = first.get(k);
+                if (r1 == null) {
+                    second.add(r2);
+                } else {
+                    first.remove(k);
+                    List<R> both = Arrays.asList(r1, r2);
+                    shared.put(k, both);
+                }
             }
         }
         unshared = Arrays.asList(new ArrayList<R>(first.values()), second);
-     }
+    }
 
     abstract protected String getKey(R result);
 

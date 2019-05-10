@@ -1,8 +1,12 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.reactome.web.nursa.client.details.tabs.dataset.AnalysisResultFilterChangedEvent;
+import org.reactome.web.nursa.client.details.tabs.dataset.AnalysisResultFilterChangedHandler;
 import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwaySelectedEvent;
 import org.reactome.web.pwp.client.details.tabs.analysis.widgets.results.events.PathwayHoveredResetEvent;
-
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.MouseOutEvent;
 import com.google.gwt.event.dom.client.MouseOutHandler;
@@ -16,23 +20,47 @@ import com.google.gwt.view.client.SelectionChangeEvent;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class AnalysisResultPanel<T, K> extends VerticalPanel {
+public abstract class AnalysisResultPanel<R, K> extends VerticalPanel
+implements AnalysisResultFilterChangedHandler {
 
+    private AnalysisResultTable<R, K> table;
     private SimplePager pager;
-    private AnalysisResultTable<T, K> table;
+    private List<R> unfilteredResults;
+    private EventBus eventBus;
 
-    public AnalysisResultPanel(AnalysisResultTable<T, K> table, EventBus eventBus) {
-        this.table = table;
+    protected AnalysisResultPanel(List<R> results, EventBus eventBus) {
+        this.eventBus = eventBus;
+        initDisplay(results, eventBus);
+    }
+
+    protected AnalysisResultPanel(List<R> results, double filter, EventBus eventBus) {
+        this.eventBus = eventBus;
+        unfilteredResults = results;
+        filterResults(filter);
+        eventBus.addHandler(AnalysisResultFilterChangedEvent.TYPE, this);
+    }
+
+    public void setResults(List<R> results, EventBus eventBus) {
+        remove(table);
+        remove(pager);
+        unfilteredResults = results;
+        initDisplay(results, eventBus);
+    }
+
+    abstract protected AnalysisResultTable<R, K> createResultsTable(List<R> results);
+
+    private void initDisplay(List<R> results, EventBus eventBus) {
+        table = createResultsTable(results);
         // Paginate the table.
         SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
         pager = new SimplePager(TextLocation.CENTER, pagerResources, false, 0, true);
         pager.setDisplay(table);
-        pager.setPageSize(20);
+        pager.setPageSize(table.getPageSize());
 
         // Assemble the widget.
-        this.add(table);
-        this.add(pager);
-        
+        add(table);
+        add(pager);
+         
         // Add the hover handler.
         RowHoverEvent.Handler hoverHandler = new RowHoverEvent.Handler() {
 
@@ -77,6 +105,23 @@ public class AnalysisResultPanel<T, K> extends VerticalPanel {
             }
         };
         table.getSelectionModel().addSelectionChangeHandler(selectHandler);
+    }
+
+    @Override
+    public void onFilterChanged(double filter) {
+        remove(table);
+        remove(pager);
+        filterResults(filter);
+    }
+    
+    abstract protected double getFdr(R result);
+
+    private void filterResults(double filter) {
+        List<R> filtered = unfilteredResults.stream()
+                .filter(result -> getFdr(result) <= filter)
+                .collect(Collectors.toList());
+        initDisplay(filtered, eventBus);
+        pager.setPageSize(table.getPageSize());
     }
     
     private K getKey(int pageRow) {

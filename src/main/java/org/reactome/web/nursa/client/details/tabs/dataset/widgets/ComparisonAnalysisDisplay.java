@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.nursa.model.Experiment;
+import org.reactome.nursa.model.DisplayableDataPoint;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaComparisonPartition;
@@ -15,20 +16,20 @@ import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Widget;
 
-public class ComparisonAnalysisPanel extends AnalysisDisplay {
+public class ComparisonAnalysisDisplay extends AnalysisDisplay {
 
     private Comparison comparison;
 
-    public ComparisonAnalysisPanel(Comparison comparison, EventBus eventBus) {
+    public ComparisonAnalysisDisplay(Comparison comparison, EventBus eventBus) {
         super(eventBus);
         this.comparison = comparison;
     }
 
     @Override
     protected void binomialAnalyse() {
-        List<Experiment> exps = comparison.experiments();
-        Experiment exp1 = exps.get(0);
-        Experiment exp2 = exps.get(1);
+        List<List<DisplayableDataPoint>> exps = comparison.dataPoints();
+        List<DisplayableDataPoint> exp1 = exps.get(0);
+        List<DisplayableDataPoint> exp2 = exps.get(1);
         binomialAnalyse(exp1, new Consumer<AnalysisResult>() {
             
             @Override
@@ -37,14 +38,16 @@ public class ComparisonAnalysisPanel extends AnalysisDisplay {
 
                     @Override
                     public void accept(AnalysisResult second) {
+                        double filter = getResultFilter();
                         BinomialComparisonPartition partition =
                                 new BinomialComparisonPartition(
                                         first.getPathways(),
-                                        second.getPathways());
+                                        second.getPathways(),
+                                        filter);
                         showBinomialResult(partition);
                         ComparisonAnalysisCompletedEvent event =
                                 new ComparisonAnalysisCompletedEvent(comparison, partition);
-                        eventBus.fireEventFromSource(event, ComparisonAnalysisPanel.this);
+                        eventBus.fireEventFromSource(event, ComparisonAnalysisDisplay.this);
                     }
 
                 });
@@ -55,23 +58,24 @@ public class ComparisonAnalysisPanel extends AnalysisDisplay {
 
     @Override
     protected void gseaAnalyse() {
-        List<Experiment> exps = comparison.experiments();
-        Experiment exp1 = exps.get(0);
-        Experiment exp2 = exps.get(1);
-        gseaAnalyse(exp1, new Consumer<List<GseaAnalysisResult>>() {
+        List<List<DisplayableDataPoint>> dataPoints = comparison.dataPoints();
+        List<DisplayableDataPoint> dps1 = dataPoints.get(0);
+        List<DisplayableDataPoint> dps2 = dataPoints.get(1);
+        gseaAnalyse(dps1, new Consumer<List<GseaAnalysisResult>>() {
             
             @Override
             public void accept(List<GseaAnalysisResult> first) {
-                gseaAnalyse(exp2, new Consumer<List<GseaAnalysisResult>>() {
+                gseaAnalyse(dps2, new Consumer<List<GseaAnalysisResult>>() {
 
                     @Override
                     public void accept(List<GseaAnalysisResult> second) {
+                        double filter = getResultFilter();
                         GseaComparisonPartition partition =
-                                new GseaComparisonPartition(first, second);
+                                new GseaComparisonPartition(first, second, filter);
                         showGseaResult(partition);
                         ComparisonAnalysisCompletedEvent event =
                                 new ComparisonAnalysisCompletedEvent(comparison, partition);
-                        eventBus.fireEventFromSource(event, ComparisonAnalysisPanel.this);
+                        eventBus.fireEventFromSource(event, ComparisonAnalysisDisplay.this);
                     }
 
                 });
@@ -80,7 +84,7 @@ public class ComparisonAnalysisPanel extends AnalysisDisplay {
         });
     }
 
-    private void showBinomialResult(ComparisonPartition<PathwaySummary> partition) {
+    private void showBinomialResult(BinomialComparisonPartition partition) {
         Widget panel = new BinomialComparisonPanel(comparison, partition, eventBus);
         resultsPanel.setWidget(panel);
     }
