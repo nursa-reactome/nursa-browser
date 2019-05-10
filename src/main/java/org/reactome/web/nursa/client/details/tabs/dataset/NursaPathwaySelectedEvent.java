@@ -5,7 +5,8 @@ import com.google.gwt.event.shared.GwtEvent;
 /**
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public abstract class NursaPathwaySelectedEvent<K> extends GwtEvent<PathwayLoader> {
+public abstract class NursaPathwaySelectedEvent<K>
+extends GwtEvent<NursaPathwaySelectedHandler> {
 
     private final K key;
 
