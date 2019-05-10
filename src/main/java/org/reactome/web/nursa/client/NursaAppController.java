@@ -6,6 +6,8 @@ import org.reactome.web.nursa.client.manager.state.NursaStateManager;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelector;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelectorDisplay;
 import org.reactome.web.nursa.client.toppanel.dataset.DataSetSelectorPresenter;
+import org.reactome.web.nursa.client.viewport.diagram.NursaDiagramDisplay;
+import org.reactome.web.nursa.client.viewport.diagram.NursaDiagramPresenter;
 import org.reactome.web.nursa.client.viewport.fireworks.NursaFireworksDisplay;
 import org.reactome.web.nursa.client.viewport.fireworks.NursaFireworksPresenter;
 import org.reactome.web.nursa.diagram.client.NursaDiagramViewer;
@@ -28,6 +30,7 @@ import org.reactome.web.pwp.client.hierarchy.HierarchyDisplay;
 import org.reactome.web.pwp.client.tools.launcher.ToolLauncher;
 import org.reactome.web.pwp.client.viewport.diagram.Diagram;
 import org.reactome.web.pwp.client.viewport.diagram.DiagramDisplay;
+import org.reactome.web.pwp.client.viewport.diagram.DiagramPresenter;
 import org.reactome.web.pwp.client.viewport.fireworks.Fireworks;
 import org.reactome.web.pwp.client.viewport.fireworks.FireworksDisplay;
 import org.reactome.web.pwp.client.viewport.fireworks.FireworksPresenter;
@@ -73,9 +76,13 @@ public class NursaAppController extends AppController {
     }
 
     @Override
+    protected DiagramPresenter createDiagramPresenter(Diagram.Display diagram) {
+        return new NursaDiagramPresenter(this.eventBus, diagram);
+    }
+
+    @Override
     protected Diagram.Display createDiagramDisplay() {
-        NursaDiagramViewer viewer = new NursaDiagramViewer();
-        return new DiagramDisplay(viewer);
+        return new NursaDiagramDisplay();
     }
 
     @Override
