@@ -1,7 +1,17 @@
+/* The dialog .main width and height and the .combo style
+   height below must accomodate the rows specified in the combo
+   box constructor page size argument but not overrun the
+   available display area. This is tricky to judge; as a rough
+   heuristic, the dialog box needs app. 10 + 2*n em units to
+   show n suggestion rows. This layout should be carefully
+   checked on the supported browsers and media sizes. If the
+   rows do not fit into the height, then suggestion rows are
+   silently hidden.
+ */
 .main {
 	position: relative;
 	width: 32em;
-	height: 21em;
+	height: 30em;
     border: 3px solid gray !important;
     border-radius: 15px;
     padding: 5px 10px 5px 10px;
@@ -43,7 +53,7 @@
 
 .combo {
     margin-top: 4px;
-    height: 19em;
+    height: 25em;
 }
 
 .load {
@@ -57,6 +67,13 @@
     font-weight: bolder;
     height: 20px;
     padding: 4px 4px 6px 4px;
+    /* Disable text selection of the load button text.
+       Bizarre, but it happens when a dataset suggestion
+       is double-clicked outside of a visible row. */
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
 }
 
 .load:disabled {
@@ -80,6 +97,13 @@
     font-weight: bolder;
     height: 20px;
     padding: 0 4px;
+    /* Disable text selection, which can occur as a side-effect of a
+       double- or triple-click in the suggestion box but outside
+       of any visible suggestion row. */
+    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+    -moz-user-select: none; /* mozilla browsers */
+    -khtml-user-select: none; /* webkit (konqueror) browsers */
+    -ms-user-select: none; /* IE10+ */
 }
 
 .info img {
