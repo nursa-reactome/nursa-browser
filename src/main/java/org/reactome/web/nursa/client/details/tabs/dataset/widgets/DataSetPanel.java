@@ -5,13 +5,14 @@ import java.util.List;
 import org.reactome.gsea.model.GseaAnalysisResult;
 import org.reactome.nursa.model.DataSet;
 import org.reactome.nursa.model.Experiment;
+import org.reactome.nursa.model.DisplayableDataPoint;
 import org.reactome.web.analysis.client.model.AnalysisResult;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.BinomialCompletedHandler;
 import org.reactome.web.nursa.model.Comparison;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.GseaCompletedHandler;
-import org.reactome.web.nursa.client.search.ExperimentLoadedEvent;
+import org.reactome.web.nursa.client.search.DataPointsLoadedEvent;
 import org.reactome.web.nursa.client.search.ExperimentLoadedHandler;
 import org.reactome.web.nursa.client.search.SearchDialog;
 
@@ -44,6 +45,8 @@ import com.google.gwt.user.client.ui.Widget;
 public class DataSetPanel extends DockLayoutPanel
         implements BinomialCompletedHandler, GseaCompletedHandler, ExperimentLoadedHandler {
 
+    private static final double TOP_BAR_HEIGHT = 4.5;
+
     private static final String SEARCH_DIALOG_TITLE = "Comparison Search";
 
     private ScrollPanel scrollPanel;
@@ -60,20 +63,23 @@ public class DataSetPanel extends DockLayoutPanel
 
     private Experiment experiment;
 
-    public DataSetPanel(DataSet dataset, Experiment experiment, EventBus eventBus) {
+    private List<DisplayableDataPoint> dataPoints;
+
+    public DataSetPanel(DataPointsLoadedEvent event, EventBus eventBus) {
         super(Style.Unit.EM);
-        this.dataset = dataset;
-        this.experiment = experiment;
+        dataset = event.getDataSet();
+        experiment = event.getExperiment();
+        dataPoints = event.getDataPoints();
         this.eventBus = eventBus;
         this.compareEventBus = new SimpleEventBus();
-        this.compareEventBus.addHandler(ExperimentLoadedEvent.TYPE, this);
+        this.compareEventBus.addHandler(DataPointsLoadedEvent.TYPE, this);
         eventBus.addHandler(GseaCompletedEvent.TYPE, this);
         eventBus.addHandler(BinomialCompletedEvent.TYPE, this);
         addStyleName(RESOURCES.getCSS().main());
         topBar = getTopBar(dataset, experiment, eventBus);
-        addNorth(topBar, 4.25);
+        addNorth(topBar, TOP_BAR_HEIGHT);
         scrollPanel = new ScrollPanel();
-        contentPanel = getExperimentContent(dataset, experiment, eventBus);
+        contentPanel = getExperimentContent(event, eventBus);
         scrollPanel.add(contentPanel);
         add(scrollPanel);
     }
@@ -104,11 +110,9 @@ public class DataSetPanel extends DockLayoutPanel
     }
 
     @Override
-    public void onExperimentLoaded(ExperimentLoadedEvent event) {
+    public void onExperimentLoaded(DataPointsLoadedEvent event) {
         // Handle the comparison experiment.
-        DataSet dataset = event.getDataSet();
-        Experiment experiment = event.getExperiment();
-        contentPanel = getComparisonContent(dataset, experiment, eventBus);
+        contentPanel = getComparisonContent(event, eventBus);
         scrollPanel.clear();
         scrollPanel.add(contentPanel);
     }
@@ -173,8 +177,8 @@ public class DataSetPanel extends DockLayoutPanel
         return topBar;
     }
 
-    private Panel getExperimentContent(DataSet dataset, Experiment experiment, EventBus eventBus) {
-        DataSetSections sections = new ExperimentSections(dataset, experiment, eventBus);
+    private Panel getExperimentContent(DataPointsLoadedEvent event, EventBus eventBus) {
+        DataSetSections sections = new ExperimentSections(event, eventBus);
         VerticalPanel vp = new VerticalPanel();
         for (Widget section: sections) {
             vp.add(section);
@@ -182,8 +186,9 @@ public class DataSetPanel extends DockLayoutPanel
         return vp;
     }
 
-    private Panel getComparisonContent(DataSet dataset, Experiment experiment, EventBus eventBus) {
-        Comparison comparison = new Comparison(this.dataset, this.experiment, dataset, experiment);
+    private Panel getComparisonContent(DataPointsLoadedEvent event, EventBus eventBus) {
+        Comparison comparison = new Comparison(dataset, experiment, dataPoints,
+                event.getDataSet(), event.getExperiment(), event.getDataPoints());
         DataSetSections sections = new ComparisonSections(comparison, eventBus);
         VerticalPanel vp = new VerticalPanel();
         for (Widget section: sections) {
