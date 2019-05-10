@@ -2,87 +2,104 @@ package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
 import java.util.Comparator;
 import java.util.List;
-import org.reactome.nursa.model.DataPoint;
-import org.reactome.nursa.model.Experiment;
+import org.reactome.nursa.model.DisplayableDataPoint;
 
-import com.google.gwt.user.cellview.client.CellTable;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.ColumnSortEvent.ListHandler;
+import com.google.gwt.user.cellview.client.DataGrid;
 import com.google.gwt.user.cellview.client.TextColumn;
 import com.google.gwt.view.client.ListDataProvider;
 
 /**
+ * ExperimentDataPointsPanel lays out the experiment data points.
+ *
  * @author Fred Loney <loneyf@ohsu.edu>
  */
-public class ExperimentDataPointsPanel extends DataPanel<DataPoint> {
+public class ExperimentDataPointsPanel extends DataPanel<DisplayableDataPoint> {
 
-    private Experiment experiment;
+    private List<DisplayableDataPoint> dataPoints;
 
-    public ExperimentDataPointsPanel(Experiment experiment) {
-        this.experiment = experiment;
+    public ExperimentDataPointsPanel(List<DisplayableDataPoint>dataPoints) {
+        this.dataPoints = dataPoints;
     }
 
     @Override
-    protected CellTable<DataPoint> getDataTable() {
+    protected DataGrid<DisplayableDataPoint> getDataTable() {
         // The sortable table.
-        CellTable<DataPoint> table = new CellTable<DataPoint>();
-        ListDataProvider<DataPoint> dataProvider = new ListDataProvider<DataPoint>();
+        DataGrid<DisplayableDataPoint> table = new DataGrid<DisplayableDataPoint>(PAGE_SIZE);
+        ListDataProvider<DisplayableDataPoint> dataProvider =
+                new ListDataProvider<DisplayableDataPoint>();
         dataProvider.addDataDisplay(table);
-        List<DataPoint> dataPoints = experiment.getDataPoints();
         dataProvider.setList(dataPoints);
-        ListHandler<DataPoint> sorter =
-                new ListHandler<DataPoint>(dataProvider.getList());
+        ListHandler<DisplayableDataPoint> sorter =
+                new ListHandler<DisplayableDataPoint>(dataProvider.getList());
         table.addColumnSortHandler(sorter);
         // The exact row count.
         table.setRowCount(dataPoints.size(), true);
         
         // Define the columns.
-        TextColumn<DataPoint> symbolColumn = new TextColumn<DataPoint>() {
+        TextColumn<DisplayableDataPoint> symbolColumn = new TextColumn<DisplayableDataPoint>() {
             @Override
-            public String getValue(DataPoint dataPoint) {
+            public String getValue(DisplayableDataPoint dataPoint) {
               return dataPoint.getSymbol();
             }
         };
         symbolColumn.setSortable(true);
-        sorter.setComparator(symbolColumn, new Comparator<DataPoint>() {
+        sorter.setComparator(symbolColumn, new Comparator<DisplayableDataPoint>() {
             @Override
-            public int compare(DataPoint p1, DataPoint p2) {
+            public int compare(DisplayableDataPoint p1, DisplayableDataPoint p2) {
                 return p1.getSymbol().compareTo(p2.getSymbol());
             }
         });
-        Column<DataPoint, Number> pValueColumn = new Column<DataPoint, Number>(SCIENTIFIC_CELL) {
+        table.addColumn(symbolColumn, "Symbol");
+
+        Column<DisplayableDataPoint, Number> pValueColumn = new Column<DisplayableDataPoint, Number>(CellTypes.SCIENTIFIC_CELL) {
             @Override
-            public Number getValue(DataPoint dataPoint) {
+            public Number getValue(DisplayableDataPoint dataPoint) {
                 return dataPoint.getPvalue();
             }
         };
         pValueColumn.setSortable(true);
-        sorter.setComparator(pValueColumn, new Comparator<DataPoint>() {
+        sorter.setComparator(pValueColumn, new Comparator<DisplayableDataPoint>() {
             @Override
-            public int compare(DataPoint p1, DataPoint p2) {
+            public int compare(DisplayableDataPoint p1, DisplayableDataPoint p2) {
                 return Double.compare(p1.getPvalue(), p2.getPvalue());
             }
         });
+        table.addColumn(pValueColumn, "p-value");
 
-        Column<DataPoint, Number> foldChangeColumn = new Column<DataPoint, Number>(DECIMAL_CELL) {
+        Column<DisplayableDataPoint, Number> foldChangeColumn = new Column<DisplayableDataPoint, Number>(CellTypes.SCIENTIFIC_CELL) {
             @Override
-            public Number getValue(DataPoint dataPoint) {
+            public Number getValue(DisplayableDataPoint dataPoint) {
                 return dataPoint.getFoldChange();
             }
         };
         foldChangeColumn.setSortable(true);
-        sorter.setComparator(foldChangeColumn, new Comparator<DataPoint>() {
+        sorter.setComparator(foldChangeColumn, new Comparator<DisplayableDataPoint>() {
             @Override
-            public int compare(DataPoint p1, DataPoint p2) {
+            public int compare(DisplayableDataPoint p1, DisplayableDataPoint p2) {
                 return Double.compare(p1.getFoldChange(), p2.getFoldChange());
             }
         });
-        
-        // Add the columns.
-        table.addColumn(symbolColumn, "Symbol");
-        table.addColumn(pValueColumn, "P-Value");
         table.addColumn(foldChangeColumn, "Fold Change");
 
+        TextColumn<DisplayableDataPoint> isReactomeColumn = new TextColumn<DisplayableDataPoint>() {
+            @Override
+            public String getValue(DisplayableDataPoint dataPoint) {
+                return Boolean.toString(dataPoint.isReactome());
+            }
+        };
+        isReactomeColumn.setSortable(true);
+        sorter.setComparator(isReactomeColumn, new Comparator<DisplayableDataPoint>() {
+            @Override
+            public int compare(DisplayableDataPoint p1, DisplayableDataPoint p2) {
+                return Boolean.compare(p1.isReactome(), p2.isReactome());
+            }
+        });
+        table.addColumn(isReactomeColumn, "Reactome Gene");
+        
+        formatTableDimensions(table);
+        
         return table;
     }
 

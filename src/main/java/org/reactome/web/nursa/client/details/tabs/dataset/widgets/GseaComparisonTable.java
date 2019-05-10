@@ -9,10 +9,13 @@ import org.reactome.web.nursa.client.details.tabs.dataset.GseaSelectedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwayHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwaySelectedEvent;
 
+import com.google.gwt.event.shared.EventBus;
+
 public class GseaComparisonTable extends AnalysisComparisonTable<GseaAnalysisResult, String> {
 
-    protected GseaComparisonTable(Map<String, List<GseaAnalysisResult>> results) {
-        super(results);
+    protected GseaComparisonTable(Map<String, List<GseaAnalysisResult>> results,
+                    EventBus eventBus) {
+        super(results, eventBus);
     }
 
     @Override

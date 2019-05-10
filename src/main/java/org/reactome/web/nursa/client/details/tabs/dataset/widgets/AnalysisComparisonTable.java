@@ -1,24 +1,28 @@
 package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.reactome.web.nursa.client.details.tabs.dataset.NursaWidgetHelper;
+
+import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.user.cellview.client.Column;
 import com.google.gwt.user.cellview.client.TextColumn;
 
-abstract public class AnalysisComparisonTable<R, K>
-extends AnalysisResultTable<Map.Entry<String, List<R>>, K> {
+abstract public class AnalysisComparisonTable<R, K> 
+extends AnalysisResultTable<Entry<String, List<R>>, K> {
 
-    protected AnalysisComparisonTable(Map<String, List<R>> results) {
-        super(results.entrySet()
-                     .stream()
-                     .sorted(Map.Entry.comparingByKey())
-                     .collect(Collectors.toList()));
- 
+    protected AnalysisComparisonTable(Map<String, List<R>> results, EventBus eventBus) {
+        super(new ArrayList<Entry<String, List<R>>>(results.entrySet()));
+        initDisplay();
+    }
+
+    private void initDisplay() {
         // The pathway name column.
         TextColumn<Map.Entry<String, List<R>>> nameColumn =
                 new TextColumn<Map.Entry<String, List<R>>>() {
@@ -36,12 +40,12 @@ extends AnalysisResultTable<Map.Entry<String, List<R>>, K> {
                 return r1.getKey().compareTo(r2.getKey());
             }
         });
-        addColumn(nameColumn, "Name");
+        addColumn(nameColumn, "Pathway");
         
         for (int i=0; i < 2; i++) {
             final int index = i;
             Column<Map.Entry<String, List<R>>, Number> pValueColumn =
-                    new Column<Map.Entry<String, List<R>>, Number>(SCIENTIFIC_CELL) {
+                    new Column<Map.Entry<String, List<R>>, Number>(CellTypes.SCIENTIFIC_CELL) {
                 @Override
                 public Number getValue(Map.Entry<String, List<R>> result) {
                     return getPvalue(result.getValue().get(index));
@@ -59,9 +63,11 @@ extends AnalysisResultTable<Map.Entry<String, List<R>>, K> {
                     return Double.compare(pvalue1, pvalue2);
                 }
             });
+            SafeHtml pValueHdr = NursaWidgetHelper.superscriptHeader(i, "p-value");
+            addColumn(pValueColumn, pValueHdr);
             
             Column<Map.Entry<String, List<R>>, Number> fdrColumn =
-                    new Column<Map.Entry<String, List<R>>, Number>(DECIMAL_CELL) {
+                    new Column<Map.Entry<String, List<R>>, Number>(CellTypes.DECIMAL_CELL) {
                 @Override
                 public Number getValue(Map.Entry<String, List<R>> result) {
                     return getFdr(result.getValue().get(index));
@@ -78,12 +84,10 @@ extends AnalysisResultTable<Map.Entry<String, List<R>>, K> {
                     return Double.compare(fdr1,fdr2);
                 }
             });
-            
-            // Add the columns.
-            SafeHtml pValueHdr = NursaWidgetHelper.superscriptHeader(i, "P-Value");
-            addColumn(pValueColumn, pValueHdr);
             SafeHtml fdrHdr = NursaWidgetHelper.superscriptHeader(i, "FDR");
             addColumn(fdrColumn, fdrHdr);
+            
+            formatTableDimensions();
         }
     }
     

@@ -9,10 +9,12 @@ import org.reactome.web.nursa.client.details.tabs.dataset.BinomialSelectedEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwayHoveredEvent;
 import org.reactome.web.nursa.client.details.tabs.dataset.NursaPathwaySelectedEvent;
 
+import com.google.gwt.event.shared.EventBus;
+
 public class BinomialComparisonTable extends AnalysisComparisonTable<PathwaySummary, Long> {
 
-    BinomialComparisonTable(Map<String, List<PathwaySummary>> results) {
-        super(results);
+    BinomialComparisonTable(Map<String, List<PathwaySummary>> results, EventBus eventBus) {
+        super(results, eventBus);
     }
 
     @Override
