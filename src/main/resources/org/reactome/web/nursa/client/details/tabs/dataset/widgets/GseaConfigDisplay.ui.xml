@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder" xmlns:g="urn:import:com.google.gwt.user.client.ui">
+
+  <g:VerticalPanel ui:field='container'>
+    <g:HorizontalPanel>
+      <g:Label>Permutations</g:Label>
+      <g:IntegerBox ui:field='nperms'/>
+    </g:HorizontalPanel>
+    <g:Label>Gene Set Size Range</g:Label>
+    <!-- The gene set size min/max slider must be added in the code,
+         since it attaches a third-party control. -->
+  </g:VerticalPanel>
+
+</ui:UiBinder>

@@ -20,6 +20,7 @@ public interface GseaClient extends RestService {
     @Path("/analyse")
     public void analyse(
             List<List<String>> rankedList,
+            @QueryParam("nperms") Integer nperms,
             @QueryParam("dataSetSizeMin") Integer dataSetSizeMin,
             @QueryParam("dataSetSizeMax") Integer dataSetSizeMax,
             MethodCallback<List<GseaAnalysisResult>> result
