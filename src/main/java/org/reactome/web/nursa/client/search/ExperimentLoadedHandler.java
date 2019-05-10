@@ -7,6 +7,6 @@ import com.google.gwt.event.shared.EventHandler;
  */
 public interface ExperimentLoadedHandler extends EventHandler {
 
-    void onExperimentLoaded(ExperimentLoadedEvent event);
+    void onExperimentLoaded(DataPointsLoadedEvent event);
 
 }
