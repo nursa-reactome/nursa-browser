@@ -19,12 +19,14 @@
 }
 
 /* Work around the following apparent GWT bug:
-   * Setting a flow panel width does not set the width of the panel content.
-     The work-around is to set the width of the table which implements
-     the flow panel.
+   * Setting a flow panel width does not set the width of the panel
+     content. The work-around is to set the width of the table
+     which implements the flow panel.
  */
 .main > div > table {
-    width: 100%;    
+    width: 100%;
+    /* Add room between the dialog components. */
+    border-spacing: 0 6px;
 }
 
 .header {
@@ -41,6 +43,7 @@
     cursor: default;
 }
 
+/*
 .info {
     cursor: help;
     position: absolute;
@@ -58,6 +61,7 @@
 .info img {
 	padding: 2px 4px 0 0;
 }
+*/
 
 @sprite .close {
     gwt-image: 'closeNormal';
