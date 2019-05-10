@@ -33,7 +33,12 @@ abstract public class DataSetSections implements Iterable<Widget> {
         if (sections == null) {
             sections = new ArrayList<Widget>();
             overview = createOverviewSection();
-            sections.add(overview);
+            // The dataset overview section is null if the dataset doesn't
+            // have a description.
+            if (overview != null) {
+                sections.add(overview);
+  
+            }
             dataPoints = createDataPointsSection();
             sections.add(dataPoints);
             analysis = createAnalysisSection(eventBus);
@@ -55,6 +60,9 @@ abstract public class DataSetSections implements Iterable<Widget> {
 
     private Widget createOverviewSection() {
         Widget panel = createOverviewPanel();
+        if (panel == null) {
+            return null;
+        }
         panel.setStyleName(DataSetPanel.RESOURCES.getCSS().overview());
         return createDataSetSection(overviewTitle(), panel);
     }
