@@ -2,7 +2,27 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
 	xmlns:g="urn:import:com.google.gwt.user.client.ui" xmlns:c="urn:import:com.google.gwt.user.cellview.client">
 
-<g:HorizontalPanel ui:field='content'>
-    <g:Label>P-Value Cutoff:</g:Label>
-    <g:DoubleBox ui:field='pValueCutoff'/>
-</g:HorizontalPanel></ui:UiBinder>
+  <g:VerticalPanel>
+    <g:HorizontalPanel>
+      <g:Label>p-value &le;</g:Label>
+      <g:DoubleBox ui:field='pValueCutoff'/>
+    </g:HorizontalPanel>
+    <g:ListBox ui:field='pValueFcMinConjunction'>
+      <g:item>and</g:item>
+      <g:item>or</g:item>
+    </g:ListBox>
+    <g:HorizontalPanel>
+      <g:Label>Fold Change &le;</g:Label>
+      <g:DoubleBox ui:field='fcMin'/>
+    </g:HorizontalPanel>
+    <g:ListBox ui:field='fcMinMaxConjunction'>
+      <g:item>or</g:item>
+      <g:item>and</g:item>
+    </g:ListBox>
+    <g:HorizontalPanel>
+      <g:Label>Fold Change &ge;</g:Label>
+      <g:DoubleBox ui:field='fcMax'/>
+    </g:HorizontalPanel>
+  </g:VerticalPanel>
+
+</ui:UiBinder>
