@@ -30,9 +30,17 @@
     float: right;
 }
 
+table.gsea-config {
+    border-spacing: 0 6px;	
+}
+
 .gsea-config .min-max-slider-table {
     position: relative;
     margin: 0 0 6px 6px;
+}
+
+.gsea-config .min-max-slider-table label {
+    color: FloralWhite;
 }
 
 /* Reduce the default slider knob size by app. 1/4 in the
