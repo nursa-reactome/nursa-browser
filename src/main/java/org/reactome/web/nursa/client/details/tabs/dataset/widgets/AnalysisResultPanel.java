@@ -14,6 +14,7 @@ import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.cellview.client.RowHoverEvent;
 import com.google.gwt.user.cellview.client.SimplePager;
 import com.google.gwt.user.cellview.client.SimplePager.TextLocation;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.view.client.SelectionChangeEvent;
 
@@ -22,6 +23,9 @@ import com.google.gwt.view.client.SelectionChangeEvent;
  */
 public abstract class AnalysisResultPanel<R, K> extends VerticalPanel
 implements AnalysisResultFilterChangedHandler {
+
+    private static final String EMPTY_RESULT_MSG =
+            "No pathways match the analysis criteria";
 
     private AnalysisResultTable<R, K> table;
     private SimplePager pager;
@@ -50,6 +54,11 @@ implements AnalysisResultFilterChangedHandler {
     abstract protected AnalysisResultTable<R, K> createResultsTable(List<R> results);
 
     private void initDisplay(List<R> results, EventBus eventBus) {
+        if (results.size() == 0) {
+            Label label = new Label(EMPTY_RESULT_MSG);
+            add(label);
+            return;
+        }
         table = createResultsTable(results);
         // Paginate the table.
         SimplePager.Resources pagerResources = GWT.create(SimplePager.Resources.class);
@@ -121,7 +130,9 @@ implements AnalysisResultFilterChangedHandler {
                 .filter(result -> getFdr(result) <= filter)
                 .collect(Collectors.toList());
         initDisplay(filtered, eventBus);
-        pager.setPageSize(table.getPageSize());
+        if (pager != null) {
+            pager.setPageSize(table.getPageSize());
+        }
     }
     
     private K getKey(int pageRow) {
