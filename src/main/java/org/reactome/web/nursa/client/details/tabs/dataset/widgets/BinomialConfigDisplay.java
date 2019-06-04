@@ -85,7 +85,10 @@ public class BinomialConfigDisplay extends Composite {
         ConfigFilter filter = new ConfigFilter(cutoffs, comparators, conjunctions);
         
         // The predicate calls the filter.
-        return dp -> filter.test(getPValueCutoff(), getMinFoldChange(), getMaxFoldChange());
+        return dp -> {
+            double fc = dp.getFoldChange();
+            return filter.test(dp.getPvalue(), fc, fc);
+        };
     }
     
     public Double getPValueCutoff() {
