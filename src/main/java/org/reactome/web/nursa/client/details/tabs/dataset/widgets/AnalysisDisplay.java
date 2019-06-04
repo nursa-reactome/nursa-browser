@@ -244,11 +244,18 @@ public abstract class AnalysisDisplay extends Composite {
     
     protected void binomialAnalyse(List<DisplayableDataPoint> dataPoints, Consumer<AnalysisResult> consumer) {
         // The input is a table of gene symbol lines.
-        List<String> rankedList = getBinomialGeneList(dataPoints);
+        List<String> geneList = getBinomialGeneList(dataPoints);
         // Add the header required by the REST API call.
-        rankedList.add(0, GENE_NAMES_HEADER);
+        geneList.add(0, GENE_NAMES_HEADER);
         // Make the REST payload text value.
-        String data = String.join("\n", rankedList);
+        String data = String.join("\n", geneList);
+        
+        
+        
+        Console.log(data);
+        
+        
+        
         AnalysisClient.analyseData(data, true, false, 0, 0, new AnalysisHandler.Result() {
             @Override
             public void onAnalysisServerException(String message) {
