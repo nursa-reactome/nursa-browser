@@ -13,6 +13,7 @@ import org.reactome.web.analysis.client.model.PathwayBase;
 import org.reactome.web.analysis.client.model.PathwaySummary;
 import org.reactome.web.analysis.client.model.ResourceSummary;
 import org.reactome.web.analysis.client.model.SpeciesFilteredResult;
+import org.reactome.web.analysis.client.model.SpeciesSummary;
 import org.reactome.web.nursa.client.details.tabs.dataset.ComparisonPartition;
 import org.reactome.web.nursa.model.Comparison;
 
@@ -179,9 +180,19 @@ public class PseudoAnalysisResult implements AnalysisResult {
             public Integer getPathways() {
                 return 0;
             }
+
+            @Override
+            public Integer getFiltered() {
+                return 0;
+            }
         };
 
         return Arrays.asList(emptyItem);
+    }
+
+    @Override
+    public List<SpeciesSummary> getSpeciesSummary() {
+        return null;
     }
 
 }

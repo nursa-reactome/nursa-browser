@@ -34,6 +34,7 @@ import org.reactome.web.pwp.client.viewport.diagram.DiagramPresenter;
 import org.reactome.web.pwp.client.viewport.fireworks.Fireworks;
 import org.reactome.web.pwp.client.viewport.fireworks.FireworksDisplay;
 import org.reactome.web.pwp.client.viewport.fireworks.FireworksPresenter;
+import org.reactome.web.pwp.model.client.classes.DBInfo;
 
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.event.shared.SimpleEventBus;
@@ -41,6 +42,10 @@ import com.google.gwt.user.client.ui.ComplexPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 public class NursaAppController extends AppController {
+
+    public NursaAppController(DBInfo dbInfo) {
+        super(dbInfo);
+    }
 
     private EventBus dataSetEventBus;
 

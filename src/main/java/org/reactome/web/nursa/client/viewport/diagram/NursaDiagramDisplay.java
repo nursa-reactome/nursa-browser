@@ -12,7 +12,7 @@ public class NursaDiagramDisplay extends DiagramDisplay {
 
     @Override
     public void setAnalysisToken(AnalysisStatus analysisStatus) {
-        ((NursaDiagramViewer) this.diagram).setAnalysisToken(analysisStatus.getToken(), analysisStatus.getResource());
+        ((NursaDiagramViewer) this.diagram).setAnalysisToken(analysisStatus.getToken(), analysisStatus.getResultFilter());
     }
 
 }

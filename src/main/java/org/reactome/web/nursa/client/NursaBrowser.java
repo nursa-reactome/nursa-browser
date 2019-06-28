@@ -3,6 +3,7 @@ package org.reactome.web.nursa.client;
 import org.fusesource.restygwt.client.Defaults;
 import org.reactome.web.pwp.client.AppController;
 import org.reactome.web.pwp.client.Browser;
+import org.reactome.web.pwp.model.client.classes.DBInfo;
 
 public class NursaBrowser extends Browser {
 
@@ -13,8 +14,8 @@ public class NursaBrowser extends Browser {
     }
 
     @Override
-    protected AppController createController() {
-        return new NursaAppController();
+    protected AppController createController(DBInfo dbInfo) {
+        return new NursaAppController(dbInfo);
     }
 
 }

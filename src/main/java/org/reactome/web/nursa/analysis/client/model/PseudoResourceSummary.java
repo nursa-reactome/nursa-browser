@@ -33,4 +33,9 @@ public class PseudoResourceSummary implements ResourceSummary {
         return 0;
     }
 
+    @Override
+    public Integer getFiltered() {
+        return 0;
+    }
+
 }
