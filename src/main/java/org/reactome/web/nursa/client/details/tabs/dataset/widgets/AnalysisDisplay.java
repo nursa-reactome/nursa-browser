@@ -249,13 +249,6 @@ public abstract class AnalysisDisplay extends Composite {
         geneList.add(0, GENE_NAMES_HEADER);
         // Make the REST payload text value.
         String data = String.join("\n", geneList);
-        
-        
-        
-        Console.log(data);
-        
-        
-        
         AnalysisClient.analyseData(data, true, false, 0, 0, new AnalysisHandler.Result() {
             @Override
             public void onAnalysisServerException(String message) {
