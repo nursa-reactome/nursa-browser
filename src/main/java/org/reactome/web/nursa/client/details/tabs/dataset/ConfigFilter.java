@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiPredicate;
 
-import org.reactome.web.fireworks.util.Console;
-
 public class ConfigFilter {
     
     public static enum Conjunction {
