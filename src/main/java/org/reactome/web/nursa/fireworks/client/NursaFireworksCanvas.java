@@ -33,13 +33,13 @@ public class NursaFireworksCanvas extends FireworksCanvas {
 
     @Override
     protected EnrichmentControl createEnrichmentControl(EventBus eventBus) {
-        return new EnrichmentControl(eventBus, false);
+        return new EnrichmentControl(eventBus);
     }
 
     @Override
     protected void drawNode(int column, Context2d ctx, Node node) {
         if (AnalysisType.DATASET_COMPARISON.equals(analysisInfo.getType())) {
-            String nodeColour = node.getEnrichmentColour();
+            String nodeColour = node.getColour();
             ctx.setFillStyle(nodeColour);
             ctx.setStrokeStyle(nodeColour);
             node.draw(ctx);
@@ -51,7 +51,7 @@ public class NursaFireworksCanvas extends FireworksCanvas {
     @Override
     protected void drawEdge(int column, Context2d ctx, Edge edge) {
         if (AnalysisType.DATASET_COMPARISON.equals(analysisInfo.getType())) {
-            String edgeColour = edge.getEnrichmentColour();
+            String edgeColour = edge.getColour();
             ctx.setStrokeStyle(edgeColour);
             edge.draw(ctx);
        } else {
