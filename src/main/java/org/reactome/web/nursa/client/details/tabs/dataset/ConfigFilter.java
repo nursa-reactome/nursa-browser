@@ -34,7 +34,7 @@ public class ConfigFilter {
         if (cutoff != null) {
             comparator = comparators.get(index);
         }
-        if (index < cutoffs.length) {
+        if (index < cutoffs.length - 1) {
             // Make another filter for the remaining cutoffs.
             other = new ConfigFilter(cutoffs, comparators, conjunctions, index + 1);
             // AND/OR the current comparison with the other filter.
