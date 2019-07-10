@@ -3,6 +3,7 @@ package org.reactome.web.nursa.client.details.tabs.dataset.widgets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Consumer;
@@ -20,7 +21,10 @@ import org.reactome.web.analysis.client.AnalysisClient;
 import org.reactome.web.analysis.client.AnalysisHandler;
 import org.reactome.web.analysis.client.model.AnalysisError;
 import org.reactome.web.analysis.client.model.AnalysisResult;
+import org.reactome.web.analysis.client.model.AnalysisSummary;
+import org.reactome.web.analysis.client.model.ExpressionSummary;
 import org.reactome.web.analysis.client.model.PathwaySummary;
+import org.reactome.web.analysis.client.model.ResourceSummary;
 import org.reactome.web.pwp.client.common.events.AnalysisResetEvent;
 import org.reactome.web.pwp.client.common.utils.Console;
 import org.reactome.web.nursa.client.details.tabs.dataset.AnalysisResultFilterChangedEvent;
@@ -37,6 +41,7 @@ import com.google.gwt.resources.client.ClientBundle;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -245,6 +250,49 @@ public abstract class AnalysisDisplay extends Composite {
     protected void binomialAnalyse(List<DisplayableDataPoint> dataPoints, Consumer<AnalysisResult> consumer) {
         // The input is a table of gene symbol lines.
         List<String> geneList = getBinomialGeneList(dataPoints);
+        if (geneList.isEmpty()) {
+            runningLbl.setVisible(false);
+            launchBtn.setVisible(true);
+            filterPanel.setVisible(true);
+            AnalysisResult result = new AnalysisResult() {
+                
+                @Override
+                public List<String> getWarnings() {
+                    return null;
+                }
+                
+                @Override
+                public AnalysisSummary getSummary() {
+                    return null;
+                }
+                
+                @Override
+                public List<ResourceSummary> getResourceSummary() {
+                    return null;
+                }
+                
+                @Override
+                public Integer getPathwaysFound() {
+                    return 0;
+                }
+                
+                @Override
+                public List<PathwaySummary> getPathways() {
+                    return Collections.emptyList();
+                }
+                
+                @Override
+                public Integer getIdentifiersNotFound() {
+                    return 0;
+                }
+                
+                @Override
+                public ExpressionSummary getExpression() {
+                    return null;
+                }
+            };
+            consumer.accept(result);
+        }
         // Add the header required by the REST API call.
         geneList.add(0, GENE_NAMES_HEADER);
         // Make the REST payload text value.
