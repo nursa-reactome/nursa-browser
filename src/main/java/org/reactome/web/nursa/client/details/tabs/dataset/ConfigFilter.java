@@ -31,9 +31,7 @@ public class ConfigFilter {
     private ConfigFilter(Double[] cutoffs, List<BiPredicate<Double, Double>> comparators,
             Conjunction[] conjunctions, int index) {
         cutoff = cutoffs[index];
-        if (cutoff != null) {
-            comparator = comparators.get(index);
-        }
+        comparator = comparators.get(index);
         if (index < cutoffs.length - 1) {
             // Make another filter for the remaining cutoffs.
             other = new ConfigFilter(cutoffs, comparators, conjunctions, index + 1);
